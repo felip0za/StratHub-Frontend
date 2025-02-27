@@ -1,0 +1,28 @@
+/* src/Home.css */
+.presentation-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centraliza verticalmente */
+    align-items: flex-start; /* Alinha ao lado esquerdo */
+    height: 100vh; /* Altura total da tela */
+    padding-left: 20px; /* Adiciona um espaço à esquerda */
+}
+
+.presentation-container h2 {
+    margin-bottom: 20px; /* Espaçamento abaixo do título */
+}
+
+.presentation-container button {
+    padding: 10px 20px; /* Espaçamento interno do botão */
+    font-size: 16px; /* Tamanho da fonte do botão */
+    cursor: pointer; /* Cursor de ponteiro ao passar sobre o botão */
+    background-color: #ff0000; /* Cor de fundo do botão */
+    color: white; /* Cor do texto do botão */
+    border: none; /* Sem borda */
+    border-radius: 5px; /* Bordas arredondadas */
+    transition: background-color 0.3s; /* Transição suave para a cor de fundo */
+}
+
+.presentation-container button:hover {
+    background-color: #700202; /* Cor de fundo ao passar o mouse */
+}
