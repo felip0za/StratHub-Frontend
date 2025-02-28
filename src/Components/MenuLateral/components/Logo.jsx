@@ -1,11 +1,11 @@
 import React from "react";
-import{ FireFilled } from "@ant-design/icons"
+import R6HubLogo from './assets/R6HubLogo.png';
 
 const Logo  = () => {
     return(
         <div className="logo">
             <div className="logo-icon">
-                <FireFilled />
+                <img src="R6HubLogo" alt="Logo" />
             </div>
         </div>
     )
