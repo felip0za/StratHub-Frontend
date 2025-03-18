@@ -19,18 +19,3 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh; /* Para ocupar a tela inteira */
-  background-color: #121212; /* Cor de fundo escura */
-}
-
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-

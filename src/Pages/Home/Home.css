@@ -1,0 +1,16 @@
+.home-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #242424; /* Cor de fundo escura */
+    color: white;
+    text-align: center;
+  }
+  
+  /* Estilo específico para o título */
+  .home-title {
+    font-size: 2rem;
+    font-weight: bold;
+  }
+  

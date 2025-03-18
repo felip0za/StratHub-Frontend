@@ -9,22 +9,24 @@ function Login() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (username && password) {
-            navigate('/'); // Redireciona para a página inicial
+        if (email && password) {
+            navigate('/home'); // Redireciona para a página inicial
         } else {
             alert('Por favor, preencha todos os campos.');
         }
     };
 
-    const handleClick = (e) => {
+    const handleClickSignin = (e) => {
         e.preventDefault();
         navigate('/cadastro')
     };
 
+
+
     return (
         <div className="login-container">
             <h2>Tela de Login</h2>
-            <form onSubmit={handleSubmit}>
+            <form  onSubmit={handleSubmit}>
                 <div>
                     <label>Email:</label>
                     <input
@@ -46,7 +48,7 @@ function Login() {
                 <button type="submit">Entrar</button>
             </form>
             <h2>ou</h2>
-            <form onClick={handleClick}>
+            <form onClick={handleClickSignin}>
                 <button type="click">Cadastre-se</button>
             </form>
         </div>

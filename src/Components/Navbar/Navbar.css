@@ -1,0 +1,33 @@
+/* Estilos globais da Navbar */
+nav {
+    background-color: #1a1a1a; /* Fundo escuro */
+    color: white;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  /* Estilo do Logo */
+  nav .button img {
+    width: 48px;
+    height: 48px;
+    cursor: pointer;
+  }
+  
+  /* Estilos do botão "Salas" */
+  nav .btn-salas {
+    background-color: #007bff;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    border: none;
+    color: white;
+  }
+  
+  nav .btn-salas:hover {
+    background-color: #0056b3;
+  }
+  
