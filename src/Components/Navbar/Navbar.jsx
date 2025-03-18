@@ -7,16 +7,16 @@ function Navbar() {
 
     return (
         <header>
-            <nav className="bg-gray-900 text-white py-4 px-6 flex items-center justify-between">
+            <nav className="nav">
                 {/* Logo */}
-                <button onClick={() => navigate("/")} className="flex items-center">
+                <button onClick={() => navigate("/")} className="nav">
                     <img src={R6HubLogo} alt="Logo do sistema" />
                 </button>
 
                 {/* Contatar Button */}
                 <button
                     onClick={() => navigate("/salas")}
-                    className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md"
+                    className="nav"
                 >
                     Salas
                 </button>
