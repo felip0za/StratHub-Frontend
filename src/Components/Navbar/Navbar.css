@@ -1,33 +1,33 @@
-/* Estilos globais da Navbar */
+@import url('https://fonts.cdnfonts.com/css/akira-expanded');
+
 nav {
-    background-color: #1a1a1a; /* Fundo escuro */
-    color: white;
-    padding: 1rem 1.5rem;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-  }
-  
-  /* Estilo do Logo */
-  nav .button img {
-    width: 48px;
-    height: 48px;
+    position: left; 
+}
+
+nav .nav-link {
+    font-family: 'Akira Expanded', sans-serif;
+    font-size: large;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 1.2rem; 
     cursor: pointer;
-  }
-  
-  /* Estilos do botão "Salas" */
-  nav .btn-salas {
-    background-color: #007bff;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background 0.3s ease;
-    border: none;
+    transition: all 0.3s ease;
     color: white;
-  }
-  
-  nav .btn-salas:hover {
-    background-color: #0056b3;
-  }
-  
+    font-weight: bold;
+    text-decoration: none;
+    position: absolute; 
+    left: 50%; 
+    transform: translateX(-50%); 
+    margin-left: -400px;
+}
+
+nav .nav-link:hover {
+    transform: scale(1.05) translateX(-50%);
+}
+
+nav .nav-link:active {
+    transform: scale(0.95) translateX(-50%);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}

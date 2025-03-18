@@ -1,6 +1,5 @@
-// src/Register.jsx
 import React, { useState } from 'react';
-import './Cadastro.css'; // Importando o CSS
+import './Cadastro.css';
 import { useNavigate } from 'react-router-dom';
 
 const Cadastro = () => {
@@ -11,12 +10,11 @@ const Cadastro = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Aqui você pode adicionar a lógica para enviar os dados para o servidor
         console.log('Nome:', name);
         console.log('Email:', email);
         console.log('Senha:', password);
         alert('Cadastro realizado com sucesso!');
-        navigate('/login')
+        navigate('/login');
     };
 
     return (

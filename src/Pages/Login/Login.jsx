@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./Login.css"; 
 import { useNavigate } from "react-router-dom";
-import R6HubLogo from "/src/assets/R6HubLogo.png";; // Certifique-se de que a imagem está no diretório correto
+import R6HubLogo from "/src/assets/R6HubLogo.png";
 
 function Login() {
     const [email, setEmail] = useState(''); 
@@ -11,7 +11,7 @@ function Login() {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (email && password) {
-            navigate('/home'); // Redireciona para a página inicial
+            navigate('/home');
         } else {
             alert('Por favor, preencha todos os campos.');
         }
@@ -24,10 +24,8 @@ function Login() {
 
     return (
         <div className="login-page">
-            {/* Logo posicionada no lado direito */}
             <img src={R6HubLogo} alt="Logo do site" className="login-logo" />
 
-            {/* Container do formulário de login */}
             <div className="login-container">
                 <h2>Tela de Login</h2>
                 <form onSubmit={handleSubmit}>

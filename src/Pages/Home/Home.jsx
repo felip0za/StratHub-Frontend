@@ -8,7 +8,7 @@ function Home() {
 
   return (
     <>
-      <Navbar /> {/* Adiciona a Navbar aqui */}
+      <Navbar />
       <div className="home-container">
         <h2 className="home-title">OLA</h2>
       </div>

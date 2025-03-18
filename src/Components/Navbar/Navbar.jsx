@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import R6HubLogo from "/src/assets/R6HubLogo.png";
-import "./Navbar.css"
+import "./Navbar.css";
 
 function Navbar() {
     const navigate = useNavigate();
@@ -8,18 +8,10 @@ function Navbar() {
     return (
         <header>
             <nav className="nav">
-                {/* Logo */}
-                <button onClick={() => navigate("/")} className="nav">
-                    <img src={R6HubLogo} alt="Logo do sistema" />
-                </button>
-
-                {/* Contatar Button */}
-                <button
-                    onClick={() => navigate("/salas")}
-                    className="nav"
-                >
+                <img src={R6HubLogo} alt="Logo do sistema" onClick={() => navigate("/")}/>
+                <span onClick={() => navigate("/salas")} className="nav-link">
                     Salas
-                </button>
+                </span>
             </nav>
         </header>
     );
