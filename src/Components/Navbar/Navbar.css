@@ -4,6 +4,7 @@ nav {
     display: flex;
     align-items: center;
     position: left; 
+    background-color: rgb(65, 0, 0);
 }
 
 nav .nav-link {
@@ -14,7 +15,7 @@ nav .nav-link {
     font-size: 1.2rem; 
     cursor: pointer;
     transition: all 0.3s ease;
-    color: white;
+    color: rgb(255, 255, 255);
     font-weight: bold;
     text-decoration: none;
     position: absolute; 
