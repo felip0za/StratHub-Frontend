@@ -9,7 +9,7 @@ function Navbar() {
         <header>
             <nav className="nav">
                 <img src={R6HubLogo} alt="Logo do sistema" onClick={() => navigate("/")}/>
-                <span onClick={() => navigate("/salas")} className="nav-link">
+                <span onClick={() => navigate("/chatbox")} className="nav-link">
                     Salas
                 </span>
             </nav>
