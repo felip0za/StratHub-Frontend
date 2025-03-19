@@ -1,16 +1,71 @@
 .home-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #242424; /* Cor de fundo escura */
-    color: white;
-    text-align: center;
-  }
-  
-  /* Estilo específico para o título */
-  .home-title {
-    font-size: 2rem;
-    font-weight: bold;
-  }
-  
+  text-align: center;
+  padding: 20px;
+  background-color: #121212;
+  min-height: 100vh;
+}
+
+.home-title {
+  color: #ffffff;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.card-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+}
+
+.card-box {
+  background: #1e1e1e;
+  color: #ffffff;
+  width: 220px;
+  border-radius: 10px;
+  padding: 15px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.3s;
+}
+
+.card-box:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+}
+
+.card-time {
+  display: block;
+  background: #ffcc00;
+  color: #000;
+  padding: 5px;
+  font-size: 12px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.card-content {
+  text-align: center;
+}
+
+.card-points {
+  color: #9c27b0;
+  font-weight: bold;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+.card-description {
+  font-size: 12px;
+  color: #bdbdbd;
+}
+
+.card-info {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  font-size: 14px;
+}

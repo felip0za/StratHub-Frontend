@@ -1,34 +1,50 @@
 @import url('https://fonts.cdnfonts.com/css/akira-expanded');
 
-nav {
+.nav {
     display: flex;
     align-items: center;
-    position: left; 
-    background-color: rgb(65, 0, 0);
+    justify-content: space-between;
+    padding: 10px 20px;
+    background-color: #1a1a1a;
 }
 
-nav .nav-link {
-    font-family: 'Akira Expanded', sans-serif;
-    font-size: large;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 1.2rem; 
+.nav-logo {
+    width: 50px;
     cursor: pointer;
-    transition: all 0.3s ease;
+}
+
+.nav-links {
+    display: flex;
+    gap: 10px; /* Define o espaçamento entre os itens */
+}
+
+.nav-link {
+    font-family: 'Akira Expanded', sans-serif;
+    color: white;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 5px 10px;
+    transition: 0.3s;
+}
+
+.nav-link:hover {
+    font-size: 20px;
+    transition: 0.3s;
+    padding: 8px;
+    color: rgb(180, 0, 0);
+}
+
+.profile-icon {
+    font-size: 40px;
+    color: white;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+.profile-icon:hover {
+    font-size: 60px;
+    transition: 0.3s;
+    padding: 8px;
     color: rgb(255, 255, 255);
-    font-weight: bold;
-    text-decoration: none;
-    position: absolute; 
-    left: 50%; 
-    transform: translateX(-50%); 
-    margin-left: -400px;
-}
-
-nav .nav-link:hover {
-    transform: scale(1.05) translateX(-50%);
-}
-
-nav .nav-link:active {
-    transform: scale(0.95) translateX(-50%);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
