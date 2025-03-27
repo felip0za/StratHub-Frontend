@@ -3,3 +3,4 @@ Projeto que tem como intuito criar salas personalizadas para o jogo Rainbow six 
 
 <img src="src/assets/R6HubLogo.png">
 <img src="src/assets/PrintA.png">
+<img src="src/assets/PrintB.png">
