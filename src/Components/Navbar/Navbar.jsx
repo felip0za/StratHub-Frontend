@@ -21,7 +21,7 @@ function Navbar() {
                 </span>
                 <FaUserCircle 
                     className="profile-icon" 
-                    onClick={() => navigate("/")} 
+                    onClick={() => navigate("/user")} 
                 />
             </nav>
         </header>

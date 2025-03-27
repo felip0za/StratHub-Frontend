@@ -1,0 +1,93 @@
+@import url('https://fonts.cdnfonts.com/css/akira-expanded');
+
+/* User.css */
+.user-profile {
+    border-radius: 12px; /* Bordas arredondadas */
+    box-shadow: 0 10px 30px rgba(255, 0, 0, 0.8); /* Sombra deslocada para baixo */
+    padding: 305px; /* Espaçamento interno */
+    text-align: center; /* Centraliza o texto */
+    transition: transform 0.2s, box-shadow 0.3s; /* Transição suave */
+    margin: auto;
+    background-color: #1a1a1a; /* Fundo escuro */
+    width: 80%; /* Ajuste de largura */
+    max-width: 900px; /* Limite máximo */
+    margin-top: 40px; /* Ajuste para ficar abaixo da navbar */
+}
+
+.user-photo {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    border: 2px solid #007bff;
+    position: absolute;
+    top: 105px;
+    left: 520px;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.user-details {
+    text-align: center;
+}
+
+.user-name {
+    font-size: 24px;
+    font-weight: bold;
+    position: absolute;
+    top: 120px;
+    left: 920px;
+    margin: 5px 0;
+}
+
+.ubi-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    position: absolute;
+    top: 120px;
+    left: 1265px;
+}
+
+.ubi-id{
+    font-size: 24px;
+    font-weight: bold;
+    position: absolute;
+    top: 120px;
+    left: 1300px;
+}
+
+/* Botão do usuário */
+.user-button {
+    font-family: 'Akira Expanded', sans-serif;
+    padding: 10px 20px;
+    background-color: rgb(180, 0, 0);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+    
+    position: absolute;
+    top: 660px; /* Ajuste a altura conforme necessário */
+    left: 520px; /* Mantém alinhado com a foto */
+}
+.user-button:hover {
+    background-color: rgb(150, 0, 0); /* Cor mais escura ao passar o mouse */
+    transform: scale(1.05); /* Aumenta o botão ao passar o mouse */
+}
+
+/* Estilo do botão de desativar conta */
+.deactivate-button {
+    font-family: 'Akira Expanded', sans-serif;
+    background-color: rgb(180, 0, 0); /* Cor de fundo para o botão de desativar */
+    top: 660px; /* Ajuste a altura conforme necessário */
+    left: 640px; /* Mantém alinhado com a foto */
+}
+
+.deactivate-button:hover {
+    background-color: rgb(150, 0, 0); /* Cor mais escura ao passar o mouse */
+}

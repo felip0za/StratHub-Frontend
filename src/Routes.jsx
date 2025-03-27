@@ -4,7 +4,7 @@ import Login from './Pages/Login/Login';
 import Cadastro from './Pages/Cadastro/Cadastro';
 import Chatbox from './Pages/Chatbox/Chatbox';
 import Home from './Pages/Home/Home';
-
+import User from './Pages/User/User';
 
 
 function MainRoutes() {
@@ -16,10 +16,10 @@ function MainRoutes() {
       <Route path='/' element={<Presentation />}/>
       <Route path='/login' element={<Login />}/>
       <Route path='/cadastro' element={<Cadastro/>}/>
-      <Route path='*' element={<h1>404 page not found</h1>}/>
       <Route path='/chatbox' element={<Chatbox/>}/>
       <Route path='/home' element={<Home />}/>
-
+      <Route path='*' element={<h1>404 page not found</h1>}/>
+      <Route path='/user' element={<User />}/>
      </Routes>
     </>
   );
