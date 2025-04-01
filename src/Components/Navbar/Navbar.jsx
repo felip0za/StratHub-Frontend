@@ -5,6 +5,7 @@ import "./Navbar.css";
 
 function Navbar() {
     const navigate = useNavigate();
+    const userBalance = 125.50; // Substitua pelo valor vindo da API ou do estado global
 
     return (
         <header>
@@ -14,15 +15,19 @@ function Navbar() {
                     Salas
                 </span>
                 <span onClick={() => navigate("/chatbox")} className="nav-link">
-                    Sobre o site
+                    Campeonatos (em Breve)
                 </span>
-                <span onClick={() => navigate("/chatbox")} className="nav-link">
+                <span onClick={() => navigate("/times")} className="nav-link">
                     Seu time
                 </span>
-                <FaUserCircle 
-                    className="profile-icon" 
-                    onClick={() => navigate("/user")} 
-                />
+                
+                <div className="user-info">
+                <span onClick={() => navigate("/user")} className="user-balance">R$ {userBalance.toFixed(2)}</span>
+                    <FaUserCircle 
+                        className="profile-icon" 
+                        onClick={() => navigate("/user")} 
+                    />
+                </div>
             </nav>
         </header>
     );

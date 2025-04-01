@@ -2,92 +2,117 @@
 
 /* User.css */
 .user-profile {
-    border-radius: 12px; /* Bordas arredondadas */
-    box-shadow: 0 10px 30px rgba(255, 0, 0, 0.8); /* Sombra deslocada para baixo */
-    padding: 305px; /* Espaçamento interno */
-    text-align: center; /* Centraliza o texto */
-    transition: transform 0.2s, box-shadow 0.3s; /* Transição suave */
-    margin: auto;
-    background-color: #1a1a1a; /* Fundo escuro */
-    width: 80%; /* Ajuste de largura */
-    max-width: 900px; /* Limite máximo */
-    margin-top: 40px; /* Ajuste para ficar abaixo da navbar */
-}
-
-.user-photo {
-    width: 140px;
-    height: 140px;
-    border-radius: 50%;
-    border: 2px solid #007bff;
-    position: absolute;
-    top: 105px;
-    left: 520px;
-}
-
-.user-info {
+    font-family: 'Akira Expanded', sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 100px 50px;
+    width: 1000px;
+    height: 750px;
+    margin: 0 auto;
+    border-radius: 20px;
+    box-shadow: 0 6px 16px rgba(255, 0, 0, 0.6);
+    position: relative;
 }
 
+/* Logo e foto do usuário */
+.user-photo {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #00050fce;
+    margin-bottom: 30px;
+}
+
+/* Detalhes do usuário */
 .user-details {
     text-align: center;
+    margin-top: 30px;
 }
 
 .user-name {
-    font-size: 24px;
-    font-weight: bold;
-    position: absolute;
-    top: 120px;
-    left: 920px;
-    margin: 5px 0;
+    font-size: 32px;
+    font-weight: 700;
+    color: white;
+    margin-top: 15px;
+}
+
+.ubi-id-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 15px;
+    gap: 15px; /* Adiciona espaçamento entre ID e logo */
+}
+
+.ubi-id {
+    font-size: 20px;
+    color: white;
 }
 
 .ubi-logo {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    position: absolute;
-    top: 120px;
-    left: 1265px;
+    width: 60px;
+    height: auto;
 }
 
-.ubi-id{
-    font-size: 24px;
+.user-valor {
+    font-size: 22px;
     font-weight: bold;
-    position: absolute;
-    top: 120px;
-    left: 1300px;
+    color: #4CAF50;
+    margin-top: 10px;
 }
 
-/* Botão do usuário */
-.user-button {
+/* Botões */
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    width: 100%;
+    margin-top: 40px;
+}
+
+.user-button, .edit-button, .deactivate-button {
     font-family: 'Akira Expanded', sans-serif;
-    padding: 10px 20px;
+    padding: 15px 30px;
+    font-size: 18px;
     background-color: rgb(180, 0, 0);
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.3s;
-    
-    position: absolute;
-    top: 660px; /* Ajuste a altura conforme necessário */
-    left: 520px; /* Mantém alinhado com a foto */
-}
-.user-button:hover {
-    background-color: rgb(150, 0, 0); /* Cor mais escura ao passar o mouse */
-    transform: scale(1.05); /* Aumenta o botão ao passar o mouse */
 }
 
-/* Estilo do botão de desativar conta */
-.deactivate-button {
-    font-family: 'Akira Expanded', sans-serif;
-    background-color: rgb(180, 0, 0); /* Cor de fundo para o botão de desativar */
-    top: 660px; /* Ajuste a altura conforme necessário */
-    left: 640px; /* Mantém alinhado com a foto */
+.user-button:hover, .edit-button:hover, .deactivate-button:hover {
+    background-color: rgb(150, 0, 0);
+    transform: scale(1.1);
 }
 
-.deactivate-button:hover {
-    background-color: rgb(150, 0, 0); /* Cor mais escura ao passar o mouse */
+/* Responsividade */
+@media (max-width: 768px) {
+    .user-profile {
+        padding: 30px;
+        width: 90%;
+        height: auto;
+    }
+
+    .button-group {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .user-button, .edit-button, .deactivate-button {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+    .ubi-logo {
+        width: 90px;
+    }
+
+    .user-photo {
+        width: 160px;
+        height: 160px;
+    }
 }

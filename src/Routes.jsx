@@ -5,7 +5,7 @@ import Cadastro from './Pages/Cadastro/Cadastro';
 import Chatbox from './Pages/Chatbox/Chatbox';
 import Home from './Pages/Home/Home';
 import User from './Pages/User/User';
-
+import Times from './Pages/Times/Times';
 
 function MainRoutes() {
   
@@ -20,6 +20,7 @@ function MainRoutes() {
       <Route path='/home' element={<Home />}/>
       <Route path='*' element={<h1>404 page not found</h1>}/>
       <Route path='/user' element={<User />}/>
+      <Route path='/times' element={<Times />}/>
      </Routes>
     </>
   );

@@ -34,6 +34,27 @@
     color: rgb(180, 0, 0);
 }
 
+/* Estilização da área de saldo do usuário */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #222;
+    padding: 8px 12px;
+    border-radius: 8px;
+    color: white;
+    font-family: 'Akira Expanded', sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.user-info:hover {
+    background-color: rgb(180, 0, 0);
+    color: white;
+}
+
+/* Ícone de perfil */
 .profile-icon {
     font-size: 40px;
     color: white;
@@ -43,8 +64,8 @@
 }
 
 .profile-icon:hover {
-    font-size: 60px;
+    font-size: 50px;
     transition: 0.3s;
-    padding: 8px;
+    padding: 5px;
     color: rgb(255, 255, 255);
 }
