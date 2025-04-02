@@ -1,3 +1,5 @@
+@import url('https://fonts.cdnfonts.com/css/akira-expanded');
+
 /* Container da página de login */
 .login-page {
   display: flex;
@@ -5,6 +7,17 @@
   align-items: center;
   height: 100vh;
   position: relative;
+  font-family: 'Akira Expanded', sans-serif;
+}
+
+/* Estilização da logo */
+.login-logo {
+  height: 300px; /* A logo ocupará toda a altura disponível */
+  width:auto; /* Mantém a proporção da imagem */
+  max-width: 40%; /* A logo terá no máximo 40% da largura da tela */
+  object-fit: cover; /* Faz a imagem cobrir a área sem distorção */
+  order: 1; /* Coloca a logo à esquerda */
+  justify-content: space-between;
 }
 
 /* Estilização do formulário */
@@ -13,28 +26,29 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  margin-left: -350px; /* Ajuste conforme necessário */
+  width: 350px; /* Largura da caixa de login */
+  background-color: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  order: 2; /* Coloca a box à direita */
 }
 
 .login-container h2 {
   margin-bottom: 20px;
+  color: black;
 }
 
 .login-container form {
   display: flex;
   flex-direction: column;
-  width: 350px; /* Aumentei para maior proporção */
-  background-color: white;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  width: 100%; /* A largura é agora de 100% da .login-container */
 }
 
 .login-container label {
+  font-family: 'Akira Expanded', sans-serif;
   margin-bottom: 5px;
   color: black;
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
 }
 
 .login-container input {
@@ -46,6 +60,7 @@
 
 /* Estilização do botão */
 .login-container button {
+  font-family: 'Akira Expanded', sans-serif;
   padding: 12px;
   font-size: 16px;
   cursor: pointer;
@@ -53,6 +68,7 @@
   color: white;
   border: none;
   border-radius: 5px;
+  margin-top: -10px;
   transition: background-color 0.3s;
 }
 
@@ -60,9 +76,17 @@
   background-color: #700202;
 }
 
-/* Ajuste da logo */
-.login-logo {
-  height: 40%; /* Ocupa a mesma altura do formulário */
-  margin-right: -40%;
-  right: 0;
+.login-container button_sign_in {
+  font-family: 'Akira Expanded', sans-serif;
+  padding: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #ff0000;
+  color: white;
+  border-radius: 50%;
+  transition: background-color 0.3s;
+}
+
+.login-container button_sign_in :hover {
+  background-color: #700202;
 }

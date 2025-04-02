@@ -30,7 +30,7 @@ function Login() {
                 <h2>Tela de Login</h2>
                 <form onSubmit={handleSubmit}>
                     <div>
-                        <label>Email:</label>
+                        <label>Email :</label>
                         <input
                             type="email"
                             value={email}
@@ -39,7 +39,7 @@ function Login() {
                         />
                     </div>
                     <div>
-                        <label>Senha:</label>
+                        <label>Senha :</label>
                         <input
                             type="password"
                             value={password}
@@ -51,7 +51,7 @@ function Login() {
                 </form>
                 <h2>ou</h2>
                 <form onClick={handleClickSignin}>
-                    <button type="button">Cadastre-se</button>
+                    <button type="button_sign_in">Cadastre-se</button>
                 </form>
             </div>
         </div>

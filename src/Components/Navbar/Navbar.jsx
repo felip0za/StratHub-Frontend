@@ -4,8 +4,19 @@ import R6HubLogo from "/src/assets/R6HubLogo.png";
 import "./Navbar.css";
 
 function Navbar() {
+    const user={
+        time : false,
+    }
     const navigate = useNavigate();
     const userBalance = 125.50; // Substitua pelo valor vindo da API ou do estado global
+
+    const handleClickVerifyTime = () =>{
+        if (user.time == false) {
+            navigate("/criartime");
+          } else {
+            navigate("/times");
+          }
+    }
 
     return (
         <header>
@@ -17,7 +28,7 @@ function Navbar() {
                 <span onClick={() => navigate("/chatbox")} className="nav-link">
                     Campeonatos (em Breve)
                 </span>
-                <span onClick={() => navigate("/times")} className="nav-link">
+                <span onClick={handleClickVerifyTime} className="nav-link">
                     Seu time
                 </span>
                 

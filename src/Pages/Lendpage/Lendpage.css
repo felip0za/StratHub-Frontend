@@ -1,0 +1,75 @@
+@import url('https://fonts.cdnfonts.com/css/akira-expanded');
+/* Contêiner principal da apresentação */
+.presentation-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centraliza verticalmente */
+    align-items: center; /* Alinha ao centro horizontalmente */
+    height: 100vh; /* Altura total da tela */
+    background-color: #141414; /* Cor de fundo escura */
+    padding: 20px; /* Adiciona um espaçamento interno */
+    color: white; /* Cor do texto */
+    font-family: 'Arial', sans-serif; /* Fonte padrão */
+}
+
+/* Estilo do título */
+.presentation-container h2 {
+    font-family: 'Akira Expanded', sans-serif;
+    font-size: 2.5rem; /* Tamanho maior para o título */
+    font-weight: 600; /* Peso da fonte */
+    text-align: center; /* Centraliza o texto */
+    margin-bottom: 20px; /* Espaçamento abaixo do título */
+    letter-spacing: 1px; /* Aumenta o espaçamento entre as letras */
+    color: #ffffff; /* Cor branca */
+}
+
+.presentation-container p{
+    font-family: 'Akira Expanded', sans-serif;
+    font-size: 1 rem;
+    margin-bottom: 20px;
+
+}
+
+/* Estilo do botão */
+.presentation-container button {
+    font-family: 'Akira Expanded', sans-serif;
+    padding: 15px 30px; /* Aumenta o tamanho do botão */
+    font-size: 18px; /* Tamanho da fonte do botão */
+    cursor: pointer; /* Cursor de ponteiro ao passar sobre o botão */
+    background-color: #e60000; /* Cor de fundo vermelha */
+    color: white; /* Cor do texto do botão */
+    border: none; /* Sem borda */
+    border-radius: 50px; /* Bordas arredondadas mais acentuadas */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Sombra sutil para profundidade */
+    transition: all 0.3s ease; /* Transição suave */
+    outline: none; /* Remove o contorno padrão do botão */
+}
+
+/* Efeito hover do botão */
+.presentation-container button:hover {
+    background-color: #700202; /* Cor de fundo mais escura */
+    transform: translateY(-2px); /* Leve movimento de elevação */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Sombra mais forte */
+}
+
+/* Efeito ao focar o botão */
+.presentation-container button:focus {
+    outline: none; /* Remove o contorno */
+    box-shadow: 0 0 5px 2px rgba(255, 0, 0, 0.5); /* Adiciona uma borda sutil */
+}
+
+/* Responsividade para telas pequenas (mobile) */
+@media (max-width: 600px) {
+    .presentation-container {
+        padding: 15px; /* Menos espaço nas laterais */
+    }
+
+    .presentation-container h2 {
+        font-size: 2rem; /* Reduz o tamanho da fonte do título */
+    }
+
+    .presentation-container button {
+        font-size: 16px; /* Reduz o tamanho da fonte do botão */
+        padding: 12px 25px; /* Ajusta o tamanho do botão */
+    }
+}
