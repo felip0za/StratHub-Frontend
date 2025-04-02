@@ -1,22 +1,22 @@
 import { useNavigate } from "react-router-dom";
-import { FaUserCircle } from "react-icons/fa";
+import { FaUserCircle, FaUsers } from "react-icons/fa";
 import R6HubLogo from "/src/assets/R6HubLogo.png";
 import "./Navbar.css";
 
 function Navbar() {
-    const user={
-        time : false,
-    }
+    const user = {
+        time: false,
+    };
     const navigate = useNavigate();
     const userBalance = 125.50; // Substitua pelo valor vindo da API ou do estado global
 
-    const handleClickVerifyTime = () =>{
-        if (user.time == false) {
+    const handleClickVerifyTime = () => {
+        if (user.time === false) {
             navigate("/criartime");
-          } else {
+        } else {
             navigate("/times");
-          }
-    }
+        }
+    };
 
     return (
         <header>
@@ -29,11 +29,13 @@ function Navbar() {
                     Campeonatos (em Breve)
                 </span>
                 <span onClick={handleClickVerifyTime} className="nav-link">
-                    Seu time
+                    Time
                 </span>
-                
+                <span onClick={() => navigate("/amigos")} className="nav-link-friends">
+                    <FaUsers className="friends-icon" /> 
+                </span>
                 <div className="user-info">
-                <span onClick={() => navigate("/user")} className="user-balance">R$ {userBalance.toFixed(2)}</span>
+                    <span onClick={() => navigate("/user")} className="user-balance">R$ {userBalance.toFixed(2)}</span>
                     <FaUserCircle 
                         className="profile-icon" 
                         onClick={() => navigate("/user")} 

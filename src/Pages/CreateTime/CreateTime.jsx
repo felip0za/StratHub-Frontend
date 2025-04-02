@@ -11,7 +11,8 @@ const CreateTime = () => {
   const handleSubmit = (e) => {
     if (teamName && teamDescription) {
         console.log('Time Criado:', { teamName, teamDescription });
-        navigate('/home');
+        alert('Time criado com sucesso!!!');
+        navigate('/times');
     } else {
         alert('Por favor, preencha todos os campos.');
     }
@@ -25,7 +26,7 @@ const CreateTime = () => {
         <h2>Criar Meu Time</h2>
         <form onSubmit={handleSubmit}>
           {/* Nome do time */}
-          <label htmlFor="teamName">Nome do Time:</label>
+          <label className='teamname'>Nome do Time:</label>
           <input
             type="text"
             id="teamName"
@@ -35,12 +36,11 @@ const CreateTime = () => {
           />
 
           {/* Descrição do time */}
-          <label htmlFor="teamDescription">Descrição do Time:</label>
+          <label className='teamDescription'>Descrição do Time:</label>
           <textarea
             id="teamDescription"
             value={teamDescription}
             onChange={(e) => setTeamDescription(e.target.value)}
-            placeholder="Digite uma breve descrição sobre o seu time"
             rows="4"
             required
           />

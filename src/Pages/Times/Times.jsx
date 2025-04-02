@@ -14,12 +14,12 @@ function Times(){
       const time ={
         nome: 'THE DRAGONS FURY',
         descricao: 'Time de R6 | 1x🏆'  
-      }
+      };
 
       const campeonato={
         nome:'ORG.camp',
         placement:'1º lugar'
-      }
+      };
       
     const handleEdit = (e) => {
         e.preventDefault();

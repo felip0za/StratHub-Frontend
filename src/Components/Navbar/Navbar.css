@@ -9,7 +9,7 @@
 }
 
 .nav-logo {
-    width: 50px;
+    width: 100px;
     cursor: pointer;
 }
 
@@ -27,6 +27,16 @@
     transition: 0.3s;
 }
 
+.nav-link-friends {
+    font-family: 'Akira Expanded', sans-serif;
+    color: white;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 5px;
+    transition: 0.3s;
+    margin-right: -100px; /* Reduz a distância entre Ver Amigos e User Info */
+}
+
 .nav-link:hover {
     font-size: 20px;
     transition: 0.3s;
@@ -38,7 +48,7 @@
 .user-info {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 5px; /* Reduzi o gap para diminuir a distância */
     background-color: #222;
     padding: 8px 12px;
     border-radius: 8px;

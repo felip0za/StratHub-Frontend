@@ -79,7 +79,7 @@
 .login-container button_sign_in {
   font-family: 'Akira Expanded', sans-serif;
   padding: 12px;
-  font-size: 16px;
+  font-size: 8px;
   cursor: pointer;
   background-color: #ff0000;
   color: white;
@@ -87,6 +87,6 @@
   transition: background-color 0.3s;
 }
 
-.login-container button_sign_in :hover {
+.login-container button_sign_in:hover {
   background-color: #700202;
 }
