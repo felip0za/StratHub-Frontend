@@ -1,0 +1,111 @@
+@import url('https://fonts.cdnfonts.com/css/akira-expanded');
+
+.game-screen {
+  display: flex;
+  height: 100vh;
+  position: relative; /* Necessário para posicionar o botão de forma absoluta */
+  font-family: 'Akira Expanded', sans-serif;
+}
+
+.game-area {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+}
+
+.team1 {
+  width: 45%;
+  padding: 10px;
+  border: 3px solid #00050fce;
+  box-shadow: 0 6px 16px rgba(255, 0, 0, 0.6);
+  border-radius: 8px;
+  text-align: left;
+}
+
+.team2 {
+  width: 45%;
+  padding: 10px;
+  border: 3px solid #00050fce;
+  box-shadow: 0 6px 16px rgba(255, 0, 0, 0.6);
+  border-radius: 8px;
+  text-align: right;
+}
+
+.chatbox {
+    width: 300px;
+    border-left: 1px solid #ccc;
+    padding: 20px;
+    background-color: #f1f1f1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 60px; /* deixa espaço para o campo de input fixo */
+    border-bottom: 1px solid #ccc;
+    padding-right: 10px;
+  }
+  
+  /* ✅ Fixar input na parte inferior */
+  .chat-input {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .input-field {
+    width: 80%;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    margin-right: 10px;
+  }
+  
+  .send-button {
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+  }
+
+
+.title-game {
+    position: absolute;
+    top: 260px;
+    left: 800px;
+    transform: translateX(-50%);
+    font-size: 32px;
+    color: white;
+    font-weight: bold;
+    z-index: 1;
+    text-align: center;
+  }
+
+/* ✅ Botão de voltar no canto superior esquerdo */
+.back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  z-index: 1000;
+  transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+  background-color: #c62828;
+}

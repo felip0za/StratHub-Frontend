@@ -27,7 +27,7 @@ const CardBox = ({ time, points, players, price, route }) => {
 
 function Home() {
   const cardData = [
-    { time: "Em 9min", points: 52, players: 4, price: 7, route: "/game/1" },
+    { time: "Em 9min", points: 52, players: 4, price: 7, route: "/partida" },
     { time: "Em 44min", points: 52, players: 0, price: 7, route: "/game/2" },
     { time: "13h45", points: 52, players: 0, price: 7, route: "/game/3" },
     { time: "14h20", points: 52, players: 0, price: 7, route: "/game/4" },
