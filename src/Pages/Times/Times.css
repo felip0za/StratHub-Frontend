@@ -78,10 +78,12 @@
   }
   
   .member-logo {
-    width: 40px;
-    height: 40px;
+    width: 100%;
+    max-width: 80px;
+    height: auto;
     margin-right: 10px;
-  }
+}
+
   
   .member-info {
     font-size: small;

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./Login.css"; 
 import { useNavigate } from "react-router-dom";
-import R6HubLogo from "/src/assets/R6HubLogo.png";
+import StratHub from "/src/assets/StratHub.png";
 
 function Login() {
     const [email, setEmail] = useState(''); 
@@ -24,7 +24,7 @@ function Login() {
 
     return (
         <div className="login-page">
-            <img src={R6HubLogo} alt="Logo do site" className="login-logo" />
+            <img src={StratHub} alt="Logo do site" className="login-logo" />
 
             <div className="login-container">
                 <h2>Tela de Login</h2>

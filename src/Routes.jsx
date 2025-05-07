@@ -9,6 +9,7 @@ import Times from './Pages/Times/Times';
 import CreateTime from './Pages/CreateTime/CreateTime';
 import Invites from './Pages/Invites/Invites';
 import Partidas from './Pages/Partidas/Partidas';
+import Profile from './Pages/Profiles/Profile';
 
 function MainRoutes() {
   
@@ -27,6 +28,7 @@ function MainRoutes() {
       <Route path='/criartime' element={<CreateTime />}/>
       <Route path='/amigos' element={<Invites />}/>
       <Route path='/partida' element={<Partidas />}/>
+      <Route path='/profile' element={<Profile />}/>
      </Routes>
     </>
   );

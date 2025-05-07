@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { FaUserCircle, FaUsers } from "react-icons/fa";
-import R6HubLogo from "/src/assets/R6HubLogo.png";
+import StratHub from "/src/assets/StratHub.png";
 import "./Navbar.css";
 
 function Navbar() {
@@ -21,7 +21,7 @@ function Navbar() {
     return (
         <header>
             <nav className="nav">
-                <img src={R6HubLogo} alt="Logo do sistema" onClick={() => navigate("/")} className="nav-logo"/>
+                <img src={StratHub} alt="Logo do sistema" onClick={() => navigate("/")} className="nav-logo"/>
                 <span onClick={() => navigate("/home")} className="nav-link">
                     Salas
                 </span>

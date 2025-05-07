@@ -11,11 +11,18 @@
   margin-bottom: 20px;
 }
 
+.type-title {
+  color: #ffffff;
+  font-size: 24px;
+  margin-bottom: 40px; /* Adicionado para aumentar a distância entre o título FPL e o próximo conteúdo */
+  position: center;
+}
+
 .card-container {
   display: flex;
   flex-wrap: wrap;
   gap: 15px;
-  justify-content: center;
+  justify-content: flex-start; /* Alinha os cards à esquerda */
 }
 
 .card-box {
@@ -68,4 +75,51 @@
   justify-content: space-between;
   margin-top: 10px;
   font-size: 14px;
+}
+
+/* Estilo para o card extra de "ENTRAR NOS LOBBYS" */
+.card-box-enter-lobby {
+  background: #4caf50; /* Verde para destacar */
+  color: #ffffff;
+  width: 220px;
+  border-radius: 10px;
+  padding: 15px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.3s;
+  text-align: center;
+}
+
+.card-box-enter-lobby:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+}
+
+.card-box-enter-lobby .card-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.card-box-enter-lobby .card-description {
+  font-size: 12px;
+  color: #bdbdbd;
+}
+
+/* Estilos para o botão de scroll */
+.scroll-button {
+  margin-top: 20px;
+  cursor: pointer;
+  color: #ffffff;
+  background-color: #9c27b0;
+  padding: 10px 20px;
+  border-radius: 25px;
+  transition: background-color 0.3s;
+}
+
+.scroll-button:hover {
+  background-color: #7b1fa2;
+}
+
+.scroll-button span {
+  font-size: 16px;
+  font-weight: bold;
 }

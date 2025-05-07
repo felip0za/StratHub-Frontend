@@ -1,7 +1,7 @@
 import React from 'react';
 import './Times.css';
 import Navbar from '../../Components/Navbar/Navbar';
-import R6HubLogo from "/src/assets/R6HubLogo.png";
+import StratHub from "/src/assets/StratHub.png";
 
 function Times(){
     const user = {
@@ -33,7 +33,7 @@ function Times(){
             {/* Lado esquerdo - Logo e informações */}
             <div className="logo-section">
                 <div className="logo-border">
-                    <img src={R6HubLogo} alt="Logo do sistema" className="logo" />
+                    <img src={StratHub} alt="Logo do sistema" className="logo" />
                 </div>
                 <h1 className="description-title">DESCRIÇÃO:</h1>
                 <p className='description-label'>{time.descricao}</p>
@@ -49,7 +49,7 @@ function Times(){
                 <div className="player-list">
                     {[...Array(1)].map((_, index) => (
                         <div className="member-card" key={index}>
-                            <img src={R6HubLogo} alt="Logo do sistema" className="member-avatar" />
+                            <img src={StratHub} alt="Logo do sistema" className="member-logo" />
                             <div className="member-info">
                                 <p className="member-name">apelido: {user.apelido}</p>
                                 <p className="member-id">ubi: {user.ubi}</p>

@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { FaUserFriends, FaUserPlus, FaUsers } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import "./Invites.css";
 import Navbar from "../../Components/Navbar/Navbar";
 
 function Invites() {
+    const navigate = useNavigate();
+    
     const [friends, setFriends] = useState([
         { id: 1, name: "Carlos Silva" },
         { id: 2, name: "Ana Souza" },
@@ -20,11 +23,11 @@ function Invites() {
         { id: 2, teamName: "Ghost Operators" }
     ]);
 
-    const [currentTeam, setCurrentTeam] = useState(null); // 👈 Time atual do usuário
-
+    const [currentTeam, setCurrentTeam] = useState(null);
     const [showConfirm, setShowConfirm] = useState(false);
     const [selectedFriend, setSelectedFriend] = useState(null);
     const [showRequestsPopup, setShowRequestsPopup] = useState(false);
+    const [teamWarningId, setTeamWarningId] = useState(null);
 
     const handleAcceptFriend = (id) => {
         const acceptedFriend = friendRequests.find(request => request.id === id);
@@ -35,12 +38,16 @@ function Invites() {
     };
 
     const handleAcceptTeamInvite = (inviteId) => {
-        if (currentTeam !== null) return; // já está em um time
+        if (currentTeam !== null) {
+            setTeamWarningId(inviteId);
+            return;
+        }
 
         const invite = teamInvites.find(team => team.id === inviteId);
         if (invite) {
-            setCurrentTeam(invite.teamName); // define o time atual
-            setTeamInvites(prev => prev.filter(team => team.id !== inviteId)); // remove da lista de convites
+            setCurrentTeam(invite.teamName);
+            setTeamInvites(prev => prev.filter(team => team.id !== inviteId));
+            setTeamWarningId(null);
         }
     };
 
@@ -60,6 +67,10 @@ function Invites() {
         setSelectedFriend(null);
     };
 
+    const handleGoToProfile = () => {
+        navigate(`/profile`);
+    };
+
     return (
         <>
             <Navbar />
@@ -71,7 +82,7 @@ function Invites() {
                     <ul>
                         {friends.map(friend => (
                             <li key={friend.id}>
-                                {friend.name}
+                                <span onClick={() => handleGoToProfile(friend.id)} className="friend-name">{friend.name}</span>
                                 <button
                                     className="delete-button"
                                     onClick={() => confirmRemoveFriend(friend)}
@@ -113,7 +124,7 @@ function Invites() {
                             <ul>
                                 {friendRequests.map(request => (
                                     <li key={request.id}>
-                                        {request.name}
+                                        <span onClick={() => handleGoToProfile(request.id)} className="friend-name">{request.name}</span>
                                         <button onClick={() => handleAcceptFriend(request.id)}>Aceitar</button>
                                     </li>
                                 ))}
@@ -128,17 +139,17 @@ function Invites() {
                                 {teamInvites.map(invite => (
                                     <li key={invite.id}>
                                         {invite.teamName}
-                                        <button
-                                            disabled={currentTeam !== null}
-                                            onClick={() => handleAcceptTeamInvite(invite.id)}
-                                        >
-                                            {currentTeam ? "Já está em um time" : "Aceitar"}
-                                        </button>
+                                        <button onClick={() => handleAcceptTeamInvite(invite.id)}>Aceitar</button>
                                     </li>
                                 ))}
                             </ul>
                         ) : (
                             <p>Nenhum convite de time.</p>
+                        )}
+
+                        {/* ⚠️ Mensagem posicionada fora da box de times */}
+                        {teamWarningId !== null && currentTeam && (
+                            <p className="team-warning-outside">⚠️Você já está em um time.</p>
                         )}
 
                         <button className="close-popup-button" onClick={() => setShowRequestsPopup(false)}>

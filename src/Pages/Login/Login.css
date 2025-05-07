@@ -12,7 +12,7 @@
 
 /* Estilização da logo */
 .login-logo {
-  height: 300px; /* A logo ocupará toda a altura disponível */
+  height: 150px; /* A logo ocupará toda a altura disponível */
   width:auto; /* Mantém a proporção da imagem */
   max-width: 40%; /* A logo terá no máximo 40% da largura da tela */
   object-fit: cover; /* Faz a imagem cobrir a área sem distorção */
