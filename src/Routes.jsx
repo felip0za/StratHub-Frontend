@@ -10,6 +10,7 @@ import CreateTime from './Pages/CreateTime/CreateTime';
 import Invites from './Pages/Invites/Invites';
 import Partidas from './Pages/Partidas/Partidas';
 import Profile from './Pages/Profiles/Profile';
+import FPL from './Pages/Lobbys/FPL/FPL';
 
 function MainRoutes() {
   
@@ -29,6 +30,7 @@ function MainRoutes() {
       <Route path='/amigos' element={<Invites />}/>
       <Route path='/partida' element={<Partidas />}/>
       <Route path='/profile' element={<Profile />}/>
+      <Route path='/fpl' element={<FPL />}/>
      </Routes>
     </>
   );
