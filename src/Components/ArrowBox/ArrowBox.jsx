@@ -1,9 +1,9 @@
 import React from 'react';
 import './ArrowBox.css';
 
-const ArrowBox = () => {
+const ArrowBox = ({ link = '/' }) => {
   const handleClick = () => {
-    window.location.href = '/lobbys'; // Altere para a rota desejada
+    window.location.href = link;
   };
 
   return (

@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Importando o hook de navegação
+import { useNavigate } from 'react-router-dom';
 import './Partidas.css';
 import Navbar from '../../Components/Navbar/Navbar';
 
 const Partidas = () => {
   const navigate = useNavigate();
-
   const team1 = ['Player 1', 'Player 2', 'Player 3', 'Player 4', 'Player 5'];
   const team2 = ['Player 6', 'Player 7', 'Player 8', 'Player 9', 'Player 10'];
 
@@ -16,8 +15,8 @@ const Partidas = () => {
   const [message, setMessage] = useState('');
 
   const sendMessage = () => {
-    if (message) {
-      setMessages([...messages, `Player: ${message}`]);
+    if (message.trim()) {
+      setMessages(prev => [...prev, `Player: ${message}`]);
       setMessage('');
     }
   };
@@ -25,51 +24,50 @@ const Partidas = () => {
   return (
     <>
       <Navbar />
-      <div className="game-screen">
-        {/* Botão de voltar para a Home no canto superior esquerdo */}
-        <button className="back-button" onClick={() => navigate('/home')}>
+      <div className="match-container">
+        <button className="match-back-button" onClick={() => navigate('/home')}>
           Voltar
         </button>
 
-        <div className="game-area">
-          <h1 className='title-game'>PARTIDA</h1>
-          <div className="team1">
-            <h2>Team 1</h2>
-            {team1.map((player, index) => (
-              <p key={index}>{player}</p>
-            ))}
-          </div>
-          <h2>X</h2>
-          <div className="team2">
-            <h2>Team 2</h2>
-            {team2.map((player, index) => (
-              <p key={index}>{player}</p>
-            ))}
-          </div>
-        </div>
+        <h1 className="match-title">PARTIDA</h1>
 
-        <div className="chatbox">
-          <div className="chat-messages">
-            {messages.map((msg, index) => (
-              <p key={index}>{msg}</p>
-            ))}
+        <div className="match-content">
+          <div className="match-teams">
+            <TeamCard title="Team 1" players={team1} align="left" />
+            <h2 className="match-vs">X</h2>
+            <TeamCard title="Team 2" players={team2} align="right" />
           </div>
-          <div className="chat-input">
-            <input
-              type="text"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Type a message..."
-              className="input-field"
-            />
-            <button onClick={sendMessage} className="send-button">
-              Send
-            </button>
+
+          <div className="match-chat">
+            <div className="match-chat-messages">
+              {messages.map((msg, i) => <p key={i}>{msg}</p>)}
+            </div>
+            <div className="match-chat-input">
+              <input
+                type="text"
+                value={message}
+                onChange={e => setMessage(e.target.value)}
+                placeholder="Digite sua mensagem..."
+                className="match-input"
+              />
+              <button onClick={sendMessage} className="match-send-button">
+                Enviar
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </>
   );
 };
+
+const TeamCard = ({ title, players, align }) => (
+  <div className={`match-team-card ${align}`}>
+    <h2>{title}</h2>
+    {players.map((player, i) => (
+      <p key={i}>{player}</p>
+    ))}
+  </div>
+);
 
 export default Partidas;

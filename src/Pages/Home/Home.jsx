@@ -50,18 +50,18 @@ function Home() {
 
         <h2 className="type-title">FPL</h2>
         <div className="card-container">
-          {FPLData.slice(0, 5).map((card, index) => (
+          {FPLData.map((card, index) => (
             <CardBox key={index} {...card} />
           ))}
-          <ArrowBox route="/FPL" />
+          <ArrowBox link="/FPL" />
         </div>
 
         <h2 className="home-title">CAMPEONATOS</h2>
         <div className="card-container">
-          {campeonatoData.slice(0, 5).map((card, index) => (
+          {campeonatoData.map((card, index) => (
             <CardBox key={index} {...card} />
           ))}
-          <ArrowBox route="/campeonatos" />
+          <ArrowBox link="/campeonatos" />
         </div>
       </div>
     </>
