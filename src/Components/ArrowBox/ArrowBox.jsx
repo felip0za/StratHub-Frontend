@@ -1,0 +1,17 @@
+import React from 'react';
+import './ArrowBox.css';
+
+const ArrowBox = () => {
+  const handleClick = () => {
+    window.location.href = '/lobbys'; // Altere para a rota desejada
+  };
+
+  return (
+    <div className="arrow-box" onClick={handleClick}>
+      <span className="arrow-box-text">mais salas</span>
+      <span className="arrow-box-arrow">➜</span>
+    </div>
+  );
+};
+
+export default ArrowBox;

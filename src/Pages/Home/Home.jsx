@@ -1,9 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../Components/Navbar/Navbar";
+import ArrowBox from "../../Components/ArrowBox/ArrowBox";
 import "./Home.css";
 
-// Componente para o card
 const CardBox = ({ points, players, price, route, title }) => {
   const navigate = useNavigate();
 
@@ -25,15 +25,13 @@ const CardBox = ({ points, players, price, route, title }) => {
   );
 };
 
-// Componente Home
 function Home() {
   const FPLData = [
     { title: "receba", points: 52, players: 4, price: 7, route: "/partida" },
     { title: "receba", points: 52, players: 0, price: 7, route: "/game/2" },
     { title: "receba", points: 52, players: 0, price: 7, route: "/game/3" },
-    { title: "receba", points: 52, players: 0, price: 7, route: "/game/3" },
-    { title: "receba", points: 52, players: 0, price: 7, route: "/game/3" },
-    { title: "receba", points: 52, players: 0, price: 7, route: "/game/3" },
+    { title: "receba", points: 52, players: 0, price: 7, route: "/game/4" },
+    { title: "receba", points: 52, players: 0, price: 7, route: "/game/5" },
   ];
 
   const campeonatoData = [
@@ -42,49 +40,28 @@ function Home() {
     { title: "receba", points: 50, players: 0, price: 0, route: "/free-lobby/3" },
     { title: "receba", points: 40, players: 0, price: 0, route: "/free-lobby/4" },
     { title: "receba", points: 60, players: 0, price: 0, route: "/free-lobby/5" },
-    { title: "receba", points: 60, players: 0, price: 0, route: "/free-lobby/5" },
   ];
-
-  // Função para rolar até a seção de lobbys
-  const handleScrollToLobbys = () => {
-    document.getElementById("free-lobby-section").scrollIntoView({ behavior: "smooth" });
-  };
-
-  // Modificar a lógica para substituir um card em campeonatos 
-  const modifiedCampeonatoData = campeonatoData.length > 4
-    ? campeonatoData.slice(0, 5).concat({
-        route: "/campeonatos",
-        title: "ENTRAR NOS LOBBYS",
-      })
-    : campeonatoData;
-
-    // Modificar a lógica para substituir um card em FPL
-    const modifiedFPLData = FPLData.length > 4
-    ? campeonatoData.slice(0, 5).concat({
-        route: "/FPL",
-        title: "ENTRAR NOS LOBBYS",
-      })
-    : FPLData;
 
   return (
     <>
       <Navbar />
       <div className="home-container">
-        {/* Seção de Disputas */}
         <h2 className="home-title">SELECIONE SUA DISPUTA</h2>
+
         <h2 className="type-title">FPL</h2>
         <div className="card-container">
-          {modifiedFPLData.map((card, index) => (
+          {FPLData.slice(0, 5).map((card, index) => (
             <CardBox key={index} {...card} />
           ))}
+          <ArrowBox route="/FPL" />
         </div>
 
-        {/* Seção de Campeonatos */}
         <h2 className="home-title">CAMPEONATOS</h2>
         <div className="card-container">
-          {modifiedCampeonatoData.map((card, index) => (
+          {campeonatoData.slice(0, 5).map((card, index) => (
             <CardBox key={index} {...card} />
           ))}
+          <ArrowBox route="/campeonatos" />
         </div>
       </div>
     </>
