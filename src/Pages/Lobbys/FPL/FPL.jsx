@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../../Components/Navbar/Navbar";
 import "./FPL.css";
@@ -36,9 +36,19 @@ const FPLCard = ({ title, points, players, price, route }) => {
 
 function FPL() {
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showPopup, setShowPopup] = useState(false); // estado do popup
 
   const handleClickVoltar = () => {
     navigate("/home");
+  };
+
+  const handleClickCriar = () => {
+    setShowPopup(true);
+  };
+
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
   };
 
   const lobbies = [
@@ -49,16 +59,28 @@ function FPL() {
     { title: "Lounge #5", points: 55, players: 1, price: 7, route: "/partida/5" },
   ];
 
+  const filteredLobbies = lobbies.filter((lobby) =>
+    lobby.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <>
       <Navbar />
       <div className="fpl-container">
         <h2 className="fpl-titulo">LOBBIES FPL DISPONÍVEIS</h2>
 
-        {/* Search bar removida */}
+        <div className="search-bar-container">
+          <input
+            type="text"
+            className="search-bar"
+            placeholder="Buscar Lobbies..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+          />
+        </div>
 
         <div className="fpl-lobby-grid">
-          {lobbies.map((lobby, index) => (
+          {filteredLobbies.map((lobby, index) => (
             <FPLCard key={index} {...lobby} />
           ))}
         </div>
@@ -66,9 +88,28 @@ function FPL() {
         <button className="voltar" onClick={handleClickVoltar}>
           ⬅ Voltar
         </button>
+
+        <button className="fpl-criar" onClick={handleClickCriar}>
+          Criar FPL
+        </button>
+
+        {/* Popup de confirmação */}
+        {showPopup && (
+          <div className="popup-overlay">
+            <div className="popup-box">
+              <h3>Confirmação</h3>
+              <p>Você deseja criar um novo lobby FPL?</p>
+              <div className="popup-buttons">
+                <button onClick={() => navigate("/criarLobby")}>Sim</button>
+                <button onClick={() => setShowPopup(false)}>Cancelar</button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
 }
 
 export default FPL;
+  
