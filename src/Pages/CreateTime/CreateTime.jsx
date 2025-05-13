@@ -1,59 +1,70 @@
-import React, { useState } from 'react';
-import './CreateTime.css'; // Importando o CSS para estilizar a página
+import { useState } from 'react';
+import './CreateTime.css';
 import Navbar from '../../Components/Navbar/Navbar';
 import { useNavigate } from 'react-router-dom';
+import api from '../../Services/API';
 
 const CreateTime = () => {
-  const [teamName, setTeamName] = useState('');
-  const [teamDescription, setTeamDescription] = useState('');
+  const [times, setTimes] = useState({
+    nome: '',
+    descricao: '',
+  });
+
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    if (teamName && teamDescription) {
-        console.log('Time Criado:', { teamName, teamDescription });
-        alert('Time criado com sucesso!!!');
-        navigate('/times');
-    } else {
-        alert('Por favor, preencha todos os campos.');
+  const handleCreateTime = async () => {
+    try {
+      await api.post('/times', times); // ✅ Usando o api diretamente
+      alert('Time criado com sucesso!');
+      setTimes({ nome: '', descricao: '' }); // limpa o formulário
+      navigate('/times'); // redireciona após criar
+    } catch (error) {
+      console.error('Erro ao criar time:', error);
+      alert('Erro ao criar o time.');
     }
-};
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (times.nome && times.descricao) {
+      handleCreateTime();
+    } else {
+      alert('Por favor, preencha todos os campos.');
+    }
+  };
 
   return (
     <>
-    <Navbar />
-    <div className="create-team-page">
-      <div className="create-team-container">
-        <h2>Criar Meu Time</h2>
-        <form onSubmit={handleSubmit}>
-          {/* Nome do time */}
-          <label className='teamname'>Nome do Time:</label>
-          <input
-            type="text"
-            id="teamName"
-            value={teamName}
-            onChange={(e) => setTeamName(e.target.value)}
-            required
-          />
+      <Navbar />
+      <div className="create-team-page">
+        <div className="create-team-container">
+          <h2>Criar Meu Time</h2>
 
-          {/* Descrição do time */}
-          <label className='teamDescription'>Descrição do Time:</label>
-          <textarea
-            id="teamDescription"
-            value={teamDescription}
-            onChange={(e) => setTeamDescription(e.target.value)}
-            rows="4"
-            required
-          />
+          <form onSubmit={handleSubmit}>
+            <label className="teamname">Nome do Time:</label>
+            <input
+              type="text"
+              value={times.nome}
+              onChange={(e) => setTimes({ ...times, nome: e.target.value })}
+              required
+            />
 
-          {/* Botão de envio */}
-          <button type="submit" className="submit-btn">
-            Criar Time
-          </button>
-        </form>
+            <label className="teamDescription">Descrição do Time:</label>
+            <textarea
+              value={times.descricao}
+              onChange={(e) => setTimes({ ...times, descricao: e.target.value })}
+              required
+              rows="4"
+            />
+
+            <button type="submit" className="submit-btn">
+              Criar Time
+            </button>
+          </form>
+        </div>
       </div>
-    </div>
     </>
-    
   );
 };
 
