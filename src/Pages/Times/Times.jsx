@@ -3,16 +3,18 @@ import './Times.css';
 import Navbar from '../../Components/Navbar/Navbar';
 import StratHub from "/src/assets/StratHub.png";
 import api from '../../Services/API';
+import { useNavigate } from 'react-router-dom';
 
 function Times() {
   const [times, setTimes] = useState([]); // Lista de times vindos da API
+  const navigate = useNavigate(); // Para redirecionar após a criação de time
 
   // Buscar dados da API quando o componente for montado
   useEffect(() => {
     const fetchTimes = async () => {
       try {
         const response = await api.get('/times');
-        setTimes(response.data);
+        setTimes(response.data); // Atualiza a lista de times
       } catch (error) {
         console.error('Erro ao buscar times:', error);
         alert('Erro ao carregar times');
@@ -24,8 +26,20 @@ function Times() {
 
   const handleEdit = (e) => {
     e.preventDefault();
-    // navegação ainda não implementada
-    // navigate("/login");
+    // navegação para editar time
+    navigate("/login");
+  };
+
+  // Função para criar um novo time
+  const handleCreateTime = async (newTime) => {
+    try {
+      const response = await api.post('/times', newTime);
+      setTimes((prevTimes) => [...prevTimes, response.data]); // Adiciona o time criado à lista
+      navigate('/times'); // Redireciona para a página de times
+    } catch (error) {
+      console.error('Erro ao criar time:', error);
+      alert('Erro ao criar o time');
+    }
   };
 
   return (
