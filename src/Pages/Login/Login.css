@@ -1,92 +1,92 @@
 @import url('https://fonts.cdnfonts.com/css/akira-expanded');
 
-/* Container da página de login */
 .login-page {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  position: relative;
-  font-family: 'Akira Expanded', sans-serif;
-}
-
-/* Estilização da logo */
-.login-logo {
-  height: 150px; /* A logo ocupará toda a altura disponível */
-  width:auto; /* Mantém a proporção da imagem */
-  max-width: 40%; /* A logo terá no máximo 40% da largura da tela */
-  object-fit: cover; /* Faz a imagem cobrir a área sem distorção */
-  order: 1; /* Coloca a logo à esquerda */
-  justify-content: space-between;
-}
-
-/* Estilização do formulário */
-.login-container {
-  display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  width: 350px; /* Largura da caixa de login */
-  background-color: white;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  order: 2; /* Coloca a box à direita */
+  justify-content: center;
+  height: 100vh;
+  padding: 20px;
+}
+
+.login-logo {
+  width: 180px;
+  margin-bottom: 30px;
+}
+
+/* Form container */
+.login-container {
+  background-color: #ffffff;
+  color: #000;
+  padding: 35px 30px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
 
 .login-container h2 {
   margin-bottom: 20px;
-  color: black;
+  text-align: center;
+  font-size: 1.5rem;
 }
 
-.login-container form {
-  display: flex;
-  flex-direction: column;
-  width: 100%; /* A largura é agora de 100% da .login-container */
-}
-
+/* Input styles */
 .login-container label {
-  font-family: 'Akira Expanded', sans-serif;
   margin-bottom: 5px;
-  color: black;
+  display: block;
+  font-weight: bold;
 }
 
 .login-container input {
-  margin-bottom: 15px;
+  width: 100%;
   padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
 }
 
-/* Estilização do botão */
-.login-container button {
-  font-family: 'Akira Expanded', sans-serif;
-  padding: 12px;
-  font-size: 16px;
-  cursor: pointer;
-  background-color: #ff0000;
-  color: white;
+/* Login button */
+.login-container button[type="submit"] {
+  width: 100%;
+  padding: 14px;
+  background-color: #e50914;
+  color: #fff;
   border: none;
-  border-radius: 5px;
-  margin-top: -10px;
-  transition: background-color 0.3s;
-}
-
-.login-container button:hover {
-  background-color: #700202;
-}
-
-.login-container button_sign_in {
-  font-family: 'Akira Expanded', sans-serif;
-  padding: 12px;
-  font-size: 8px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
   cursor: pointer;
-  background-color: #ff0000;
-  color: white;
-  border-radius: 50%;
-  transition: background-color 0.3s;
+  transition: background 0.3s ease;
 }
 
-.login-container button_sign_in:hover {
-  background-color: #700202;
+.login-container button[type="submit"]:hover {
+  background-color: #b00610;
+}
+
+/* Divider */
+.login-container .divider {
+  margin: 20px 0;
+  text-align: center;
+  font-size: 14px;
+  color: #555;
+}
+
+/* Cadastre-se button */
+.button-sign-in {
+  width: 100%;
+  padding: 12px;
+  background-color: #222;
+  color: #fff;
+  border: 2px solid #e50914;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.button-sign-in:hover {
+  background-color: #e50914;
+  color: #fff;
 }
