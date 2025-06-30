@@ -90,3 +90,11 @@
   background-color: #e50914;
   color: #fff;
 }
+
+/* Exemplo simples para melhorar feedback de erro */
+.error-message {
+  color: red;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+

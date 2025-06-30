@@ -24,7 +24,7 @@ function MainRoutes() {
         <Route path='/home' element={<Home />} />
         <Route path='*' element={<h1>404 page not found</h1>} />
         <Route path='/user' element={<User />} />
-        <Route path='/times' element={<Times />} />
+        <Route path='/times/:id' element={<Times />} />
         <Route path='/criartime' element={<CreateTime />} />
         <Route path='/amigos' element={<Invites />} />
         <Route path='/partida' element={<Partidas />} />

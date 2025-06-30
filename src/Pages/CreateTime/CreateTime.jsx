@@ -14,10 +14,16 @@ const CreateTime = () => {
 
   const handleCreateTime = async () => {
     try {
-      await api.post('/times', times); // ✅ Usando o api diretamente
+      const response = await api.post('/times', times);
+      const idTime = response.data.id;
+
+      if (idTime) {
+        localStorage.setItem('idTime', idTime);
+        navigate(`/times/${idTime}`);  // ✅ Redireciona direto para o ID do time
+      }
+
       alert('Time criado com sucesso!');
-      setTimes({ nome: '', descricao: '' }); // limpa o formulário
-      navigate('/times'); // redireciona após criar
+      setTimes({ nome: '', descricao: '' });
     } catch (error) {
       console.error('Erro ao criar time:', error);
       alert('Erro ao criar o time.');
