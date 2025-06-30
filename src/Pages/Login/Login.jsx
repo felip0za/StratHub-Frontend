@@ -5,16 +5,24 @@ import './Login.css';
 
 function Login() {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [senha, setSenha] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (email && password) {
-      navigate('/home');
-    } else {
-      alert('Por favor, preencha todos os campos.');
-    }
+    setIsLoading(true);
+    setError('');
+
+    setTimeout(() => {
+      if (email === 'admin@example.com' && senha === '123456') {
+        navigate('/home');
+      } else {
+        setError('Usuário ou senha inválidos.');
+      }
+      setIsLoading(false);
+    }, 1000);
   };
 
   const handleClickSignin = () => {
@@ -27,6 +35,8 @@ function Login() {
 
       <div className="login-container">
         <h2>Entrar na sua conta</h2>
+
+        {error && <div className="error-message">{error}</div>}
 
         <form onSubmit={handleSubmit}>
           <div>
@@ -43,13 +53,15 @@ function Login() {
             <label>Senha</label>
             <input
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
               required
               placeholder="********"
             />
           </div>
-          <button type="submit">Entrar</button>
+          <button type="submit" disabled={isLoading}>
+            {isLoading ? 'Entrando...' : 'Entrar'}
+          </button>
         </form>
 
         <div className="divider">ou</div>
