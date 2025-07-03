@@ -15,7 +15,7 @@
 
 .nav-links {
     display: flex;
-    gap: 10px; /* Define o espaçamento entre os itens */
+    gap: 10px;
 }
 
 .nav-link {
@@ -34,21 +34,28 @@
     font-size: 18px;
     padding: 5px;
     transition: 0.3s;
-    margin-right: -100px; /* Reduz a distância entre Ver Amigos e User Info */
+    margin-right: -100px;
 }
 
 .nav-link:hover {
     font-size: 20px;
-    transition: 0.3s;
     padding: 8px;
     color: rgb(180, 0, 0);
+    transition: 0.3s;
+}
+
+.nav-link-friends:hover {
+    font-size: 20px;
+    padding: 8px;
+    color: rgb(180, 0, 0);
+    transition: 0.3s;
 }
 
 /* Estilização da área de saldo do usuário */
 .user-info {
     display: flex;
     align-items: center;
-    gap: 5px; /* Reduzi o gap para diminuir a distância */
+    gap: 5px;
     background-color: #222;
     padding: 8px 12px;
     border-radius: 8px;
@@ -64,18 +71,22 @@
     color: white;
 }
 
-/* Ícone de perfil */
-.profile-icon {
-    font-size: 40px;
-    color: white;
-    cursor: pointer;
+/* Ícone de perfil como imagem */
+.profile-icon-img {
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
     transition: 0.3s;
 }
 
-.profile-icon:hover {
-    font-size: 50px;
-    transition: 0.3s;
-    padding: 5px;
-    color: rgb(255, 255, 255);
+.profile-icon-img:hover {
+    transform: scale(1.1);
+}
+
+/* Ícone de amigos */
+.friends-icon {
+    font-size: 22px;
+    color: white;
 }

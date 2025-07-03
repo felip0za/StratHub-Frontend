@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../../Services/API"; // certifique-se de importar corretamente seu `api`
 import StratHub from "/src/assets/StratHub.png";
 import './Login.css';
 
@@ -10,19 +11,25 @@ function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
 
-    setTimeout(() => {
-      if (email === 'admin@example.com' && senha === '123456') {
-        navigate('/home');
-      } else {
-        setError('Usuário ou senha inválidos.');
-      }
+    try {
+      const response = await api.post('/usuario/login', {
+        email,
+        senha
+      });
+
+      console.log('Login sucesso:', response.data);
+      navigate('/home'); // redireciona após login
+    } catch (err) {
+      console.error('Erro no login:', err);
+      setError('Email ou senha inválidos.');
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   const handleClickSignin = () => {
@@ -60,7 +67,7 @@ function Login() {
             />
           </div>
           <button type="submit" disabled={isLoading}>
-            {isLoading ? 'Entrando...' : 'Entrar'}
+            {isLoading ? 'Entrando...' : 'Entrar'}  
           </button>
         </form>
 

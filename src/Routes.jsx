@@ -1,14 +1,13 @@
 import { Routes, Route } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import Lendpage from './Pages/Lendpage/Lendpage';
 import Login from './Pages/Login/Login';
 import Cadastro from './Pages/Cadastro/Cadastro';
 import Chatbox from './Pages/Chatbox/Chatbox';
 import Home from './Pages/Home/Home';
-import User from './Pages/User/User';
-import Times from './Pages/Times/Times';
-import CreateTime from './Pages/CreateTime/CreateTime';
+import User from './Pages/Usuario/User/User';
+import Times from './Pages/Time/Times/Times';
+import CreateTime from './Pages/Time/CreateTime/CreateTime';
 import Invites from './Pages/Invites/Invites';
 import Partidas from './Pages/Partidas/Partidas';
 import Profile from './Pages/Profiles/Profile';
@@ -23,7 +22,7 @@ function MainRoutes() {
         <Route path='/chatbox' element={<Chatbox />} />
         <Route path='/home' element={<Home />} />
         <Route path='*' element={<h1>404 page not found</h1>} />
-        <Route path='/user' element={<User />} />
+        <Route path='/usuario/:id' element={<User />} />
         <Route path='/times/:id' element={<Times />} />
         <Route path='/criartime' element={<CreateTime />} />
         <Route path='/amigos' element={<Invites />} />
