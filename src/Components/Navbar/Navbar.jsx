@@ -6,6 +6,7 @@ import StratHub from "/src/assets/StratHub.png";
 import "./Navbar.css";
 
 function Navbar() {
+
     const [usuario, setUsuario] = useState('');
     const navigate = useNavigate();
     const id = localStorage.getItem("id");
@@ -23,21 +24,51 @@ function Navbar() {
         fetchUsuario();
     }, [id]);
 
+    if (!usuario) return null; // ou um loading spinner
+
     return (
         <header>
             <nav className="nav">
-                <img src={StratHub} alt="Logo do sistema" onClick={() => navigate("/")} className="nav-logo"/>
-                
+                <img
+                    src={StratHub}
+                    alt="Logo do sistema"
+                    onClick={() => navigate("/")}
+                    className="nav-logo"
+                />
+
                 <span onClick={() => navigate("/home")} className="nav-link">Salas</span>
                 <span onClick={() => navigate("/chatbox")} className="nav-link">Campeonatos (em Breve)</span>
-                <span onClick={() => navigate("/criartime")} className="nav-link">Time</span>
-                
-                <span onClick={() => navigate("/amigos")} className="nav-link-friends">
-                    <FaUsers className="friends-icon" /> 
+
+                <span
+                    onClick={async () => {
+                        try {
+                            if (usuario.timeId) {
+                                navigate(`/times/${usuario.timeId}`);
+                            } else {
+                                navigate("/criartime");
+                            }
+                        } catch (err) {
+                            console.error("Erro ao buscar time do usuário:", err);
+                            navigate("/criartime");
+                        }
+                    }}
+                    className="nav-link"
+                >
+                    Time
                 </span>
-                
+
+                <span onClick={() => navigate("/amigos")} className="nav-link-friends">
+                    <FaUsers className="friends-icon" />
+                </span>
+
                 <div className="user-info">
-                    <img className="profile-icon-img" src={usuario.imagem_usuario} alt="Foto do usuário" onClick={() => navigate(`/usuario/${id}`)}/>
+                    <img
+                        className="profile-icon-img"
+                        src={usuario.imagem_usuario}
+                        alt="Foto do usuário"
+                        onClick={() => navigate(`/usuario/${usuario.id}`)}
+                    />
+                    R$:00,00
                 </div>
             </nav>
         </header>

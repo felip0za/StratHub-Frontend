@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../../Services/API"; // certifique-se de importar corretamente seu `api`
+import api from "../../Services/API"; // Aqui você usa a URL do seu backend
 import StratHub from "/src/assets/StratHub.png";
 import './Login.css';
 
@@ -17,16 +17,24 @@ function Login() {
     setError('');
 
     try {
-      const response = await api.post('/usuario/login', {
-        email,
-        senha
-      });
+      // Envia os dados de email e senha para o backend
+      const response = await api.post('/usuario/login', { email, senha });
 
-      console.log('Login sucesso:', response.data);
-      navigate('/home'); // redireciona após login
+      // Se o login for bem-sucedido, você pode pegar os dados do usuário (sem a senha) e navegar
+      const usuario = response.data;
+
+      console.log('Login sucesso:', usuario);
+      // Você pode armazenar informações do usuário no estado global, localStorage, etc.
+
+      navigate('/home');
     } catch (err) {
       console.error('Erro no login:', err);
-      setError('Email ou senha inválidos.');
+      // Caso de erro, exibe mensagem de erro adequada
+      if (err.response && err.response.data) {
+        setError(err.response.data.message || 'Ocorreu um erro ao tentar fazer login.');
+      } else {
+        setError('Ocorreu um erro inesperado. Tente novamente mais tarde.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -64,10 +72,11 @@ function Login() {
               onChange={(e) => setSenha(e.target.value)}
               required
               placeholder="********"
+              autoComplete="current-password"
             />
           </div>
           <button type="submit" disabled={isLoading}>
-            {isLoading ? 'Entrando...' : 'Entrar'}  
+            {isLoading ? 'Entrando...' : 'Entrar'}
           </button>
         </form>
 

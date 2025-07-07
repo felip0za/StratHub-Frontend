@@ -1,29 +1,172 @@
-import Navbar from "../../../Components/Navbar/Navbar";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "../../../Services/API";
-import { useState } from "react";
-import { useNavigate,useParams } from "react-router-dom";
+import Navbar from "../../../Components/Navbar/Navbar";
+import avatarDefault from "/src/assets/avatar-default.png";
+import "./EditUser.css";
 
-function EditUser(){
-    const[usuario, setUsuario] = useState('');
-    const { id } = useParams();
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-    const navigate = useNavigate();
+function EditUser() {
+  const { id } = useParams();
+  const navigate = useNavigate();
 
-    useEffect(() => {
+  const [usuario, setUsuario] = useState({
+    nome: "",
+    sobrenome: "",
+    email: "",
+    senha: "",
+    imagem_usuario: ""
+  });
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
     async function fetchUsuario() {
       try {
         const { data } = await api.get(`/usuario/${id}`);
-        setUsuario(data);
+        setUsuario({
+          ...data,
+          imagem_usuario: data.imagem_usuario?.startsWith("data:image/")
+            ? data.imagem_usuario
+            : data.imagem_usuario
+              ? `data:image/png;base64,${data.imagem_usuario}`
+              : ""
+        });
       } catch (err) {
-        setError('Usuário não encontrado ou erro ao carregar os dados.');
+        console.error("Erro ao carregar usuário:", err);
+        setError("Erro ao carregar usuário.");
       } finally {
         setLoading(false);
       }
     }
-
     fetchUsuario();
   }, [id]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUsuario((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setUsuario((prev) => ({
+        ...prev,
+        imagem_usuario: reader.result
+      }));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const usuarioParaEnvio = {
+        ...usuario,
+        imagem_usuario: usuario.imagem_usuario.replace(/^data:image\/\w+;base64,/, "")
+      };
+      await api.put(`/usuario/${id}`, usuarioParaEnvio);
+      alert("Usuário atualizado com sucesso!");
+      navigate(`/usuario/${id}`);
+    } catch (err) {
+      console.error("Erro ao atualizar usuário:", err);
+      alert("Erro ao atualizar usuário.");
+    }
+  };
+
+  const handleDelete = async () => {
+    if (window.confirm("Tem certeza que deseja excluir este usuário?")) {
+      try {
+        await api.delete(`/usuario/${id}`);
+        alert("Usuário excluído com sucesso!");
+        navigate("/");
+      } catch (err) {
+        console.error("Erro ao excluir usuário:", err);
+        alert("Erro ao excluir usuário.");
+      }
+    }
+  };
+
+  if (loading) return <p>Carregando...</p>;
+  if (error) return <p>{error}</p>;
+
+  return (
+    <>
+      <Navbar />
+      <div className="edit-profile-container">
+        <h2>Informações</h2>
+        <form onSubmit={handleSubmit} className="edit-profile-form">
+          {/* Coluna Esquerda: Imagem */}
+          <div className="left-column">
+            <label className="avatar-wrapper">
+              <img
+                src={
+                  usuario.imagem_usuario?.startsWith("data:image/")
+                    ? usuario.imagem_usuario
+                    : avatarDefault
+                }
+                alt="Avatar"
+                className="avatar"
+              />
+              <div className="avatar-overlay">Trocar Foto</div>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="avatar-input"
+              />
+            </label>
+          </div>
+
+          {/* Coluna Direita: Dados */}
+          <div className="right-column">
+            <label>Nome</label>
+            <input
+              type="text"
+              name="nome"
+              value={usuario.nome}
+              onChange={handleChange}
+              required
+            />
+
+            <label>Email</label>
+            <input
+              type="email"
+              name="email"
+              value={usuario.email}
+              onChange={handleChange}
+              required
+            />
+
+            <label>Senha</label>
+            <input
+              type="password"
+              name="senha"
+              value={usuario.senha || ''}
+              onChange={handleChange}
+              required
+            />
+
+            <div className="buttons">
+              <button type="submit" className="update-button">
+                Salvar
+              </button>
+              <button
+                type="button"
+                onClick={handleDelete}
+                className="cancel-button"
+              >
+                🗑️ Excluir Usuário
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </>
+  );
 }
-    
-    
+
+export default EditUser;

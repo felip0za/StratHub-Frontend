@@ -12,6 +12,7 @@ import Invites from './Pages/Invites/Invites';
 import Partidas from './Pages/Partidas/Partidas';
 import Profile from './Pages/Profiles/Profile';
 import FPL from './Pages/Lobbys/FPL/FPL';
+import EditUser from './Pages/Usuario/EditUser/EditUser';
 
 function MainRoutes() {
   return (
@@ -24,6 +25,7 @@ function MainRoutes() {
         <Route path='*' element={<h1>404 page not found</h1>} />
         <Route path='/usuario/:id' element={<User />} />
         <Route path='/times/:id' element={<Times />} />
+        <Route path='/editar-usuario/:id' element={<EditUser />} />
         <Route path='/criartime' element={<CreateTime />} />
         <Route path='/amigos' element={<Invites />} />
         <Route path='/partida' element={<Partidas />} />

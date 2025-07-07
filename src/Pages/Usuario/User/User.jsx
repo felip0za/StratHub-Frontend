@@ -12,12 +12,26 @@ function User() {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    console.log('ID recebido:', id); // ✅ Verificação do ID
+
+    // Verifica se o ID está presente
+    if (!id) {
+      setError('ID do usuário não fornecido.');
+      setLoading(false);
+      return;
+    }
+
     async function fetchUsuario() {
       try {
         const { data } = await api.get(`/usuario/${id}`);
         setUsuario(data);
       } catch (err) {
-        setError('Usuário não encontrado ou erro ao carregar os dados.');
+        console.error('Erro ao buscar usuário:', err); // ✅ Debug
+        if (err.response?.status === 400 || err.response?.status === 404) {
+          setError('Usuário não encontrado.');
+        } else {
+          setError('Erro ao carregar os dados do usuário.');
+        }
       } finally {
         setLoading(false);
       }
@@ -27,7 +41,7 @@ function User() {
   }, [id]);
 
   const handleEdit = () => {
-    navigate('/editar-usuario');
+    navigate(`/editar-usuario/${id}`);
   };
 
   if (loading) {
@@ -55,20 +69,23 @@ function User() {
         <div className="profile-card">
           <div className="profile-image-section">
             {usuario.imagem_usuario ? (
-              <img className="profile-photo" src={usuario.imagem_usuario} alt="Foto do usuário" />
+              <img
+                className="profile-photo"
+                src={usuario.imagem_usuario}
+                alt="Foto do usuário"
+              />
             ) : (
               <div className="profile-photo placeholder">Sem imagem</div>
             )}
           </div>
 
           <div className="profile-info-section">
-            <h2 className="profile-name">{usuario.nome}</h2>
-            <p className="profile-detail">Email:{usuario.email}</p>
+            <h2 className="profile-name">{usuario.nome || 'Nome não disponível'}</h2>
+            <p className="profile-detail">Email: {usuario.email || 'Email não disponível'}</p>
           </div>
         </div>
 
         <div className="profile-buttons">
-          <button className="btn deactivate">Desativar Conta</button>
           <button className="btn edit" onClick={handleEdit}>
             Editar Perfil
           </button>

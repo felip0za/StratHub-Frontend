@@ -21,12 +21,14 @@ const Cadastro = () => {
     reader.readAsDataURL(file);
   };
 
+  const isFormValid = nome.trim() && email.trim() && senha.trim() && imagem_usuario;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
 
-    if (!nome.trim() || !email.trim() || !senha.trim() || !imagem_usuario) {
+    if (!isFormValid) {
       setError('Por favor, preencha todos os campos e selecione uma imagem.');
       setIsLoading(false);
       return;
@@ -38,14 +40,25 @@ const Cadastro = () => {
         email,
         senha,
         imagem_usuario: imagem_usuario.replace(/^data:image\/[a-z]+;base64,/, ''),
+        timeId: null, 
       });
 
       console.log('Cadastro feito com sucesso:', response.data);
       alert('Cadastro realizado com sucesso!');
+
+     
+      setNome('');
+      setEmail('');
+      setSenha('');
+      setimagem_usuario('');
+
+     
       navigate('/login');
     } catch (err) {
       console.error('Erro no cadastro:', err);
-      setError('Erro ao cadastrar. Verifique os dados ou tente outro e-mail.');
+      const mensagem =
+        err.response?.data || 'Erro ao cadastrar. Verifique os dados ou tente outro e-mail.';
+      setError(mensagem);
     } finally {
       setIsLoading(false);
     }
@@ -101,7 +114,7 @@ const Cadastro = () => {
           </div>
         )}
 
-        <button type="submit" disabled={isLoading}>
+        <button type="submit" disabled={isLoading || !isFormValid}>
           {isLoading ? 'Cadastrando...' : 'Concluir Cadastro'}
         </button>
       </form>
