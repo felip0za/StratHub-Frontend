@@ -48,7 +48,8 @@ const Cadastro = () => {
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      setImagemUsuario(reader.result);
+      const base64String = reader.result.split(',')[1]; // Remove o prefixo
+      setImagemUsuario(base64String);
     };
     reader.readAsDataURL(file);
   };
@@ -94,7 +95,7 @@ const Cadastro = () => {
           <div className="preview-container">
             <p>Pré-visualização da imagem:</p>
             <img
-              src={imagem_usuario}
+              src={`data:image/png;base64,${imagem_usuario}`}
               alt="Pré-visualização"
               className="preview-img"
             />

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useApi } from "../../../Services/API"; 
+import { useApi } from "../../../Services/API"; // Use hook para axios com token
 import Navbar from "../../../Components/Navbar/Navbar";
 import avatarDefault from "/src/assets/avatar-default.png";
 import { useAuth } from "../../../contexts/AuthContext";
@@ -11,7 +11,7 @@ function EditUser() {
   const navigate = useNavigate();
   const { token, logout } = useAuth();
 
-  const api = useApi(); 
+  const api = useApi(); // instância axios com token no header
 
   const [usuario, setUsuario] = useState({
     nome: "",
