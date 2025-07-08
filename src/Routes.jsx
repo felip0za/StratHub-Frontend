@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 
+import PrivateRoute from './Components/PrivateRoute/PrivateRoute';
 import Lendpage from './Pages/Lendpage/Lendpage';
 import Login from './Pages/Login/Login';
 import Cadastro from './Pages/Cadastro/Cadastro';
@@ -16,22 +17,62 @@ import EditUser from './Pages/Usuario/EditUser/EditUser';
 
 function MainRoutes() {
   return (
-      <Routes>
-        <Route path='/' element={<Lendpage />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/cadastro' element={<Cadastro />} />
-        <Route path='/chatbox' element={<Chatbox />} />
-        <Route path='/home' element={<Home />} />
-        <Route path='*' element={<h1>404 page not found</h1>} />
-        <Route path='/usuario/:id' element={<User />} />
-        <Route path='/times/:id' element={<Times />} />
-        <Route path='/editar-usuario/:id' element={<EditUser />} />
-        <Route path='/criartime' element={<CreateTime />} />
-        <Route path='/amigos' element={<Invites />} />
-        <Route path='/partida' element={<Partidas />} />
-        <Route path='/profile' element={<Profile />} />
-        <Route path='/fpl' element={<FPL />} />
-      </Routes>
+    <Routes>
+      <Route path='/' element={<Lendpage />} />
+      <Route path='/login' element={<Login />} />
+      <Route path='/cadastro' element={<Cadastro />} />
+      <Route path='/chatbox' element={
+        <PrivateRoute>
+          <Chatbox />
+        </PrivateRoute>
+      } />
+      <Route path='/home' element={
+        <PrivateRoute>
+          <Home />
+        </PrivateRoute>
+      } />
+      <Route path='/usuario/:id' element={
+        <PrivateRoute>
+          <User />
+        </PrivateRoute>
+      } />
+      <Route path='/times/:id' element={
+        <PrivateRoute>
+          <Times />
+        </PrivateRoute>
+      } />
+      <Route path='/editar-usuario/:id' element={
+        <PrivateRoute>
+          <EditUser />
+        </PrivateRoute>
+      } />
+      <Route path='/criartime' element={
+        <PrivateRoute>
+          <CreateTime />
+        </PrivateRoute>
+      } />
+      <Route path='/amigos' element={
+        <PrivateRoute>
+          <Invites />
+        </PrivateRoute>
+      } />
+      <Route path='/partida' element={
+        <PrivateRoute>
+          <Partidas />
+        </PrivateRoute>
+      } />
+      <Route path='/profile' element={
+        <PrivateRoute>
+          <Profile />
+        </PrivateRoute>
+      } />
+      <Route path='/fpl' element={
+        <PrivateRoute>
+          <FPL />
+        </PrivateRoute>
+      } />
+      <Route path='*' element={<h1>404 page not found</h1>} />
+    </Routes>
   );
 }
 
