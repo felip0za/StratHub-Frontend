@@ -2,19 +2,18 @@ import './User.css';
 import Navbar from '../../../Components/Navbar/Navbar';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import api from '../../../Services/API';
+import { useApi } from '../../../Services/API';  // usar hook para pegar api com token
 
 function User() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const api = useApi();
+
   const [usuario, setUsuario] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    console.log('ID recebido:', id); // ✅ Verificação do ID
-
-    // Verifica se o ID está presente
     if (!id) {
       setError('ID do usuário não fornecido.');
       setLoading(false);
@@ -26,7 +25,7 @@ function User() {
         const { data } = await api.get(`/usuario/${id}`);
         setUsuario(data);
       } catch (err) {
-        console.error('Erro ao buscar usuário:', err); // ✅ Debug
+        console.error('Erro ao buscar usuário:', err);
         if (err.response?.status === 400 || err.response?.status === 404) {
           setError('Usuário não encontrado.');
         } else {
@@ -38,7 +37,7 @@ function User() {
     }
 
     fetchUsuario();
-  }, [id]);
+  }, [id, api]);
 
   const handleEdit = () => {
     navigate(`/editar-usuario/${id}`);

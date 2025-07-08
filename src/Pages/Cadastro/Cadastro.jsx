@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import api from '../../Services/API';
+import { useApi } from '../../Services/API';
 import './Cadastro.css';
 import { useNavigate } from 'react-router-dom';
 
@@ -7,71 +7,59 @@ const Cadastro = () => {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
-  const [imagem_usuario, setimagem_usuario] = useState('');
+  const [imagem_usuario, setImagemUsuario] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onloadend = () => setimagem_usuario(reader.result);
-    reader.readAsDataURL(file);
-  };
-
-  const isFormValid = nome.trim() && email.trim() && senha.trim() && imagem_usuario;
+  const api = useApi();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
 
-    if (!isFormValid) {
-      setError('Por favor, preencha todos os campos e selecione uma imagem.');
-      setIsLoading(false);
-      return;
-    }
-
     try {
-      const response = await api.post('/usuario/cadastrar', {
+      const usuarioParaEnvio = {
         nome,
         email,
         senha,
-        imagem_usuario: imagem_usuario.replace(/^data:image\/[a-z]+;base64,/, ''),
-        timeId: null, 
-      });
+        imagem_usuario,
+      };
 
-      console.log('Cadastro feito com sucesso:', response.data);
+      await api.post('/usuario/cadastrar', usuarioParaEnvio);
       alert('Cadastro realizado com sucesso!');
-
-     
-      setNome('');
-      setEmail('');
-      setSenha('');
-      setimagem_usuario('');
-
-     
       navigate('/login');
     } catch (err) {
       console.error('Erro no cadastro:', err);
-      const mensagem =
-        err.response?.data || 'Erro ao cadastrar. Verifique os dados ou tente outro e-mail.';
-      setError(mensagem);
+      if (err.response?.data?.erro) {
+        setError(err.response.data.erro);
+      } else {
+        setError('Erro inesperado. Tente novamente.');
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagemUsuario(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
     <div className="register-container">
-      <form onSubmit={handleSubmit} className="register-form">
-        <h2>Cadastro</h2>
+      <h2>Cadastro</h2>
+      {error && <div className="error-text">{error}</div>}
 
-        {error && <p className="error-text">{error}</p>}
-
-        <label>Nome:</label>
+      <form onSubmit={handleSubmit}>
+        <label>Nome</label>
         <input
           type="text"
           value={nome}
@@ -79,7 +67,7 @@ const Cadastro = () => {
           required
         />
 
-        <label>Email:</label>
+        <label>Email</label>
         <input
           type="email"
           value={email}
@@ -87,7 +75,7 @@ const Cadastro = () => {
           required
         />
 
-        <label>Senha:</label>
+        <label>Senha</label>
         <input
           type="password"
           value={senha}
@@ -95,12 +83,11 @@ const Cadastro = () => {
           required
         />
 
-        <label>Imagem:</label>
+        <label>Imagem de perfil</label>
         <input
           type="file"
           accept="image/*"
           onChange={handleImageChange}
-          required
         />
 
         {imagem_usuario && (
@@ -114,8 +101,8 @@ const Cadastro = () => {
           </div>
         )}
 
-        <button type="submit" disabled={isLoading || !isFormValid}>
-          {isLoading ? 'Cadastrando...' : 'Concluir Cadastro'}
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? 'Cadastrando...' : 'Cadastrar'}
         </button>
       </form>
     </div>

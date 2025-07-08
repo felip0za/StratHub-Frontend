@@ -1,13 +1,17 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import api from "../../../Services/API";
+import { useApi } from "../../../Services/API"; 
 import Navbar from "../../../Components/Navbar/Navbar";
 import avatarDefault from "/src/assets/avatar-default.png";
+import { useAuth } from "../../../contexts/AuthContext";
 import "./EditUser.css";
 
 function EditUser() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { token, logout } = useAuth();
+
+  const api = useApi(); 
 
   const [usuario, setUsuario] = useState({
     nome: "",
@@ -21,11 +25,18 @@ function EditUser() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (!token) {
+      navigate("/login");
+    }
+  }, [token, navigate]);
+
+  useEffect(() => {
     async function fetchUsuario() {
       try {
         const { data } = await api.get(`/usuario/${id}`);
         setUsuario({
           ...data,
+          senha: "",
           imagem_usuario: data.imagem_usuario?.startsWith("data:image/")
             ? data.imagem_usuario
             : data.imagem_usuario
@@ -40,7 +51,7 @@ function EditUser() {
       }
     }
     fetchUsuario();
-  }, [id]);
+  }, [id, api]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -68,6 +79,11 @@ function EditUser() {
         ...usuario,
         imagem_usuario: usuario.imagem_usuario.replace(/^data:image\/\w+;base64,/, "")
       };
+
+      if (!usuarioParaEnvio.senha) {
+        delete usuarioParaEnvio.senha;
+      }
+
       await api.put(`/usuario/${id}`, usuarioParaEnvio);
       alert("Usuário atualizado com sucesso!");
       navigate(`/usuario/${id}`);
@@ -77,17 +93,9 @@ function EditUser() {
     }
   };
 
-  const handleDelete = async () => {
-    if (window.confirm("Tem certeza que deseja excluir este usuário?")) {
-      try {
-        await api.delete(`/usuario/${id}`);
-        alert("Usuário excluído com sucesso!");
-        navigate("/");
-      } catch (err) {
-        console.error("Erro ao excluir usuário:", err);
-        alert("Erro ao excluir usuário.");
-      }
-    }
+  const handleSair = () => {
+    logout();
+    navigate("/login");
   };
 
   if (loading) return <p>Carregando...</p>;
@@ -99,7 +107,6 @@ function EditUser() {
       <div className="edit-profile-container">
         <h2>Informações</h2>
         <form onSubmit={handleSubmit} className="edit-profile-form">
-          {/* Coluna Esquerda: Imagem */}
           <div className="left-column">
             <label className="avatar-wrapper">
               <img
@@ -121,7 +128,6 @@ function EditUser() {
             </label>
           </div>
 
-          {/* Coluna Direita: Dados */}
           <div className="right-column">
             <label>Nome</label>
             <input
@@ -141,13 +147,13 @@ function EditUser() {
               required
             />
 
-            <label>Senha</label>
+            <label>Senha (deixe em branco para não alterar)</label>
             <input
               type="password"
               name="senha"
-              value={usuario.senha || ''}
+              value={usuario.senha}
               onChange={handleChange}
-              required
+              placeholder="Nova senha (opcional)"
             />
 
             <div className="buttons">
@@ -156,10 +162,10 @@ function EditUser() {
               </button>
               <button
                 type="button"
-                onClick={handleDelete}
+                onClick={handleSair}
                 className="cancel-button"
               >
-                🗑️ Excluir Usuário
+                Sair
               </button>
             </div>
           </div>

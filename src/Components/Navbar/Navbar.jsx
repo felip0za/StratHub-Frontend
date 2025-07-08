@@ -1,78 +1,80 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import api from "../../Services/API";
+import { useApi } from "../../Services/API";
+import { useAuth } from "../../contexts/AuthContext";
 import { FaUsers } from "react-icons/fa";
 import StratHub from "/src/assets/StratHub.png";
 import "./Navbar.css";
 
 function Navbar() {
+  const { userId } = useAuth();  // pega id do usuário do contexto
+  const api = useApi();           // axios com token automático
+  const navigate = useNavigate();
+  const [usuario, setUsuario] = useState(null);
 
-    const [usuario, setUsuario] = useState('');
-    const navigate = useNavigate();
-    const id = localStorage.getItem("id");
+  useEffect(() => {
+    if (!userId) return;
 
-    useEffect(() => {
-        async function fetchUsuario() {
-            try {
-                const { data } = await api.get(`/usuario/${id}`);
-                setUsuario(data);
-            } catch (err) {
-                console.error("Erro ao buscar usuário:", err);
+    async function fetchUsuario() {
+      try {
+        const { data } = await api.get(`/usuario/${userId}`);
+        setUsuario(data);
+      } catch (err) {
+        console.error("Erro ao buscar usuário:", err);
+      }
+    }
+
+    fetchUsuario();
+  }, [userId, api]);
+
+  if (!usuario) return null;
+
+  return (
+    <header>
+      <nav className="nav">
+        <img
+          src={StratHub}
+          alt="Logo do sistema"
+          onClick={() => navigate("/")}
+          className="nav-logo"
+        />
+
+        <span onClick={() => navigate("/home")} className="nav-link">
+          Salas
+        </span>
+        <span onClick={() => navigate("/chatbox")} className="nav-link">
+          Campeonatos (em Breve)
+        </span>
+
+        <span
+          onClick={() => {
+            if (usuario.timeId) {
+              navigate(`/times/${usuario.timeId}`);
+            } else {
+              navigate("/criartime");
             }
-        }
+          }}
+          className="nav-link"
+        >
+          Time
+        </span>
 
-        fetchUsuario();
-    }, [id]);
+        <span onClick={() => navigate("/amigos")} className="nav-link-friends">
+          <FaUsers className="friends-icon" />
+        </span>
 
-    if (!usuario) return null; // ou um loading spinner
-
-    return (
-        <header>
-            <nav className="nav">
-                <img
-                    src={StratHub}
-                    alt="Logo do sistema"
-                    onClick={() => navigate("/")}
-                    className="nav-logo"
-                />
-
-                <span onClick={() => navigate("/home")} className="nav-link">Salas</span>
-                <span onClick={() => navigate("/chatbox")} className="nav-link">Campeonatos (em Breve)</span>
-
-                <span
-                    onClick={async () => {
-                        try {
-                            if (usuario.timeId) {
-                                navigate(`/times/${usuario.timeId}`);
-                            } else {
-                                navigate("/criartime");
-                            }
-                        } catch (err) {
-                            console.error("Erro ao buscar time do usuário:", err);
-                            navigate("/criartime");
-                        }
-                    }}
-                    className="nav-link"
-                >
-                    Time
-                </span>
-
-                <span onClick={() => navigate("/amigos")} className="nav-link-friends">
-                    <FaUsers className="friends-icon" />
-                </span>
-
-                <div className="user-info">
-                    <img
-                        className="profile-icon-img"
-                        src={usuario.imagem_usuario}
-                        alt="Foto do usuário"
-                        onClick={() => navigate(`/usuario/${usuario.id}`)}
-                    />
-                    R$:00,00
-                </div>
-            </nav>
-        </header>
-    );
+        <div className="user-info">
+          <img
+            className="profile-icon-img"
+            src={usuario.imagem_usuario || "/default-avatar.png"}
+            alt="Foto do usuário"
+            onClick={() => navigate(`/usuario/${usuario.id}`)}
+          />
+          R$:00,00
+        </div>
+      </nav>
+    </header>
+  );
 }
 
 export default Navbar;

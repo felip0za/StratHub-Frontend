@@ -4,11 +4,12 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
+  
 }
 
 .register-container h2 {
   margin-bottom: 20px;
-  color: #333;
+  color: #fff;
 }
 
 .register-container form {

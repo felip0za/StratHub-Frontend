@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import './CreateTime.css';
 import Navbar from '../../../Components/Navbar/Navbar';
 import { useNavigate } from 'react-router-dom';
-import api from '../../../Services/API';
+import { useApi } from '../../../Services/API';  // IMPORTANTE: usar o hook useApi
 
 const CreateTime = () => {
   const [nome, setNome] = useState('');
   const [descricao, setDescricao] = useState('');
   const [imagemBase64, setImagemBase64] = useState('');
   const navigate = useNavigate();
+  const api = useApi(); // Usa a instância axios com token do contexto
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];

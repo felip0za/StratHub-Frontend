@@ -1,23 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import api from '../../../Services/API';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useApi } from '../../../Services/API';
 import Navbar from '../../../Components/Navbar/Navbar';
 import './Times.css';
-import { useNavigate, useParams } from 'react-router-dom';
 
 function Times() {
   const [time, setTime] = useState(null);
-  const [members, setMembers] = useState([]); 
+  const [members, setMembers] = useState([]);
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { id } = useParams();
+  const api = useApi();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // ✅ Buscar o time
         const timeResponse = await api.get(`/times/${id}`);
         setTime(timeResponse.data);
 
+        const membersResponse = await api.get(`/times/${id}/membros`);
+        setMembers(membersResponse.data || []);
       } catch (error) {
         console.error('Erro ao buscar os dados do time:', error);
         setError('ID do time não encontrado ou erro ao carregar.');
@@ -25,11 +27,15 @@ function Times() {
     };
 
     fetchData();
-  }, [id]);
+  }, [id, api]);
 
   const handleEdit = (e) => {
     e.preventDefault();
-    navigate("/login");
+    navigate(`/editar-time/${id}`);
+  };
+
+  const handleAddMember = () => {
+    navigate(`/times/${id}/adicionar-membro`);
   };
 
   if (error) {
@@ -58,11 +64,12 @@ function Times() {
           <div className="logo-section">
             <img
               className="logo"
-              src={time.imagemBase64}
+              src={time.imagemBase64 || "/default-team.png"}
+              alt="Logo do time"
             />
             <h2 className="team-title">{time.nome}</h2>
             <p className="description-label">DESCRIÇÃO:</p>
-            <p className='description-label'>{time.descricao}</p>
+            <p className="description-label">{time.descricao}</p>
             <button className="edit-logo" onClick={handleEdit}>Editar Time</button>
           </div>
         </div>
@@ -73,19 +80,23 @@ function Times() {
           {members.length > 0 ? (
             members.map((member, index) => (
               <div className="member-card" key={index}>
-                <img src={member.imageUrl || "/logo.png"} alt="Logo Membro" className="member-logo" />
+                <img
+                  src={member.imagem_usuario || "/default-avatar.png"}
+                  alt="Foto do membro"
+                  className="member-logo"
+                />
                 <div className="member-info">
                   <strong>{member.nome}</strong>
-                  <p>{member.idUbi}</p>
+                  <p>{member.idUbi || 'ID não disponível'}</p>
                 </div>
-                <div className="kd">KD: {member.kd}</div>
+                <div className="kd">KD: {member.kd || 'N/A'}</div>
               </div>
             ))
           ) : (
             <p>Nenhum jogador encontrado.</p>
           )}
 
-          <button className="add-member">ADICIONAR MEMBRO +</button>
+          <button className="add-member" onClick={handleAddMember}>ADICIONAR MEMBRO +</button>
         </div>
       </div>
     </>
