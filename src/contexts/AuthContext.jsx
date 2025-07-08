@@ -1,22 +1,24 @@
-import React, { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [token, setToken] = useState(null);
-  const [userId, setUserId] = useState(null);
+  const [token, setToken] = useState(() => sessionStorage.getItem('token') || null);
+  const [userId, setUserId] = useState(() => sessionStorage.getItem('userId') || null);
 
-  // Função para logar e salvar token + id
-  function login(newToken, newUserId) {
+  const login = (newToken, id) => {
     setToken(newToken);
-    setUserId(newUserId);
-  }
+    setUserId(id);
+    sessionStorage.setItem('token', newToken);
+    sessionStorage.setItem('userId', id);
+  };
 
-  // Função para deslogar e limpar dados
-  function logout() {
+  const logout = () => {
     setToken(null);
     setUserId(null);
-  }
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('userId');
+  };
 
   return (
     <AuthContext.Provider value={{ token, userId, login, logout }}>
@@ -25,8 +27,6 @@ export function AuthProvider({ children }) {
   );
 }
 
-// Hook para usar o contexto em qualquer componente
 export function useAuth() {
   return useContext(AuthContext);
 }
- 
