@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../../Services/API"; // Aqui você usa a URL do seu backend
+import api from "../../Services/API";
 import StratHub from "/src/assets/StratHub.png";
 import './Login.css';
 
@@ -17,23 +17,25 @@ function Login() {
     setError('');
 
     try {
-      // Envia os dados de email e senha para o backend
       const response = await api.post('/usuario/login', { email, senha });
+      const { token, id } = response.data;
 
-      // Se o login for bem-sucedido, você pode pegar os dados do usuário (sem a senha) e navegar
-      const usuario = response.data;
+      if (token && id) {
+        // Salvar token e id do usuário no localStorage
+        localStorage.setItem("token", token);
+        localStorage.setItem("userId", id);
 
-      console.log('Login sucesso:', usuario);
-      // Você pode armazenar informações do usuário no estado global, localStorage, etc.
-
-      navigate('/home');
-    } catch (err) {
-      console.error('Erro no login:', err);
-      // Caso de erro, exibe mensagem de erro adequada
-      if (err.response && err.response.data) {
-        setError(err.response.data.message || 'Ocorreu um erro ao tentar fazer login.');
+        console.log("Login bem-sucedido:", response.data);
+        navigate('/home');
       } else {
-        setError('Ocorreu um erro inesperado. Tente novamente mais tarde.');
+        setError("Dados de resposta inválidos. Tente novamente.");
+      }
+    } catch (err) {
+      console.error("Erro no login:", err);
+      if (err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else {
+        setError("Erro inesperado. Verifique sua conexão e tente novamente.");
       }
     } finally {
       setIsLoading(false);
@@ -54,9 +56,10 @@ function Login() {
         {error && <div className="error-message">{error}</div>}
 
         <form onSubmit={handleSubmit}>
-          <div>
-            <label>Email</label>
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
             <input
+              id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -64,9 +67,11 @@ function Login() {
               placeholder="seu@email.com"
             />
           </div>
-          <div>
-            <label>Senha</label>
+
+          <div className="form-group">
+            <label htmlFor="senha">Senha</label>
             <input
+              id="senha"
               type="password"
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
@@ -75,6 +80,7 @@ function Login() {
               autoComplete="current-password"
             />
           </div>
+
           <button type="submit" disabled={isLoading}>
             {isLoading ? 'Entrando...' : 'Entrar'}
           </button>
