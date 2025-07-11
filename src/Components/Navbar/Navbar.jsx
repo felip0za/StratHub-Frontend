@@ -34,7 +34,6 @@ function Navbar() {
 
         const idTime = data.idTime || data.id_time;
         if (idTime) {
-          // busca o time se tiver
           const res = await api.get(`/times/${idTime}`);
           setTimeInfo(res.data);
         }
@@ -84,7 +83,7 @@ function Navbar() {
     );
   }
 
-  const imagemPerfil = usuario.imagemUsuario || usuario.imagem_usuario || "/default-avatar.png";
+  const imagemPerfil = usuario.imagemUsuario || "/default-avatar.png";
   const nomeUsuario = usuario.nome || "Usuário";
   const idTime = usuario.idTime || usuario.id_time;
 
@@ -131,14 +130,21 @@ function Navbar() {
           />
           <span className="user-name">R$:00,00</span>
 
-          {showTooltip && timeInfo && (
+          {showTooltip && (
             <div className="user-tooltip">
-              <img
-                src={`data:image/*;base64,${timeInfo.imagemBase64}`}
-                alt="Logo do time"
-                className="tooltip-logo"
-              />
-              <p className="tooltip-name">{timeInfo.nome}</p>
+              {timeInfo ? (
+                <>
+                <p className="tooltip-logo">Time: </p>
+                  <img
+                    src={`data:image/*;base64,${timeInfo.imagemBase64}`}
+                    alt="Logo do time"
+                    className="tooltip-logo"
+                  />
+                  <p className="tooltip-name">{timeInfo.nome}</p>
+                </>
+              ) : (
+                <p className="tooltip-name">Não possui</p>
+              )}
             </div>
           )}
         </div>
