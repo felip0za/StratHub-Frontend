@@ -51,14 +51,6 @@ function FPL() {
     setSearchTerm(event.target.value);
   };
 
-  const lobbies = [
-    { title: "receba", points: 52, players: 0, price: 7, route: "/partida/1" },
-    { title: "Lounge #2", points: 47, players: 3, price: 7, route: "/partida/2" },
-    { title: "Lounge #3", points: 60, players: 2, price: 7, route: "/partida/3" },
-    { title: "Lounge #4", points: 50, players: 0, price: 7, route: "/partida/4" },
-    { title: "Lounge #5", points: 55, players: 1, price: 7, route: "/partida/5" },
-  ];
-
   const filteredLobbies = lobbies.filter((lobby) =>
     lobby.title.toLowerCase().includes(searchTerm.toLowerCase())
   );

@@ -2,7 +2,7 @@ import './User.css';
 import Navbar from '../../../Components/Navbar/Navbar';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { useApi } from '../../../Services/API';  // usar hook para pegar api com token
+import { useApi } from '../../../Services/API';
 
 function User() {
   const { id } = useParams();
@@ -23,6 +23,7 @@ function User() {
     async function fetchUsuario() {
       try {
         const { data } = await api.get(`/usuario/${id}`);
+        console.log('imagemUsuario:', data.imagemUsuario); // debug
         setUsuario(data);
       } catch (err) {
         console.error('Erro ao buscar usuário:', err);
@@ -61,21 +62,22 @@ function User() {
     );
   }
 
+  // Usar imagem base64 com fallback, igual no Times
+  const imagemUsuario = usuario.imagemUsuario
+    ? `data:image/*;base64,${usuario.imagemUsuario}`
+    : "/default-user.png"; // Coloque um caminho válido para a imagem padrão
+
   return (
     <>
       <Navbar />
       <div className="profile-container">
         <div className="profile-card">
           <div className="profile-image-section">
-            {usuario.imagem_usuario ? (
-              <img
-                className="profile-photo"
-                src={usuario.imagem_usuario}
-                alt="Foto do usuário"
-              />
-            ) : (
-              <div className="profile-photo placeholder">Sem imagem</div>
-            )}
+            <img
+              className="profile-photo"
+              src={imagemUsuario}
+              alt="Foto do usuário"
+            />
           </div>
 
           <div className="profile-info-section">

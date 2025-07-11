@@ -2,14 +2,17 @@ import React, { useState } from 'react';
 import './CreateTime.css';
 import Navbar from '../../../Components/Navbar/Navbar';
 import { useNavigate } from 'react-router-dom';
-import { useApi } from '../../../Services/API';  // IMPORTANTE: usar o hook useApi
+import { useApi } from '../../../Services/API';
+import { useAuth } from '../../../contexts/AuthContext';
 
 const CreateTime = () => {
-  const [nome, setNome] = useState('');
-  const [descricao, setDescricao] = useState('');
-  const [imagemBase64, setImagemBase64] = useState('');
+  const [nmTime, setNmTime] = useState('');
+  const [teDescricao, setTeDescricao] = useState('');
+  const [teImagemBase64, setTeImagemBase64] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
-  const api = useApi(); // Usa a instância axios com token do contexto
+  const api = useApi();
+  const { userId } = useAuth(); // <-- pega ID do contexto, de forma segura
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -17,36 +20,46 @@ const CreateTime = () => {
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      setImagemBase64(reader.result);
+      const base64String = reader.result.split(',')[1]; // remove o prefixo
+      setTeImagemBase64(base64String);
     };
     reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
 
-    if (!nome.trim() || !descricao.trim() || !imagemBase64) {
-      alert('Por favor, preencha todos os campos e selecione uma imagem.');
+    if (!nmTime.trim() || !teDescricao.trim() || !teImagemBase64) {
+      setError('Por favor, preencha todos os campos e selecione uma imagem.');
+      return;
+    }
+
+    if (!userId) {
+      setError('Usuário não autenticado.');
       return;
     }
 
     try {
-      const time = {
-        nome,
-        descricao,
-        imagemBase64: imagemBase64.replace(/^data:image\/[a-z]+;base64,/, ''),
+      const novoTime = {
+        nome: nmTime,
+        descricao: teDescricao,
+        imagemBase64: teImagemBase64,
+        id_criador: parseInt(userId, 10),
       };
 
-      const response = await api.post('/times', time);
-      const timeId = response.data.id;
+      const response = await api.post('/times', novoTime);
+      const timeId = response.data.id_time || response.data.id;
 
       if (timeId) {
         alert('Time criado com sucesso!');
         navigate(`/times/${timeId}`);
+      } else {
+        alert('Time criado, mas não foi possível obter o ID para redirecionamento.');
       }
-    } catch (error) {
-      console.error('Erro ao criar time:', error);
-      alert('Erro ao criar o time. Verifique os dados e tente novamente.');
+    } catch (err) {
+      console.error('Erro ao criar time:', err);
+      setError('Erro ao criar o time. Verifique os dados e tente novamente.');
     }
   };
 
@@ -55,19 +68,20 @@ const CreateTime = () => {
       <Navbar />
       <div className="create-team-container">
         <h1 className="title">Criar Novo Time</h1>
+        {error && <div className="error-message">{error}</div>}
         <form onSubmit={handleSubmit} className="create-team-form">
           <label>Nome do Time:</label>
           <input
             type="text"
-            value={nome}
-            onChange={(e) => setNome(e.target.value)}
+            value={nmTime}
+            onChange={e => setNmTime(e.target.value)}
             required
           />
 
           <label>Descrição do Time:</label>
           <textarea
-            value={descricao}
-            onChange={(e) => setDescricao(e.target.value)}
+            value={teDescricao}
+            onChange={e => setTeDescricao(e.target.value)}
             required
             rows="4"
           />
@@ -80,10 +94,14 @@ const CreateTime = () => {
             required
           />
 
-          {imagemBase64 && (
+          {teImagemBase64 && (
             <div className="preview-container">
               <p>Pré-visualização da imagem:</p>
-              <img src={imagemBase64} alt="Pré-visualização" className="preview-img" />
+              <img
+                src={`data:image/png;base64,${teImagemBase64}`}
+                alt="Pré-visualização"
+                className="preview-img"
+              />
             </div>
           )}
 

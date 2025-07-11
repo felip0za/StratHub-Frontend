@@ -147,15 +147,6 @@ function EditUser() {
               required
             />
 
-            <label>Senha (deixe em branco para não alterar)</label>
-            <input
-              type="password"
-              name="senha"
-              value={usuario.senha}
-              onChange={handleChange}
-              placeholder="Nova senha (opcional)"
-            />
-
             <div className="buttons">
               <button type="submit" className="update-button">
                 Salvar

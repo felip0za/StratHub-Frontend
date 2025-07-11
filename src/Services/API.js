@@ -1,20 +1,29 @@
-import axios from "axios";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from '../contexts/AuthContext';
+import axios from 'axios';
+import { useEffect } from 'react';
 
-// Função para criar uma instância axios que puxe o token do contexto
+const api = axios.create({
+  baseURL: 'http://localhost:8080',
+});
+
 export function useApi() {
   const { token } = useAuth();
 
-  const api = axios.create({
-    baseURL: "http://localhost:8080", // ajuste para seu backend
-  });
+  useEffect(() => {
+    // Remove qualquer interceptor antigo antes de adicionar um novo
+    const interceptor = api.interceptors.request.use(config => {
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      } else {
+        delete config.headers.Authorization;
+      }
+      return config;
+    });
 
-  api.interceptors.request.use((config) => {
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  });
+    return () => {
+      api.interceptors.request.eject(interceptor);
+    };
+  }, [token]);
 
   return api;
 }

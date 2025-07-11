@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useApi } from "../../Services/API";  // import com chaves
+import { useApi } from "../../Services/API";
 import StratHub from "/src/assets/StratHub.png";
 import './Login.css';
 import { useAuth } from "../../contexts/AuthContext";
@@ -13,7 +13,7 @@ function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const api = useApi(); // chama aqui para usar
+  const api = useApi();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,17 +22,17 @@ function Login() {
 
     try {
       const response = await api.post('/usuario/login', { email, senha });
-      const { token, id } = response.data;
+      const dados = response.data;
 
-      if (token && id) {
-        login(token, id);
+      if (dados.token && dados.id) {
+        login(dados);  // envia todos os dados do usuário para o contexto
         navigate('/home');
       } else {
-        setError("Dados de resposta inválidos. Tente novamente.");
+        setError("Resposta inválida do servidor. Tente novamente.");
       }
     } catch (err) {
       console.error("Erro no login:", err);
-      setError("Erro ao fazer login.");
+      setError("Email ou senha inválidos.");
     } finally {
       setIsLoading(false);
     }

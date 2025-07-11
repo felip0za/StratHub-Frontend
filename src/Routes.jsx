@@ -21,16 +21,13 @@ function MainRoutes() {
       <Route path='/' element={<Lendpage />} />
       <Route path='/login' element={<Login />} />
       <Route path='/cadastro' element={<Cadastro />} />
+      <Route path='/home' element={<Home />} />
       <Route path='/chatbox' element={
         <PrivateRoute>
           <Chatbox />
         </PrivateRoute>
       } />
-      <Route path='/home' element={
-        <PrivateRoute>
-          <Home />
-        </PrivateRoute>
-      } />
+      
       <Route path='/usuario/:id' element={
         <PrivateRoute>
           <User />

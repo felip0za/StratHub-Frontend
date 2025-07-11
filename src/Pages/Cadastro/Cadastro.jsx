@@ -14,33 +14,33 @@ const Cadastro = () => {
 
   const api = useApi();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError('');
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setIsLoading(true);
+  setError('');
 
-    try {
-      const usuarioParaEnvio = {
-        nome,
-        email,
-        senha,
-        imagem_usuario,
-      };
-
-      await api.post('/usuario/cadastrar', usuarioParaEnvio);
-      alert('Cadastro realizado com sucesso!');
-      navigate('/login');
-    } catch (err) {
-      console.error('Erro no cadastro:', err);
-      if (err.response?.data?.erro) {
-        setError(err.response.data.erro);
-      } else {
-        setError('Erro inesperado. Tente novamente.');
-      }
-    } finally {
-      setIsLoading(false);
-    }
+  const usuarioParaEnvio = {
+    nome,
+    email,
+    senha,
+    imagemUsuario: imagem_usuario,
   };
+
+  try {
+    await api.post('/usuario/cadastrar', usuarioParaEnvio);
+    alert('Cadastro realizado com sucesso!');
+    navigate('/login');
+  } catch (err) {
+    console.error('Erro no cadastro:', err);
+    if (err.response?.data?.erro) {
+      setError(err.response.data.erro);
+    } else {
+      setError('Erro inesperado. Tente novamente.');
+    }
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -48,7 +48,7 @@ const Cadastro = () => {
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      const base64String = reader.result.split(',')[1]; // Remove o prefixo
+      const base64String = reader.result.split(',')[1]; // Remove o prefixo data:image/...
       setImagemUsuario(base64String);
     };
     reader.readAsDataURL(file);

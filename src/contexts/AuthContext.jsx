@@ -1,32 +1,40 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState } from 'react';
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => sessionStorage.getItem('token') || null);
-  const [userId, setUserId] = useState(() => sessionStorage.getItem('userId') || null);
+  const [user, setUser] = useState(() => {
+    const storedUser = sessionStorage.getItem('user');
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
 
-  const login = (newToken, id) => {
-    setToken(newToken);
-    setUserId(id);
-    sessionStorage.setItem('token', newToken);
-    sessionStorage.setItem('userId', id);
+  const login = (dados) => {
+    setToken(dados.token);
+    setUser(dados);
+
+    sessionStorage.setItem('token', dados.token);
+    sessionStorage.setItem('user', JSON.stringify(dados));
   };
 
   const logout = () => {
     setToken(null);
-    setUserId(null);
+    setUser(null);
+
     sessionStorage.removeItem('token');
-    sessionStorage.removeItem('userId');
+    sessionStorage.removeItem('user');
   };
 
   return (
-    <AuthContext.Provider value={{ token, userId, login, logout }}>
+    <AuthContext.Provider value={{ token, user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 }
 
+// Hook customizado para facilitar acesso a userId
 export function useAuth() {
-  return useContext(AuthContext);
+  const context = useContext(AuthContext);
+  const userId = context.user?.id || null;
+  return { ...context, userId };
 }

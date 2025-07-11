@@ -11,7 +11,7 @@ const Lendpage = () => {
 
     const handleClick = (e) => {
         e.preventDefault();
-        navigate("/login");
+        navigate("/home");
     }
 
     return (
