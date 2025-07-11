@@ -1,17 +1,21 @@
 import { useAuth } from "../../contexts/AuthContext";
 import { useApi } from "../../Services/API";
-import { useNavigate,useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import StratHub from "/src/assets/StratHub.png";
 import { FaUsers } from "react-icons/fa";
 import './Navbar.css';
+
 function Navbar() {
   const { userId } = useAuth();
   const api = useApi();
   const navigate = useNavigate();
   const location = useLocation();
+
   const [usuario, setUsuario] = useState(null);
   const [loadingUser, setLoadingUser] = useState(true);
+  const [timeInfo, setTimeInfo] = useState(null);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
     if (userId === null) {
@@ -20,10 +24,7 @@ function Navbar() {
       return;
     }
 
-    if (!userId) {
-      // userId undefined, ainda carregando? Só não busca ainda.
-      return;
-    }
+    if (!userId) return;
 
     async function fetchUsuario() {
       try {
@@ -31,8 +32,14 @@ function Navbar() {
         setUsuario(data);
         setLoadingUser(false);
 
+        const idTime = data.idTime || data.id_time;
+        if (idTime) {
+          // busca o time se tiver
+          const res = await api.get(`/times/${idTime}`);
+          setTimeInfo(res.data);
+        }
+
         if (location.pathname === "/") {
-          const idTime = data.idTime || data.id_time;
           if (idTime) {
             navigate(`/times/${idTime}`);
           } else {
@@ -49,7 +56,6 @@ function Navbar() {
     fetchUsuario();
   }, [userId, api, location.pathname, navigate]);
 
-  // Enquanto estiver carregando o estado do usuário, pode exibir algo neutro
   if (loadingUser) {
     return (
       <header>
@@ -62,7 +68,6 @@ function Navbar() {
   }
 
   if (!usuario) {
-    // Se não logado
     return (
       <header>
         <nav className="nav">
@@ -72,20 +77,16 @@ function Navbar() {
             onClick={() => navigate("/")}
             className="nav-logo"
           />
-          <span onClick={() => navigate("/login")} className="nav-link">
-            Entrar
-          </span>
-          <span onClick={() => navigate("/cadastro")} className="nav-link">
-            Cadastrar
-          </span>
+          <span onClick={() => navigate("/login")} className="nav-link">Entrar</span>
+          <span onClick={() => navigate("/cadastro")} className="nav-link">Cadastrar</span>
         </nav>
       </header>
     );
   }
 
-  // Usuário logado: exibe navbar completa
   const imagemPerfil = usuario.imagemUsuario || usuario.imagem_usuario || "/default-avatar.png";
-  const nomeUsuario = usuario.nome || usuario.name || "Usuário";
+  const nomeUsuario = usuario.nome || "Usuário";
+  const idTime = usuario.idTime || usuario.id_time;
 
   return (
     <header>
@@ -97,16 +98,11 @@ function Navbar() {
           className="nav-logo"
         />
 
-        <span onClick={() => navigate("/home")} className="nav-link">
-          Salas
-        </span>
-        <span onClick={() => navigate("/chatbox")} className="nav-link">
-          Campeonatos (em Breve)
-        </span>
+        <span onClick={() => navigate("/home")} className="nav-link">Salas</span>
+        <span onClick={() => navigate("/chatbox")} className="nav-link">Campeonatos (em Breve)</span>
 
         <span
           onClick={() => {
-            const idTime = usuario.idTime || usuario.id_time;
             if (idTime) {
               navigate(`/times/${idTime}`);
             } else {
@@ -122,18 +118,33 @@ function Navbar() {
           <FaUsers className="friends-icon" />
         </span>
 
-        <div className="user-info">
+        <div
+          className="user-info"
+          onMouseEnter={() => setShowTooltip(true)}
+          onMouseLeave={() => setShowTooltip(false)}
+        >
           <img
             className="profile-icon-img"
             src={imagemPerfil}
             alt={`Foto de ${nomeUsuario}`}
             onClick={() => navigate(`/usuario/${usuario.id || userId}`)}
           />
-          <span className="user-name"></span>
-          R$:00,00
+          <span className="user-name">R$:00,00</span>
+
+          {showTooltip && timeInfo && (
+            <div className="user-tooltip">
+              <img
+                src={`data:image/*;base64,${timeInfo.imagemBase64}`}
+                alt="Logo do time"
+                className="tooltip-logo"
+              />
+              <p className="tooltip-name">{timeInfo.nome}</p>
+            </div>
+          )}
         </div>
       </nav>
     </header>
   );
 }
+
 export default Navbar;
