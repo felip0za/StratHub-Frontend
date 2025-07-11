@@ -18,7 +18,7 @@ function EditUser() {
     sobrenome: "",
     email: "",
     senha: "",
-    imagem_usuario: ""
+    imagemUsuario: ""
   });
 
   const [loading, setLoading] = useState(true);
@@ -37,10 +37,10 @@ function EditUser() {
         setUsuario({
           ...data,
           senha: "",
-          imagem_usuario: data.imagem_usuario?.startsWith("data:image/")
-            ? data.imagem_usuario
-            : data.imagem_usuario
-              ? `data:image/png;base64,${data.imagem_usuario}`
+          imagemUsuario: data.imagemUsuario?.startsWith("data:image/")
+            ? data.imagemUsuario
+            : data.imagemUsuario
+              ? `${data.imagemUsuario}`
               : ""
         });
       } catch (err) {
@@ -66,7 +66,7 @@ function EditUser() {
     reader.onloadend = () => {
       setUsuario((prev) => ({
         ...prev,
-        imagem_usuario: reader.result
+        imagemUsuario: reader.result
       }));
     };
     reader.readAsDataURL(file);
@@ -77,7 +77,7 @@ function EditUser() {
     try {
       const usuarioParaEnvio = {
         ...usuario,
-        imagem_usuario: usuario.imagem_usuario.replace(/^data:image\/\w+;base64,/, "")
+        imagemUsuario: usuario.imagemUsuario.replace(/^data:image\/\w+;base64,/, "")
       };
 
       if (!usuarioParaEnvio.senha) {
@@ -111,8 +111,8 @@ function EditUser() {
             <label className="avatar-wrapper">
               <img
                 src={
-                  usuario.imagem_usuario?.startsWith("data:image/")
-                    ? usuario.imagem_usuario
+                  usuario.imagemUsuario?.startsWith("data:image/")
+                    ? usuario.imagemUsuario
                     : avatarDefault
                 }
                 alt="Avatar"

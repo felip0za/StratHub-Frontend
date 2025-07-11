@@ -1,28 +1,22 @@
+// src/Services/API.js ou onde você armazena o hook
+
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
-import { useEffect } from 'react';
-
-const api = axios.create({
-  baseURL: 'http://localhost:8080',
-});
+import { useMemo } from 'react';
 
 export function useApi() {
   const { token } = useAuth();
 
-  useEffect(() => {
-    // Remove qualquer interceptor antigo antes de adicionar um novo
-    const interceptor = api.interceptors.request.use(config => {
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      } else {
-        delete config.headers.Authorization;
-      }
-      return config;
+  const api = useMemo(() => {
+    const instance = axios.create({
+      baseURL: 'http://localhost:8080',
     });
 
-    return () => {
-      api.interceptors.request.eject(interceptor);
-    };
+    if (token) {
+      instance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    }
+
+    return instance;
   }, [token]);
 
   return api;

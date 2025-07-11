@@ -64,7 +64,7 @@ function User() {
 
   // Usar imagem base64 com fallback, igual no Times
   const imagemUsuario = usuario.imagemUsuario
-    ? `data:image/*;base64,${usuario.imagemUsuario}`
+    ? `${usuario.imagemUsuario}`
     : "/default-user.png"; // Coloque um caminho válido para a imagem padrão
 
   return (
@@ -73,11 +73,7 @@ function User() {
       <div className="profile-container">
         <div className="profile-card">
           <div className="profile-image-section">
-            <img
-              className="profile-photo"
-              src={imagemUsuario}
-              alt="Foto do usuário"
-            />
+            <img className="profile-photo" src={imagemUsuario} alt="Logo do time" />
           </div>
 
           <div className="profile-info-section">
