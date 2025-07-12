@@ -138,15 +138,6 @@ function EditUser() {
               required
             />
 
-            <label>Email</label>
-            <input
-              type="email"
-              name="email"
-              value={usuario.email}
-              onChange={handleChange}
-              required
-            />
-
             <div className="buttons">
               <button type="submit" className="update-button">
                 Salvar

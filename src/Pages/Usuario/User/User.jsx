@@ -3,6 +3,8 @@ import Navbar from '../../../Components/Navbar/Navbar';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useApi } from '../../../Services/API';
+import Icon from '@mdi/react';
+import { mdiUbisoft } from '@mdi/js';
 
 function User() {
   const { id } = useParams();
@@ -23,7 +25,6 @@ function User() {
     async function fetchUsuario() {
       try {
         const { data } = await api.get(`/usuario/${id}`);
-        console.log('imagemUsuario:', data.imagemUsuario); // debug
         setUsuario(data);
       } catch (err) {
         console.error('Erro ao buscar usuário:', err);
@@ -48,7 +49,9 @@ function User() {
     return (
       <>
         <Navbar />
-        <p className="loading">Carregando usuário...</p>
+        <div className="profile-container">
+          <p className="loading">Carregando usuário...</p>
+        </div>
       </>
     );
   }
@@ -57,34 +60,49 @@ function User() {
     return (
       <>
         <Navbar />
-        <p className="error-message">{error}</p>
+        <div className="profile-container">
+          <p className="error-message">{error}</p>
+        </div>
       </>
     );
   }
 
-  // Usar imagem base64 com fallback, igual no Times
   const imagemUsuario = usuario.imagemUsuario
-    ? `${usuario.imagemUsuario}`
-    : "/default-user.png"; // Coloque um caminho válido para a imagem padrão
+    ? usuario.imagemUsuario.startsWith('data:image')
+      ? usuario.imagemUsuario
+      : `data:image/png;base64,${usuario.imagemUsuario}`
+    : '/default-user.png';
 
   return (
     <>
       <Navbar />
       <div className="profile-container">
-        <div className="profile-card">
-          <div className="profile-image-section">
-            <img className="profile-photo" src={imagemUsuario} alt="Logo do time" />
-          </div>
-
-          <div className="profile-info-section">
-            <h2 className="profile-name">{usuario.nome || 'Nome não disponível'}</h2>
-            <p className="profile-detail">Email: {usuario.email || 'Email não disponível'}</p>
+        <div className="profile-header">
+          <img
+            className="profile-avatar"
+            src={imagemUsuario}
+            alt={`Foto de ${usuario.nome || 'usuário'}`}
+          />
+          <div className="profile-text">
+            <h1 className="profile-nome">
+              {usuario.apelidoTime && (
+                <span className="profile-apelido">{usuario.apelidoTime} | </span>
+              )}
+              {usuario.nome || 'Nome não disponível'}
+            </h1>
+            <p className="profile-email">
+              <strong className="ubisoft-label">
+                <Icon path={mdiUbisoft} size={1} className="ubisoft-icon" />
+                UbiConnect:
+              </strong>{' '}
+              {usuario.ubiConnect || 'Não informado'}
+            </p>
           </div>
         </div>
 
-        <div className="profile-buttons">
+        <div className="profile-actions">
           <button className="btn edit" onClick={handleEdit}>
-            Editar Perfil
+            ✏️ Editar Perfil
           </button>
         </div>
       </div>

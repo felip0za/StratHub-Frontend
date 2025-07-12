@@ -6,6 +6,7 @@ import { useApi } from '../../../Services/API';
 import { useAuth } from '../../../contexts/AuthContext';
 
 const CreateTime = () => {
+  const [apelidoTime, setApelidoTime] = useState('');
   const [nmTime, setNmTime] = useState('');
   const [teDescricao, setTeDescricao] = useState('');
   const [teImagemBase64, setTeImagemBase64] = useState('');
@@ -46,6 +47,7 @@ const CreateTime = () => {
         descricao: teDescricao,
         imagemBase64: teImagemBase64,
         id_criador: parseInt(userId, 10),
+        apelido:apelidoTime,
       };
 
       const response = await api.post('/times', novoTime);
@@ -91,6 +93,14 @@ const CreateTime = () => {
             type="file"
             accept="image/*"
             onChange={handleImageChange}
+            required
+          />
+
+          <label>Apelido do Time:</label>
+          <input
+            type="text"
+            value={apelidoTime}
+            onChange={e => setApelidoTime(e.target.value)}
             required
           />
 

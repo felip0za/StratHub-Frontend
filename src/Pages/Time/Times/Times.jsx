@@ -2,36 +2,45 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useApi } from '../../../Services/API';
 import Navbar from '../../../Components/Navbar/Navbar';
+import Icon from '@mdi/react';
+import { mdiUbisoft } from '@mdi/js';
 import './Times.css';
 
 function Times() {
   const [time, setTime] = useState(null);
+  const [membros, setMembros] = useState([]);
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { id } = useParams();
   const api = useApi();
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchTime = async () => {
       try {
         const response = await api.get(`/times/${id}`);
         setTime(response.data);
       } catch (err) {
-        console.error('Erro ao buscar os dados do time:', err);
-        setError('ID do time não encontrado ou erro ao carregar.');
+        console.error('Erro ao buscar time:', err);
+        setError('Erro ao buscar time.');
       }
     };
 
-    fetchData();
+    const fetchMembros = async () => {
+      try {
+        const response = await api.get(`/times/${id}/membros`);
+        setMembros(response.data);
+      } catch (err) {
+        console.error('Erro ao buscar membros:', err);
+        setError('Erro ao buscar membros do time.');
+      }
+    };
+
+    fetchTime();
+    fetchMembros();
   }, [id, api]);
 
-  const handleEdit = () => {
-    navigate(`/editar-time/${id}`);
-  };
-
-  const handleAddMember = () => {
-    navigate(`/times/${id}/adicionar-membro`);
-  };
+  const handleEdit = () => navigate(`/editar-time/${id}`);
+  const handleAddMember = () => navigate(`/times/${id}/adicionar-membro`);
 
   if (error) {
     return (
@@ -66,7 +75,10 @@ function Times() {
         <div className="left-section">
           <div className="logo-section">
             <img className="logo" src={imagemTime} alt="Logo do time" />
-            <h2 className="team-title">{time.nome}</h2>
+            <h2 className="team-title">
+              {time.nome}
+              {time.apelido && <span className="team-apelido"> | {time.apelido}</span>}
+            </h2>
             <p className="description-label">DESCRIÇÃO:</p>
             <p className="description-text">{time.descricao}</p>
 
@@ -76,33 +88,42 @@ function Times() {
           </div>
         </div>
 
-        {/* 🔒 Seção de membros será reativada depois */}
-        {/* 
         <div className="team-section">
           <h2 className="team-title">MEMBROS</h2>
-          {members.length > 0 ? (
-            members.map((member, index) => (
+
+          {membros.length > 0 ? (
+            membros.map((member, index) => (
               <div className="member-card" key={index}>
                 <img
-                  src={member.imagem_usuario || "/default-avatar.png"}
+                  src={member.imagemUsuario || "/default-avatar.png"}
                   alt="Foto do membro"
                   className="member-logo"
                 />
                 <div className="member-info">
-                  <strong>{member.nome}</strong>
-                  <p>{member.idUbi || 'ID não disponível'}</p>
+                  <strong>
+                    {member.nome}
+                    {member.id === time.idCriador && ' (Dono)'}
+                  </strong>
+                  <p className="profile-email">
+                    <strong className="ubisoft-label">
+                      <Icon path={mdiUbisoft} size={1} className="ubisoft-icon" />
+                      UbiConnect:
+                    </strong>{' '}
+                    <span className="ubisoft-valor">
+                      {member.ubiConnect || 'Não informado'}
+                    </span>
+                  </p>
                 </div>
-                <div className="kd">KD: {member.kd || 'N/A'}</div>
               </div>
             ))
           ) : (
-            <p>Nenhum jogador encontrado.</p>
+            <p>Nenhum membro encontrado.</p>
           )}
+
           <button className="add-member" onClick={handleAddMember}>
             ADICIONAR MEMBRO +
           </button>
-        </div> 
-        */}
+        </div>
       </div>
     </>
   );

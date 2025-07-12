@@ -7,40 +7,42 @@ const Cadastro = () => {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
-  const [imagem_usuario, setImagemUsuario] = useState('');
+  const [ubiConnect, setUbiConnect] = useState('');
+  const [imagemUsuario, setImagemUsuario] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const api = useApi();
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setIsLoading(true);
-  setError('');
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
 
-  const usuarioParaEnvio = {
-    nome,
-    email,
-    senha,
-    imagemUsuario: imagem_usuario,
-  };
+    const usuarioParaEnvio = {
+      nome,
+      email,
+      senha,
+      ubiConnect, // aqui estava errado no seu código original
+      imagemUsuario,
+    };
 
-  try {
-    await api.post('/usuario/cadastrar', usuarioParaEnvio);
-    alert('Cadastro realizado com sucesso!');
-    navigate('/login');
-  } catch (err) {
-    console.error('Erro no cadastro:', err);
-    if (err.response?.data?.erro) {
-      setError(err.response.data.erro);
-    } else {
-      setError('Erro inesperado. Tente novamente.');
+    try {
+      await api.post('/usuario/cadastrar', usuarioParaEnvio);
+      alert('Cadastro realizado com sucesso!');
+      navigate('/login');
+    } catch (err) {
+      console.error('Erro no cadastro:', err);
+      if (err.response?.data?.erro) {
+        setError(err.response.data.erro);
+      } else {
+        setError('Erro inesperado. Tente novamente.');
+      }
+    } finally {
+      setIsLoading(false);
     }
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -48,7 +50,7 @@ const handleSubmit = async (e) => {
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      const base64String = reader.result.split(',')[1]; // Remove o prefixo data:image/...
+      const base64String = reader.result.split(',')[1]; // Remove prefixo "data:image/..."
       setImagemUsuario(base64String);
     };
     reader.readAsDataURL(file);
@@ -65,6 +67,14 @@ const handleSubmit = async (e) => {
           type="text"
           value={nome}
           onChange={(e) => setNome(e.target.value)}
+          required
+        />
+
+        <label>UbisoftConnect</label>
+        <input
+          type="text"
+          value={ubiConnect}
+          onChange={(e) => setUbiConnect(e.target.value)}
           required
         />
 
@@ -91,11 +101,11 @@ const handleSubmit = async (e) => {
           onChange={handleImageChange}
         />
 
-        {imagem_usuario && (
+        {imagemUsuario && (
           <div className="preview-container">
             <p>Pré-visualização da imagem:</p>
             <img
-              src={`data:image/png;base64,${imagem_usuario}`}
+              src={`data:image/png;base64,${imagemUsuario}`}
               alt="Pré-visualização"
               className="preview-img"
             />

@@ -128,22 +128,22 @@ function Navbar() {
             alt={`Foto de ${nomeUsuario}`}
             onClick={() => navigate(`/usuario/${usuario.id || userId}`)}
           />
-          <span className="user-name">R$:00,00</span>
+          <span className="user-name"></span>
 
           {showTooltip && (
             <div className="user-tooltip">
+              <p>Time:</p>
               {timeInfo ? (
-                <>
-                <p className="tooltip-logo">Time: </p>
+                <div className="tooltip-header">
                   <img
                     src={`data:image/*;base64,${timeInfo.imagemBase64}`}
                     alt="Logo do time"
                     className="tooltip-logo"
                   />
                   <p className="tooltip-name">{timeInfo.nome}</p>
-                </>
+                </div>
               ) : (
-                <p className="tooltip-name">Não possui</p>
+                <p className="tooltip-name nao-possui">Não possui</p>
               )}
             </div>
           )}
