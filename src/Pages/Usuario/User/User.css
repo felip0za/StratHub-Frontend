@@ -40,6 +40,26 @@
   gap: 12px;
 }
 
+.ubisoft-text {
+  display: inline-flex;
+  align-items: center;
+  font-weight: bold;
+  margin-right: 6px;
+  color: #fff; 
+  font-size: large;
+}
+
+.ubisoft-icon {
+  margin-right: 6px;
+  color: #ffffff;
+}
+
+.ubi-connect-valor {
+  color: #888;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  font-size: large; /* Cor do valor do UbiConnect */
+}
+
 .profile-nome {
   font-size: 28px;
   font-weight: bold;

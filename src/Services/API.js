@@ -1,5 +1,3 @@
-// src/Services/API.js ou onde você armazena o hook
-
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import { useMemo } from 'react';
@@ -12,9 +10,18 @@ export function useApi() {
       baseURL: 'http://localhost:8080',
     });
 
-    if (token) {
-      instance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    }
+    // Adiciona um interceptor para inserir o token antes de cada requisição
+    instance.interceptors.request.use(
+      config => {
+        if (token) {
+          config.headers['Authorization'] = `Bearer ${token}`;
+        } else {
+          delete config.headers['Authorization'];
+        }
+        return config;
+      },
+      error => Promise.reject(error)
+    );
 
     return instance;
   }, [token]);

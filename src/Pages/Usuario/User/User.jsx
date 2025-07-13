@@ -30,6 +30,8 @@ function User() {
         console.error('Erro ao buscar usuário:', err);
         if (err.response?.status === 400 || err.response?.status === 404) {
           setError('Usuário não encontrado.');
+        } else if (err.response?.status === 403) {
+          setError('Acesso negado. Faça login novamente.');
         } else {
           setError('Erro ao carregar os dados do usuário.');
         }
@@ -91,11 +93,11 @@ function User() {
               {usuario.nome || 'Nome não disponível'}
             </h1>
             <p className="profile-email">
-              <strong className="ubisoft-label">
+              <strong className="ubisoft-text">
                 <Icon path={mdiUbisoft} size={1} className="ubisoft-icon" />
                 UbiConnect:
               </strong>{' '}
-              {usuario.ubiConnect || 'Não informado'}
+              <span className="ubi-connect-valor">{usuario.ubiConnect || 'Não informado'}</span>
             </p>
           </div>
         </div>
