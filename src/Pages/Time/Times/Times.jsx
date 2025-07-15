@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useApi } from '../../../Services/API';
+import { useAuth } from '../../../contexts/AuthContext';  // Importa o hook do usuário logado
 import Navbar from '../../../Components/Navbar/Navbar';
 import Icon from '@mdi/react';
 import { mdiUbisoft } from '@mdi/js';
@@ -10,9 +11,13 @@ function Times() {
   const [time, setTime] = useState(null);
   const [membros, setMembros] = useState([]);
   const [error, setError] = useState('');
+  const [showInvitePopup, setShowInvitePopup] = useState(false);
+  const [amigos, setAmigos] = useState([]);
+
   const navigate = useNavigate();
   const { id } = useParams();
   const api = useApi();
+  const { user } = useAuth(); // Obtém usuário logado
 
   useEffect(() => {
     const fetchTime = async () => {
@@ -39,8 +44,31 @@ function Times() {
     fetchMembros();
   }, [id, api]);
 
+  const buscarAmigos = async () => {
+    try {
+      const res = await api.get("/amizade/amigos");
+      setAmigos(res.data || []);
+      setShowInvitePopup(true);
+    } catch {
+      alert("Erro ao buscar amigos.");
+    }
+  };
+
+  const convidarParaTime = async (idAmigo) => {
+    try {
+      await api.post(`/convites/enviar`, {
+        idTime: time.id,
+        idConvidado: idAmigo,
+        idSolicitante: user.id,  // Enviando o solicitante corretamente
+      });
+      alert("Convite enviado com sucesso!");
+    } catch {
+      alert("Erro ao enviar convite para o time.");
+    }
+  };
+
   const handleEdit = () => navigate(`/editar-time/${id}`);
-  const handleAddMember = () => navigate(`/times/${id}/adicionar-membro`);
+  const handleAddMember = () => buscarAmigos();
 
   if (error) {
     return (
@@ -125,8 +153,43 @@ function Times() {
           </button>
         </div>
       </div>
+
+      {/* Popup de convite */}
+      {showInvitePopup && (
+        <div className="popup-overlay">
+          <div className="popup-box">
+            <h3>Convidar Amigos para o Time</h3>
+            {amigos.length > 0 ? (
+              <ul>
+                {amigos.map((amigo) => {
+                  const jaEstaNoTime = membros.some(m => m.id === amigo.id);
+                  return (
+                    <li key={amigo.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                      <img
+                        src={amigo.imagemUsuario || "/default-avatar.png"}
+                        alt="Foto"
+                        style={{ width: '40px', height: '40px', borderRadius: '50%' }}
+                      />
+                      <span>{amigo.nome}</span>
+                      {!jaEstaNoTime ? (
+                        <button onClick={() => convidarParaTime(amigo.id)}>Convidar</button>
+                      ) : (
+                        <span style={{ color: 'green' }}>Já no time</span>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : (
+              <p>Você não possui amigos.</p>
+            )}
+            <button onClick={() => setShowInvitePopup(false)}>Fechar</button>
+          </div>
+        </div>
+      )}
     </>
   );
 }
 
 export default Times;
+  

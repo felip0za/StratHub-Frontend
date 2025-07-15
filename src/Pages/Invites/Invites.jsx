@@ -18,13 +18,15 @@ function Invites() {
   const [selectedFriend, setSelectedFriend] = useState(null);
   const [showRequestsPopup, setShowRequestsPopup] = useState(false);
   const [showSearchPopup, setShowSearchPopup] = useState(false);
-  const [teamWarningId, setTeamWarningId] = useState(null);
+  const [usuarioJaTemTime, setUsuarioJaTemTime] = useState(false);
   const [searchName, setSearchName] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [loadingAcceptIds, setLoadingAcceptIds] = useState(new Set());
 
   useEffect(() => {
     if (!userId) return;
     fetchAll();
+    verificarTimeUsuario();
   }, [userId]);
 
   const fetchAll = async () => {
@@ -37,9 +39,20 @@ function Invites() {
       setFriends(friendsRes.data || []);
       setFriendRequests(friendReqRes.data || []);
       setTeamInvites(teamInvitesRes.data || []);
-      setTeamWarningId(null);
     } catch {
       alert("Erro ao buscar dados. Tente novamente mais tarde.");
+    }
+  };
+
+  const verificarTimeUsuario = async () => {
+    try {
+      const res = await api.get("/usuario/time");
+      setUsuarioJaTemTime(res.data?.time !== null && res.data?.time !== undefined);
+    } catch (err) {
+      if (err.response?.status === 403 || err.response?.status === 401) {
+        console.warn("Acesso negado para verificar time do usuário");
+      }
+      setUsuarioJaTemTime(false);
     }
   };
 
@@ -98,11 +111,19 @@ function Invites() {
 
   const handleAcceptTeamInvite = async (conviteId) => {
     try {
+      setLoadingAcceptIds(prev => new Set(prev).add(conviteId));
       await api.post(`/convites/${conviteId}/aceitar`);
       alert("Convite para time aceito!");
       await fetchAll();
+      await verificarTimeUsuario();
     } catch {
       alert("Erro ao aceitar convite de time.");
+    } finally {
+      setLoadingAcceptIds(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(conviteId);
+        return newSet;
+      });
     }
   };
 
@@ -111,12 +132,19 @@ function Invites() {
       <Navbar />
       <div className="friends-screen">
         <h1>Amigos e Convites</h1>
+
+        {/* Seção Amigos */}
         <section className="friends-list">
           <h2><FaUserFriends /> Seus Amigos</h2>
           <ul>
             {friends.length > 0 ? (
               friends.map(friend => (
-                <li key={friend.id}>
+                <li key={friend.id} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <img
+                    src={friend.imagemUsuario || "/default-avatar.png"}
+                    alt="Foto"
+                    style={{ width: '40px', height: '40px', borderRadius: '50%' }}
+                  />
                   <span
                     className="friend-name"
                     onClick={() => handleGoToProfile(friend.id)}
@@ -133,15 +161,21 @@ function Invites() {
             )}
           </ul>
         </section>
+
+        {/* Seção Convites */}
         <section className="friend-requests">
           <h2><FaUserPlus /> Convites</h2>
           <button className="open-popup-button" onClick={() => setShowRequestsPopup(true)}>Ver Convites</button>
         </section>
+
+        {/* Seção Buscar Amigos */}
         <section className="friend-search">
           <h2><FaUserPlus /> Procurar Amigos</h2>
           <button className="open-popup-button" onClick={() => setShowSearchPopup(true)}>Procurar Amigos</button>
         </section>
       </div>
+
+      {/* Modal confirmação remover amigo */}
       {showConfirm && (
         <div className="modal-overlay">
           <div className="modal">
@@ -153,6 +187,8 @@ function Invites() {
           </div>
         </div>
       )}
+
+      {/* Popup Convites */}
       {showRequestsPopup && (
         <div className="popup-overlay">
           <div className="popup-box">
@@ -169,26 +205,51 @@ function Invites() {
             ) : (
               <p className="no-invite-highlight">Nenhum convite de amizade.</p>
             )}
+
             <h3 style={{ marginTop: "20px" }}><FaUsers /> Convites para Times</h3>
             {teamInvites.length > 0 ? (
               <ul>
-                {teamInvites.map(invite => (
-                  <li key={invite.id}>
-                    {invite.time?.nm_time || "Time desconhecido"}
-                    <button onClick={() => handleAcceptTeamInvite(invite.id)}>Aceitar</button>
-                  </li>
-                ))}
+                {teamInvites.map(invite => {
+                  const nomeTime = (invite.time?.nome || invite.nomeTime || "Time desconhecido").trim();
+                  const imagemBase64 = invite.time?.imagemBase64 || invite.imagemBase64Time || null;
+                  const imagemTime = imagemBase64
+                    ? `data:image/*;base64,${imagemBase64}`
+                    : "/default-team.png";
+
+                  const isLoading = loadingAcceptIds.has(invite.id);
+
+                  return (
+                    <li key={invite.id} style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>
+                      <img
+                        src={imagemTime}
+                        alt={`Logo do time ${nomeTime}`}
+                        style={{ width: "40px", height: "40px", borderRadius: "10%", objectFit: "cover" }}
+                        onError={(e) => e.currentTarget.src = "/default-team.png"}
+                      />
+                      <span>{nomeTime}</span>
+                      {!usuarioJaTemTime ? (
+                        <button
+                          disabled={isLoading}
+                          onClick={() => handleAcceptTeamInvite(invite.id)}
+                        >
+                          {isLoading ? "Aceitando..." : "Aceitar"}
+                        </button>
+                      ) : (
+                        <span style={{ color: "red", marginLeft: "10px" }}>Você já está em um time</span>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             ) : (
               <p className="no-invite-highlight">Nenhum convite de time.</p>
-            )}
-            {teamWarningId !== null && (
-              <p className="team-warning-outside">⚠️ Você já está em um time.</p>
             )}
             <button className="close-popup-button" onClick={() => setShowRequestsPopup(false)}>Fechar</button>
           </div>
         </div>
       )}
+
+      {/* Popup Busca Amigos */}
       {showSearchPopup && (
         <div className="popup-overlay">
           <div className="popup-box">
