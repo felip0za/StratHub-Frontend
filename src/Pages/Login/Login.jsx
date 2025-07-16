@@ -4,6 +4,7 @@ import { useApi } from "../../Services/API";
 import StratHub from "/src/assets/StratHub.png";
 import './Login.css';
 import { useAuth } from "../../contexts/AuthContext";
+import LoadingScreen from "../../Components/LoadingScreen/LoadingScreen"; // ✅ importar
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -12,7 +13,6 @@ function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
-
   const api = useApi();
 
   const handleSubmit = async (e) => {
@@ -25,7 +25,7 @@ function Login() {
       const dados = response.data;
 
       if (dados.token && dados.id) {
-        login(dados);  // envia todos os dados do usuário para o contexto
+        login(dados);
         navigate('/home');
       } else {
         setError("Resposta inválida do servidor. Tente novamente.");
@@ -41,6 +41,11 @@ function Login() {
   const handleClickSignin = () => {
     navigate('/cadastro');
   };
+
+  // ✅ se estiver carregando, mostra o componente de loading
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <div className="login-page">

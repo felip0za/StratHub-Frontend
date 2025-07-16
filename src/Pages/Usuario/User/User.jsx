@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { useApi } from '../../../Services/API';
 import Icon from '@mdi/react';
 import { mdiUbisoft } from '@mdi/js';
+import LoadingScreen from '../../../Components/LoadingScreen/LoadingScreen'; // ✅ importado
 
 function User() {
   const { id } = useParams();
@@ -48,14 +49,7 @@ function User() {
   };
 
   if (loading) {
-    return (
-      <>
-        <Navbar />
-        <div className="profile-container">
-          <p className="loading">Carregando usuário...</p>
-        </div>
-      </>
-    );
+    return <LoadingScreen />;
   }
 
   if (error) {
@@ -97,7 +91,9 @@ function User() {
                 <Icon path={mdiUbisoft} size={1} className="ubisoft-icon" />
                 UbiConnect:
               </strong>{' '}
-              <span className="ubi-connect-valor">{usuario.ubiConnect || 'Não informado'}</span>
+              <span className="ubi-connect-valor">
+                {usuario.ubiConnect || 'Não informado'}
+              </span>
             </p>
           </div>
         </div>

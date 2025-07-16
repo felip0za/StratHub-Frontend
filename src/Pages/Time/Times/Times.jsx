@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useApi } from '../../../Services/API';
-import { useAuth } from '../../../contexts/AuthContext';  // Importa o hook do usuário logado
+import { useAuth } from '../../../contexts/AuthContext';
 import Navbar from '../../../Components/Navbar/Navbar';
 import Icon from '@mdi/react';
 import { mdiUbisoft } from '@mdi/js';
+import LoadingScreen from '../../../Components/LoadingScreen/LoadingScreen';
 import './Times.css';
 
 function Times() {
@@ -13,11 +14,12 @@ function Times() {
   const [error, setError] = useState('');
   const [showInvitePopup, setShowInvitePopup] = useState(false);
   const [amigos, setAmigos] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
   const { id } = useParams();
   const api = useApi();
-  const { user } = useAuth(); // Obtém usuário logado
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchTime = async () => {
@@ -40,8 +42,12 @@ function Times() {
       }
     };
 
-    fetchTime();
-    fetchMembros();
+    const carregarDados = async () => {
+      await Promise.all([fetchTime(), fetchMembros()]);
+      setLoading(false);
+    };
+
+    carregarDados();
   }, [id, api]);
 
   const buscarAmigos = async () => {
@@ -59,7 +65,7 @@ function Times() {
       await api.post(`/convites/enviar`, {
         idTime: time.id,
         idConvidado: idAmigo,
-        idSolicitante: user.id,  // Enviando o solicitante corretamente
+        idSolicitante: user.id,
       });
       alert("Convite enviado com sucesso!");
     } catch {
@@ -70,23 +76,21 @@ function Times() {
   const handleEdit = () => navigate(`/editar-time/${id}`);
   const handleAddMember = () => buscarAmigos();
 
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <LoadingScreen />
+      </>
+    );
+  }
+
   if (error) {
     return (
       <>
         <Navbar />
         <div className="container">
           <p className="error-message">{error}</p>
-        </div>
-      </>
-    );
-  }
-
-  if (!time) {
-    return (
-      <>
-        <Navbar />
-        <div className="container">
-          <p>Carregando time...</p>
         </div>
       </>
     );
@@ -154,7 +158,6 @@ function Times() {
         </div>
       </div>
 
-      {/* Popup de convite */}
       {showInvitePopup && (
         <div className="popup-overlay">
           <div className="popup-box">
@@ -192,4 +195,3 @@ function Times() {
 }
 
 export default Times;
-  
