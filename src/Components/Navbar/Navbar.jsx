@@ -98,7 +98,7 @@ function Navbar() {
         />
 
         <span onClick={() => navigate("/home")} className="nav-link">Salas</span>
-        <span onClick={() => navigate("/chatbox")} className="nav-link">Campeonatos (em Breve)</span>
+        <span onClick={() => navigate("/ranking")} className="nav-link">Campeonatos (em Breve)</span>
 
         <span
           onClick={() => {

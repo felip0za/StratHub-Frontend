@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../Components/Navbar/Navbar";
 import ArrowBox from "../../Components/ArrowBox/ArrowBox";
+import LoadingScreen from "../../Components/LoadingScreen/LoadingScreen"; // importe o componente
 import "./Home.css";
 
 const CardBox = ({ points, players, price, route, title }) => {
@@ -26,6 +27,16 @@ const CardBox = ({ points, players, price, route, title }) => {
 };
 
 function Home() {
+  const [loading, setLoading] = useState(true); // estado de carregamento
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false); // simula carregamento
+    }, 1000); // tempo de carregamento artificial
+
+    return () => clearTimeout(timer); // limpa o timeout ao desmontar
+  }, []);
+
   const FPLData = [
     { title: "receba", points: 52, players: 4, price: 7, route: "/partida" },
     { title: "receba", points: 52, players: 0, price: 7, route: "/game/2" },
@@ -41,6 +52,10 @@ function Home() {
     { title: "receba", points: 40, players: 0, price: 0, route: "/free-lobby/4" },
     { title: "receba", points: 60, players: 0, price: 0, route: "/free-lobby/5" },
   ];
+
+  if (loading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <>

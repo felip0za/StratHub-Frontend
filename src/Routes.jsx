@@ -14,6 +14,7 @@ import Partidas from './Pages/Partidas/Partidas';
 import Profile from './Pages/Profiles/Profile';
 import FPL from './Pages/Lobbys/FPL/FPL';
 import EditUser from './Pages/Usuario/EditUser/EditUser';
+import Ranking from './Pages/Ranking/Ranking';
 
 function MainRoutes() {
   return (
@@ -31,6 +32,11 @@ function MainRoutes() {
       <Route path='/usuario/:id' element={
         <PrivateRoute>
           <User />
+        </PrivateRoute>
+      } />
+      <Route path='/ranking' element={
+        <PrivateRoute>
+          <Ranking />
         </PrivateRoute>
       } />
       <Route path='/times/:id' element={

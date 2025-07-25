@@ -1,5 +1,6 @@
 @import url('https://fonts.cdnfonts.com/css/akira-expanded');
 
+/* --------- Estrutura principal --------- */
 .friends-screen {
   max-width: 640px;
   margin: 40px auto;
@@ -17,6 +18,7 @@
   margin-bottom: 20px;
 }
 
+/* --------- Lista de amigos --------- */
 .friends-list {
   padding: 20px;
   border-radius: 12px;
@@ -24,13 +26,14 @@
   background-color: transparent;
 }
 
+/* --------- Cartão do amigo --------- */
 .friend-card {
-  background-color: #d9d9d9;
-  border-radius: 20px;
-  padding: 12px 16px;
   display: flex;
   align-items: center;
   gap: 12px;
+  background-color: #d9d9d9;
+  border-radius: 20px;
+  padding: 12px 16px;
   margin-bottom: 16px;
   box-shadow: 0 2px 6px rgba(255, 0, 0, 0.25);
   font-family: 'Trebuchet MS', sans-serif;
@@ -41,10 +44,10 @@
   height: 60px;
   border-radius: 16px;
   background-color: white;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
@@ -54,7 +57,6 @@
   object-fit: cover;
   border: 2px solid black;
   border-radius: 16px;
-  background-color: white;
   display: block;
 }
 
@@ -75,6 +77,7 @@
   color: #333;
 }
 
+/* --------- Botões dentro do cartão --------- */
 .friend-card .remove-btn {
   margin-left: auto;
   background-color: #e63946;
@@ -125,13 +128,14 @@
   background-color: #c82333;
 }
 
+/* --------- Botão de convites --------- */
 .friend-requests {
   display: flex;
   justify-content: center;
   gap: 10px;
   margin-top: 20px;
-  position: relative;
   flex-wrap: wrap;
+  position: relative;
 }
 
 .open-popup-button {
@@ -172,6 +176,7 @@
   pointer-events: none;
 }
 
+/* --------- Popup --------- */
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -200,6 +205,10 @@
   text-align: center;
 }
 
+.popup-box h3 {
+  color: #000;
+}
+
 .popup-box input[type="text"] {
   width: 70%;
   padding: 10px;
@@ -211,7 +220,7 @@
 
 .popup-box button {
   background-color: #e63946;
-  color: rgb(255, 255, 255);
+  color: white;
   padding: 10px 16px;
   border: none;
   border-radius: 8px;
@@ -242,7 +251,35 @@
   border-bottom: none;
 }
 
-.popup-box h3 {
-  color: #000;
+/* --------- Ícone Ubisoft --------- */
+.ubisoft-icon {
+  color: black;
 }
-    
+
+.ubisoft-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: gray;
+  font-family: 'Akira Expanded', sans-serif;
+  font-size: 1.4rem;
+  margin-bottom: 20px;
+}
+
+.ubisoft-header .ubisoft-icon {
+  font-size: 1.6rem;
+  color: white;
+}
+
+.ubisoft-header .ubisoft-name {
+  font-size: 1.2rem;
+  color: #ffffff;
+}
+
+.ubisoft-valor {
+  color: #6c757d; /* cor mais legível do que gray puro */
+  font-weight: 500;
+  font-size: 0.95rem;
+  margin-left: 6px;
+}

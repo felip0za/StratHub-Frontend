@@ -36,10 +36,11 @@ function Invites() {
         api.get("/amizade/pendentes"),
         api.get(`/convites/usuario/${userId}`),
       ]);
+
       setFriends(friendsRes.data || []);
-      setFriendRequests(friendReqRes.data?.filter(r => r.status === "PENDENTE") || []);
+      setFriendRequests(friendReqRes.data || []);
       setTeamInvites(teamInvitesRes.data?.filter(i => i.status === "PENDENTE") || []);
-    } catch {
+    } catch (error) {
       alert("Erro ao buscar dados. Tente novamente mais tarde.");
     } finally {
       setLoading(false);
@@ -127,14 +128,7 @@ function Invites() {
     }
   };
 
-  if (loading) {
-    return (
-      <>
-        <Navbar />
-        <LoadingScreen />
-      </>
-    );
-  }
+  if (loading) return (<><Navbar /><LoadingScreen /></>);
 
   return (
     <>
@@ -154,12 +148,8 @@ function Invites() {
                     <div className="username">{friend.nome}</div>
                     <p className="profile-email">
                       <strong className="ubisoft-label">
-                        <Icon path={mdiUbisoft} size={1} className="ubisoft-icon" />
-                        UbiConnect:
-                      </strong>{' '}
-                      <span className="ubisoft-valor">
-                        {friend.username || friend.ubiConnect || 'Não informado'}
-                      </span>
+                        <Icon path={mdiUbisoft} size={1} className="ubisoft-icon" /> UbiConnect:
+                      </strong> <span className="ubisoft-valor">{friend.username || friend.ubiConnect || 'Não informado'}</span>
                     </p>
                   </div>
                   <button className="remove-btn" onClick={() => handleRemoveFriend(friend.id)}>Remover</button>
@@ -180,13 +170,10 @@ function Invites() {
               </span>
             )}
           </button>
-          <button className="open-popup-button" onClick={() => setShowSearchPopup(true)}>
-            Adicionar Amigos
-          </button>
+          <button className="open-popup-button" onClick={() => setShowSearchPopup(true)}>Adicionar Amigos</button>
         </section>
       </div>
 
-      {/* POPUP - Convites */}
       {showRequestsPopup && (
         <div className="popup-overlay">
           <div className="popup-box">
@@ -206,9 +193,7 @@ function Invites() {
                   </li>
                 ))}
               </ul>
-            ) : (
-              <p>Nenhum convite de amizade.</p>
-            )}
+            ) : <p>Nenhum convite de amizade.</p>}
 
             <h3 style={{ marginTop: 24 }}>Convites de Time</h3>
             {teamInvites.length > 0 ? (
@@ -220,8 +205,7 @@ function Invites() {
                       <div className="avatar">
                         <img
                           src={time.imagemBase64 ? `data:image/png;base64,${time.imagemBase64}` : "/default-team.png"}
-                          alt={`Time ${time.nome || "Desconhecido"}`}
-                        />
+                          alt={`Time ${time.nome || "Desconhecido"}`} />
                       </div>
                       <div className="info">
                         <div className="username">{time.nome || "Time desconhecido"}</div>
@@ -235,16 +219,13 @@ function Invites() {
                   );
                 })}
               </ul>
-            ) : (
-              <p>Nenhum convite de time.</p>
-            )}
+            ) : <p>Nenhum convite de time.</p>}
 
             <button className="open-popup-button" onClick={() => setShowRequestsPopup(false)}>Fechar</button>
           </div>
         </div>
       )}
 
-      {/* POPUP - Buscar amigos */}
       {showSearchPopup && (
         <div className="popup-overlay">
           <div className="popup-box">
@@ -262,7 +243,6 @@ function Invites() {
                 {searchResults.map(user => {
                   const isAmigo = friends.some(f => f.id === user.id);
                   const jaTemConvite = friendRequests.some(r => r.id === user.id);
-
                   return (
                     <li key={user.id} className="friend-card">
                       <div className="avatar">

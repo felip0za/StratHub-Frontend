@@ -15,6 +15,8 @@ function Times() {
   const [showInvitePopup, setShowInvitePopup] = useState(false);
   const [amigos, setAmigos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [contextMenu, setContextMenu] = useState(null);
+  const [selectedMember, setSelectedMember] = useState(null);
 
   const navigate = useNavigate();
   const { id } = useParams();
@@ -76,6 +78,62 @@ function Times() {
   const handleEdit = () => navigate(`/editar-time/${id}`);
   const handleAddMember = () => buscarAmigos();
 
+  const handleLeaveTeam = async () => {
+    if (window.confirm("Tem certeza que deseja sair do time?")) {
+      try {
+        setLoading(true);
+        await api.post(`/times/${id}/sair`, { idUsuario: user.id });
+        alert("Você saiu do time.");
+        navigate("/home");
+      } catch {
+        alert("Erro ao sair do time.");
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  const openContextMenu = (event, member) => {
+    event.preventDefault();
+    if (user.id === time.idCriador && member.id !== user.id) {
+      setSelectedMember(member);
+      setContextMenu({ x: event.pageX, y: event.pageY });
+    }
+  };
+
+  const closeContextMenu = () => {
+    setContextMenu(null);
+    setSelectedMember(null);
+  };
+
+  const expulsarMembro = async () => {
+    try {
+      await api.post(`/times/${id}/expulsar`, {
+        idUsuario: selectedMember.id
+      });
+      alert("Membro expulso com sucesso.");
+      setMembros(membros.filter(m => m.id !== selectedMember.id));
+    } catch {
+      alert("Erro ao expulsar membro.");
+    } finally {
+      closeContextMenu();
+    }
+  };
+
+  const promoverParaDono = async () => {
+    try {
+      await api.post(`/times/${id}/promover`, {
+        idNovoDono: selectedMember.id
+      });
+      alert("Novo dono promovido com sucesso.");
+      navigate(0);
+    } catch {
+      alert("Erro ao promover novo dono.");
+    } finally {
+      closeContextMenu();
+    }
+  };
+
   if (loading) {
     return (
       <>
@@ -114,9 +172,19 @@ function Times() {
             <p className="description-label">DESCRIÇÃO:</p>
             <p className="description-text">{time.descricao}</p>
 
-            <button className="edit-logo" onClick={handleEdit}>
-              Editar Time
-            </button>
+            <div className="btn-group">
+              {user.id === time.idCriador && (
+                <button className="edit-logo" onClick={handleEdit}>
+                  Editar Time
+                </button>
+              )}
+
+              {membros.some(m => m.id === user.id) && (
+                <button className="leave-team" onClick={handleLeaveTeam}>
+                  Sair do Time
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -125,7 +193,11 @@ function Times() {
 
           {membros.length > 0 ? (
             membros.map((member, index) => (
-              <div className="member-card" key={index}>
+              <div
+                className="member-card"
+                key={index}
+                onContextMenu={(e) => openContextMenu(e, member)}
+              >
                 <img
                   src={member.imagemUsuario || "/default-avatar.png"}
                   alt="Foto do membro"
@@ -159,8 +231,8 @@ function Times() {
       </div>
 
       {showInvitePopup && (
-        <div className="popup-overlay">
-          <div className="popup-box">
+        <div className="popup-overlay" onClick={() => setShowInvitePopup(false)}>
+          <div className="popup-box" onClick={(e) => e.stopPropagation()}>
             <h3>Convidar Amigos para o Time</h3>
             {amigos.length > 0 ? (
               <ul>
@@ -188,6 +260,17 @@ function Times() {
             )}
             <button onClick={() => setShowInvitePopup(false)}>Fechar</button>
           </div>
+        </div>
+      )}
+
+      {contextMenu && (
+        <div
+          className="contextual-popup"
+          style={{ top: contextMenu.y, left: contextMenu.x, position: 'absolute' }}
+          onClick={closeContextMenu}
+        >
+          <button onClick={expulsarMembro}>Expulsar Membro</button>
+          <button onClick={promoverParaDono}>Promover a Dono</button>
         </div>
       )}
     </>
