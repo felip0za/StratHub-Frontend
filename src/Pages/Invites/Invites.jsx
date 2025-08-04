@@ -24,7 +24,7 @@ function Invites() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!userId) return;
+    if (!userId) return; //Garante que nenhuma requisição será feita enquanto o userId não estiver disponível.
     fetchAll();
     verificarTimeUsuario();
   }, [userId]);

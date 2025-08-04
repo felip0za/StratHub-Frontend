@@ -1,0 +1,97 @@
+.campeonatos-page {
+  background-color: #0e0e0e;
+  color: white;
+  min-height: 100vh;
+  /* font-family removido para usar padrão do sistema */
+}
+
+.campeonatos-container {
+  max-width: 900px;
+  margin: auto;
+  padding: 40px 20px;
+}
+
+.campeonatos-container h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 32px;
+  font-weight: bold;
+  color: #ffffff;
+  /* font-family removido */
+}
+
+.campo-pesquisa {
+  width: 100%;
+  padding: 12px 16px;
+  margin-bottom: 30px;
+  border-radius: 10px;
+  border: none;
+  background-color: #1a1a1a;
+  color: white;
+  font-size: 16px;
+  outline: none;
+  box-shadow: 0 0 0 2px transparent;
+  transition: box-shadow 0.3s;
+  /* font-family removido */
+}
+
+.campo-pesquisa:focus {
+  box-shadow: 0 0 0 2px red;
+}
+
+.campeonatos-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.campeonato-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1e1e1e;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.05);
+  transition: transform 0.2s, box-shadow 0.3s;
+}
+
+.campeonato-item:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.1);
+}
+
+.campeonato-nome,
+.campeonato-times {
+  font-size: 18px;
+  font-weight: bold;
+  flex: 1;
+  text-align: left;
+  /* font-family removido */
+}
+
+.campeonato-times {
+  text-align: center;
+  font-weight: normal;
+  color: #bdbdbd;
+}
+
+.campeonato-botao {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-weight: bold;
+  /* font-family removido */
+}
+
+.campeonato-botao:hover {
+  background-color: #cc0000;
+}

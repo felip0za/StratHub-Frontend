@@ -10,7 +10,6 @@ export function useApi() {
       baseURL: 'http://localhost:8080',
     });
 
-    // Adiciona um interceptor para inserir o token antes de cada requisição
     instance.interceptors.request.use(
       config => {
         if (token) {

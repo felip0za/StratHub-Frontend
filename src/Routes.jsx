@@ -15,6 +15,7 @@ import Profile from './Pages/Profiles/Profile';
 import FPL from './Pages/Lobbys/FPL/FPL';
 import EditUser from './Pages/Usuario/EditUser/EditUser';
 import Ranking from './Pages/Ranking/Ranking';
+import Campeonatos from './Pages/Campeonatos/Campeonatos';
 
 function MainRoutes() {
   return (
@@ -72,6 +73,11 @@ function MainRoutes() {
       <Route path='/fpl' element={
         <PrivateRoute>
           <FPL />
+        </PrivateRoute>
+      } />
+      <Route path='/campeonatos' element={
+        <PrivateRoute>
+          <Campeonatos />
         </PrivateRoute>
       } />
       <Route path='*' element={<h1>404 page not found</h1>} />
