@@ -3,10 +3,40 @@ import './Ranking.css';
 import LoadingScreen from '../../Components/LoadingScreen/LoadingScreen';
 import Navbar from '../../Components/Navbar/Navbar';
 import bronze from '../../assets/bronze.png';
+// futuros imports: prata, ouro etc
 
 function Ranking() {
   const [times, setTimes] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Simulando XP atual do usuário
+  const userXP = 800;
+
+  // Função para determinar rank e XP baseado no valor atual
+  const getRankInfo = (xp) => {
+    if (xp < 2000) {
+      return {
+        nome: "Bronze",
+        img: bronze,
+        xpAtual: xp,
+        xpProximo: 2000,
+      };
+    }
+
+    // Exemplos para expandir:
+    // else if (xp < 4000) return { nome: "Prata", img: prata, xpAtual: xp, xpProximo: 4000 }
+    // etc...
+
+    return {
+      nome: "Bronze",
+      img: bronze,
+      xpAtual: xp,
+      xpProximo: 2000,
+    };
+  };
+
+  const rankInfo = getRankInfo(userXP);
+  const progresso = Math.min(100, (rankInfo.xpAtual / rankInfo.xpProximo) * 100).toFixed(1); // em porcentagem
 
   useEffect(() => {
     setTimeout(() => {
@@ -24,9 +54,7 @@ function Ranking() {
     }, 1000);
   }, []);
 
-  if (loading) {
-    return <LoadingScreen />;
-  }
+  if (loading) return <LoadingScreen />;
 
   return (
     <>
@@ -57,13 +85,18 @@ function Ranking() {
 
         {/* Quadro lateral do Rank com barra de progressão */}
         <div className="rank-box">
-          <img src={bronze} alt="Rank Bronze" className="rank-icon" />
-          <span className="rank-label">Rank: Bronze</span>
+          <img src={rankInfo.img} alt={`Rank ${rankInfo.nome}`} className="rank-icon" />
+          <span className="rank-label">Rank: {rankInfo.nome}</span>
           <div className="rank-progress-container">
             <div className="rank-progress-bar">
-              <div className="rank-progress-fill" style={{ width: '40%' }}></div>
+              <div
+                className="rank-progress-fill"
+                style={{ width: `${progresso}%` }}
+              ></div>
             </div>
-            <span className="progress-text">800 / 2000 XP</span>
+            <span className="progress-text">
+              {rankInfo.xpAtual} / {rankInfo.xpProximo} XP
+            </span>
           </div>
         </div>
       </div>
