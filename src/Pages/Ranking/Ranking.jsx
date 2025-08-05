@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './Ranking.css';
 import LoadingScreen from '../../Components/LoadingScreen/LoadingScreen';
 import Navbar from '../../Components/Navbar/Navbar';
+import bronze from '../../assets/bronze.png';
 
 function Ranking() {
   const [times, setTimes] = useState([]);
@@ -30,25 +31,40 @@ function Ranking() {
   return (
     <>
       <Navbar />
-      <div className="ranking-container">
-        <h1 className="ranking-title">ELITE CUP</h1>
-        <div className="ranking-header">
-          <span>Posição</span>
-          <span>Time</span>
-          <span>Pontuação</span>
-          <span>Vitórias</span>
-          <span>Derrotas</span>
+      <div className="ranking-wrapper">
+        {/* Quadro principal da tabela */}
+        <div className="ranking-container">
+          <h1 className="ranking-title">ELITE CUP</h1>
+          <div className="ranking-header">
+            <span>Posição</span>
+            <span>Time</span>
+            <span>Pontuação</span>
+            <span>Vitórias</span>
+            <span>Derrotas</span>
+          </div>
+          <div className="ranking-list">
+            {times.map((time, index) => (
+              <div key={index} className={`ranking-card ${index === 0 ? 'top-team' : ''}`}>
+                <span className="rank-position">#{index + 1}</span>
+                <span className="team-name">{time.nome}</span>
+                <span className="team-points">{time.pontuacao} pts</span>
+                <span className="team-wins">{time.vitorias}</span>
+                <span className="team-losses">{time.derrotas}</span>
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="ranking-list">
-          {times.map((time, index) => (
-            <div key={index} className={`ranking-card ${index === 0 ? 'top-team' : ''}`}>
-              <span className="rank-position">#{index + 1}</span>
-              <span className="team-name">{time.nome}</span>
-              <span className="team-points">{time.pontuacao} pts</span>
-              <span className="team-wins">{time.vitorias}</span>
-              <span className="team-losses">{time.derrotas}</span>
+
+        {/* Quadro lateral do Rank com barra de progressão */}
+        <div className="rank-box">
+          <img src={bronze} alt="Rank Bronze" className="rank-icon" />
+          <span className="rank-label">Rank: Bronze</span>
+          <div className="rank-progress-container">
+            <div className="rank-progress-bar">
+              <div className="rank-progress-fill" style={{ width: '40%' }}></div>
             </div>
-          ))}
+            <span className="progress-text">800 / 2000 XP</span>
+          </div>
         </div>
       </div>
     </>

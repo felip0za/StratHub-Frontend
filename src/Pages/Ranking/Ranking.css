@@ -1,14 +1,25 @@
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap');
 
+/* Layout geral */
+.ranking-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 20px;
+}
+
+/* Container principal */
 .ranking-container {
-  max-width: 800px;
-  margin: 40px auto;
   background: #0e0e0e;
   padding: 30px;
   border-radius: 20px;
   box-shadow: 0 0 30px rgba(255, 0, 0, 0.3);
   color: white;
   font-family: 'Orbitron', sans-serif;
+  max-width: 800px;
+  flex: 1;
 }
 
 .ranking-title {
@@ -23,7 +34,7 @@
 
 .ranking-header {
   display: grid;
-  grid-template-columns: 50px 2fr 1fr 1fr 1fr;
+  grid-template-columns: 70px 2fr 1fr 1fr 1fr;
   padding: 10px 20px;
   color: #999;
   border-bottom: 1px solid #333;
@@ -39,7 +50,7 @@
 
 .ranking-card {
   display: grid;
-  grid-template-columns: 50px 2fr 1fr 1fr 1fr;
+  grid-template-columns: 70px 2fr 1fr 1fr 1fr;
   align-items: center;
   background: #1c1c1e;
   padding: 14px 20px;
@@ -88,4 +99,59 @@
   color: #f44336;
   font-weight: bold;
   text-align: center;
+}
+
+/* Card lateral com escudo e rank */
+.rank-box {
+  background: #0e0e0e;
+  border-radius: 20px;
+  padding: 30px 20px;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(255, 0, 0, 0.3);
+  max-width: 220px;
+  height: fit-content;
+  font-family: 'Orbitron', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.rank-icon {
+  width: 90px;
+  height: auto;
+  margin-bottom: 15px;
+}
+
+.rank-label {
+  color: white;
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+}
+
+/* Barra de progressão */
+.rank-progress-container {
+  margin-top: 20px;
+}
+
+.rank-progress-bar {
+  width: 100%;
+  height: 16px;
+  background: #333;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: inset 0 0 5px #000;
+}
+
+.rank-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff9500, #ffcc00);
+  transition: width 0.5s ease;
+  border-radius: 10px;
+}
+
+.progress-text {
+  margin-top: 8px;
+  font-size: 0.95rem;
+  color: #eee;
+  font-weight: 500;
 }
