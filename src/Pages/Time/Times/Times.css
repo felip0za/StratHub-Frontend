@@ -10,8 +10,10 @@
   background-color: #121212;
   color: white;
   min-height: 100vh;
+  flex-wrap: wrap;
 }
 
+/* SEÇÃO ESQUERDA */
 .left-section {
   flex: 1;
   max-width: 400px;
@@ -39,22 +41,29 @@
 .team-title {
   font-size: 26px;
   margin-bottom: 5px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
 }
 
 .team-apelido {
   font-size: 18px;
   color: crimson;
+  font-weight: 700;
 }
 
 .description-label {
   margin-top: 20px;
   font-size: 14px;
   color: #999;
+  font-weight: 700;
+  letter-spacing: 0.05em;
 }
 
 .description-text {
   font-size: 16px;
   margin-top: 5px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
 }
 
 .btn-group {
@@ -64,39 +73,49 @@
   margin-top: 30px;
 }
 
-.edit-logo, .leave-team {
+.edit-logo,
+.leave-team {
   background-color: crimson;
   color: white;
   padding: 10px;
   border-radius: 8px;
   border: none;
   cursor: pointer;
-  transition: 0.3s;
+  transition: background-color 0.3s ease;
   font-family: 'Akira Expanded', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
-.edit-logo:hover, .leave-team:hover {
+.edit-logo:hover,
+.leave-team:hover {
   background-color: #9b0000;
 }
 
+/* SEÇÃO DO TIME */
 .team-section {
   flex: 2;
   background-color: #1e1e1e;
   padding: 30px;
   border-radius: 16px;
   box-shadow: 0px 4px 12px rgb(150, 0, 0);
+  width: 100%;
+  max-width: 800px;
 }
 
+/* CARTÃO DE MEMBRO */
 .member-card {
   display: flex;
   align-items: center;
   background-color: #2a2a2a;
   padding: 15px;
   border-radius: 12px;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
   cursor: pointer;
-  transition: 0.2s;
+  transition: background-color 0.2s ease, transform 0.2s ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  border-left: 5px solid transparent;
 }
 
 .member-card:hover {
@@ -117,17 +136,25 @@
   flex: 1;
 }
 
+.member-info strong {
+  display: block;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
 .profile-email {
   font-size: 14px;
   color: #ccc;
   margin-top: 5px;
 }
 
+/* UBISOFT */
 .ubisoft-label {
   display: flex;
   align-items: center;
   gap: 5px;
   color: #888;
+  font-weight: 700;
 }
 
 .ubisoft-icon {
@@ -135,10 +162,12 @@
 }
 
 .ubisoft-valor {
-  font-weight: bold;
+  font-weight: 900;
   color: white;
+  letter-spacing: 0.05em;
 }
 
+/* BOTÃO ADICIONAR MEMBRO */
 .add-member {
   margin-top: 20px;
   background-color: #007bff;
@@ -147,15 +176,19 @@
   padding: 12px;
   border-radius: 10px;
   cursor: pointer;
-  transition: 0.3s;
+  transition: background-color 0.3s ease;
   box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
   font-family: 'Akira Expanded', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .add-member:hover {
   background-color: #0056b3;
 }
 
+/* POPUP */
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -181,11 +214,15 @@
 
 .popup-box h3 {
   margin-bottom: 20px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .popup-box ul {
   list-style: none;
   padding: 0;
+  margin: 0 0 20px 0;
 }
 
 .popup-box li {
@@ -202,12 +239,16 @@
   padding: 6px 12px;
   border-radius: 6px;
   cursor: pointer;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  transition: background-color 0.3s ease;
 }
 
 .popup-box button:hover {
   background-color: #218838;
 }
 
+/* CONTEXTUAL */
 .contextual-popup {
   position: absolute;
   background-color: #2a2a2a;
@@ -228,6 +269,9 @@
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  transition: background-color 0.3s ease;
 }
 
 .contextual-popup button:last-child {
@@ -236,4 +280,64 @@
 
 .contextual-popup button:hover {
   opacity: 0.9;
+}
+
+/* RANKS */
+.rank-label {
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  background-color: #444;
+  color: white;
+  text-align: center;
+  letter-spacing: 0.1em;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
+}
+
+/* Cores por rank */
+.rank-ferro {
+  background-color: #6e6e6e;
+  color: white;
+}
+.rank-bronze {
+  background-color: #cd7f32;
+  color: white;
+}
+.rank-prata {
+  background-color: #c0c0c0;
+  color: black;
+}
+.rank-ouro {
+  background-color: #ffd700;
+  color: black;
+}
+.rank-platina {
+  background-color: #00ffff;
+  color: black;
+}
+.rank-challenger {
+  background-color: #9b30ff;
+  color: white;
+}
+.rank-master {
+  background-color: #ff4500;
+  color: white;
+}
+
+/* AJUSTES ADICIONADOS */
+.rank-image {
+  width: 130px;
+  height: auto;
+  display: block;
+  margin: 0 auto 8px auto;
+}
+
+.rank-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }

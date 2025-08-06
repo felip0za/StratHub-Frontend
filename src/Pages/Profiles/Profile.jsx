@@ -12,10 +12,8 @@ function Profile() {
   // Estado para gerenciar o status do pedido de amizade
   const [friendRequestStatus, setFriendRequestStatus] = useState('');
 
-  // Função para enviar o pedido de amizade
+
   const handleAddFriend = () => {
-    // Aqui você pode fazer a chamada à API ou lógica para enviar o pedido de amizade.
-    // Neste exemplo, apenas atualizamos o estado para simular a ação.
     setFriendRequestStatus('Pedido de amizade enviado!');
   };
 

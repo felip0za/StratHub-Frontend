@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './Ranking.css';
 import LoadingScreen from '../../Components/LoadingScreen/LoadingScreen';
 import Navbar from '../../Components/Navbar/Navbar';
-import master from '../../assets/master.png';
+import platina from '../../assets/platina.png';
 // futuros imports: prata, ouro etc
 
 function Ranking() {
@@ -14,16 +14,16 @@ function Ranking() {
   const getRankInfo = (xp) => {
     if (xp < 800) {
       return {
-        nome: "Master",
-        img: master,
+        nome: "platina",
+        img: platina,
         xpAtual: xp,
         xpProximo: 800,
       };
     }
 
     return {
-      nome: "Master",
-      img: master,
+      nome: "platina",
+      img: platina,
       xpAtual: xp,
       xpProximo: null,
     };
@@ -111,7 +111,7 @@ function Ranking() {
             )}
 
             {rankInfo.xpAtual >= 800 && (
-              <span className="classified-text">Classificado</span>
+              <span className="classified-text">Classificados</span>
             )}
           </div>
         </div>

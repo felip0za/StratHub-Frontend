@@ -6,6 +6,14 @@ import Navbar from '../../../Components/Navbar/Navbar';
 import Icon from '@mdi/react';
 import { mdiUbisoft } from '@mdi/js';
 import LoadingScreen from '../../../Components/LoadingScreen/LoadingScreen';
+import ferro from '../../../assets/ferro.png';
+import bronze from '../../../assets/bronze.png';
+import prata from '../../../assets/prata.png';
+import ouro from '../../../assets/ouro.png';
+import platina from '../../../assets/platina.png';
+import challenger from '../../../assets/challenger.png';
+import master from '../../../assets/master.png';
+
 import './Times.css';
 
 function Times() {
@@ -158,6 +166,19 @@ function Times() {
     ? `data:image/*;base64,${time.imagemBase64}`
     : "/default-team.png";
 
+  // Mapear rank para imagem importada
+  const rankToImage = {
+    FERRO: ferro,
+    BRONZE: bronze,
+    PRATA: prata,
+    OURO: ouro,
+    PLATINA: platina,
+    MASTER: master,
+    CHALLENGER: challenger,
+  };
+
+  const rankImage = time.rank ? rankToImage[time.rank.toUpperCase()] : null;
+
   return (
     <>
       <Navbar />
@@ -171,6 +192,15 @@ function Times() {
             </h2>
             <p className="description-label">DESCRIÇÃO:</p>
             <p className="description-text">{time.descricao}</p>
+            <p className="description-label">RANK:</p>
+            {rankImage ? (
+              <div className="rank-display">
+                <img src={rankImage} alt={`Rank ${time.rank}`} className="rank-image" />
+                <span className="rank-label">{time.rank}</span>
+              </div>
+            ) : (
+              <p className="rank-text">Sem rank</p>
+            )}
 
             <div className="btn-group">
               {user.id === time.idCriador && (
@@ -278,3 +308,4 @@ function Times() {
 }
 
 export default Times;
+  
