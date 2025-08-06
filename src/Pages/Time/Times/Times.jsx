@@ -173,8 +173,8 @@ function Times() {
     PRATA: prata,
     OURO: ouro,
     PLATINA: platina,
-    MASTER: master,
     CHALLENGER: challenger,
+    MASTER: master,
   };
 
   const rankImage = time.rank ? rankToImage[time.rank.toUpperCase()] : null;
@@ -308,4 +308,3 @@ function Times() {
 }
 
 export default Times;
-  
