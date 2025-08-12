@@ -9,7 +9,7 @@ function Ranking() {
   const [times, setTimes] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const userXP = 800; // PONTOS DO USUÁRIO
+  const userXP = 100; // PONTOS DO USUÁRIO
 
   const getRankInfo = (xp) => {
     if (xp < 800) {
