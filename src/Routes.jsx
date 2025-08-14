@@ -35,7 +35,7 @@ function MainRoutes() {
           <User />
         </PrivateRoute>
       } />
-      <Route path='/ranking' element={
+      <Route path='/eliteCup/:rank' element={
         <PrivateRoute>
           <Ranking />
         </PrivateRoute>

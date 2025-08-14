@@ -18,13 +18,11 @@ function Navbar() {
   const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
-    if (userId === null) {
+    if (!userId) {
       setUsuario(null);
       setLoadingUser(false);
       return;
     }
-
-    if (!userId) return;
 
     async function fetchUsuario() {
       try {
@@ -39,11 +37,7 @@ function Navbar() {
         }
 
         if (location.pathname === "/") {
-          if (idTime) {
-            navigate(`/times/${idTime}`);
-          } else {
-            navigate("/criartime");
-          }
+          navigate(idTime ? `/times/${idTime}` : "/criartime");
         }
       } catch (err) {
         console.error("Erro ao buscar usuário:", err);
@@ -86,6 +80,7 @@ function Navbar() {
   const imagemPerfil = usuario.imagemUsuario || "/default-avatar.png";
   const nomeUsuario = usuario.nome || "Usuário";
   const idTime = usuario.idTime || usuario.id_time;
+  const rank = usuario.rank || "default"; // Evita erro de variável indefinida
 
   return (
     <header>
@@ -98,17 +93,13 @@ function Navbar() {
         />
 
         <span onClick={() => navigate("/home")} className="nav-link">Salas</span>
-        <span onClick={() => navigate("/campeonatos")} className="nav-link">Campeonatos </span>
-        <span onClick={() => navigate("/ranking")} className="nav-link">ELITE CUP (em Breve)</span>
+        <span onClick={() => navigate("/campeonatos")} className="nav-link">Campeonatos</span>
+        <span onClick={() => navigate(`/eliteCup/${rank}`)} className="nav-link">
+          ELITE CUP (em breve)
+        </span>
 
         <span
-          onClick={() => {
-            if (idTime) {
-              navigate(`/times/${idTime}`);
-            } else {
-              navigate("/criartime");
-            }
-          }}
+          onClick={() => navigate(idTime ? `/times/${idTime}` : "/criartime")}
           className="nav-link"
         >
           Time
@@ -129,7 +120,6 @@ function Navbar() {
             alt={`Foto de ${nomeUsuario}`}
             onClick={() => navigate(`/usuario/${usuario.id || userId}`)}
           />
-          <span className="user-name"></span>
 
           {showTooltip && (
             <div className="user-tooltip">

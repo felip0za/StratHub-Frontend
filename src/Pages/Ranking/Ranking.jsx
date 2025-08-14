@@ -1,70 +1,131 @@
 import React, { useEffect, useState } from 'react';
-import './Ranking.css';
-import LoadingScreen from '../../Components/LoadingScreen/LoadingScreen';
+import { useApi } from '../../Services/API';
 import Navbar from '../../Components/Navbar/Navbar';
+import LoadingScreen from '../../Components/LoadingScreen/LoadingScreen';
+
+import ferro from '../../assets/ferro.png';
+import bronze from '../../assets/bronze.png';
+import prata from '../../assets/prata.png';
+import ouro from '../../assets/ouro.png';
 import platina from '../../assets/platina.png';
-// futuros imports: prata, ouro etc
+import challenger from '../../assets/challenger.png';
+import master from '../../assets/master.png';
+
+import './Ranking.css';
 
 function Ranking() {
   const [times, setTimes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [rankSelecionado, setRankSelecionado] = useState('');
+  const [meuTime, setMeuTime] = useState(null);
 
-  const userXP = 100; // PONTOS DO USUÁRIO
+  const api = useApi();
 
-  const getRankInfo = (xp) => {
-    if (xp < 800) {
-      return {
-        nome: "platina",
-        img: platina,
-        xpAtual: xp,
-        xpProximo: 800,
-      };
-    }
-
-    return {
-      nome: "platina",
-      img: platina,
-      xpAtual: xp,
-      xpProximo: null,
-    };
+  const rankToImage = {
+    FERRO: ferro,
+    BRONZE: bronze,
+    PRATA: prata,
+    OURO: ouro,
+    PLATINA: platina,
+    CHALLENGER: challenger,
+    MASTER: master,
   };
 
-  const rankInfo = getRankInfo(userXP);
-  const progresso = rankInfo.xpProximo
-    ? Math.min(100, (rankInfo.xpAtual / rankInfo.xpProximo) * 100).toFixed(1)
-    : 0;
-
   useEffect(() => {
-    setTimeout(() => {
-      const dadosMock = [
-        { nome: 'Phantom Squad', vitorias: 12, derrotas: 3 },
-        { nome: 'ViperX', vitorias: 11, derrotas: 4 },
-        { nome: 'Valor Titans', vitorias: 10, derrotas: 5 },
-        { nome: 'Odin Elite', vitorias: 9, derrotas: 6 },
-        { nome: 'Radiant Killers', vitorias: 8, derrotas: 7 },
-      ];
+    const carregarRanking = async () => {
+      setLoading(true);
+      try {
+        const token = localStorage.getItem('token');
 
-      // Recalcula pontuação com base nas vitórias e derrotas
-      const comPontuacao = dadosMock.map(time => ({
-        ...time,
-        pontuacao: (time.vitorias * 50) + (time.derrotas * 25),
-      }));
+        // Buscar o time do usuário logado
+        const resUsuario = await api.get('/times/usuario', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-      const ordenado = comPontuacao.sort((a, b) => b.pontuacao - a.pontuacao);
-      setTimes(ordenado);
-      setLoading(false);
-    }, 1000);
-  }, []);
+        if (!resUsuario.data || resUsuario.data.length === 0) {
+          setError('Você não possui nenhum time.');
+          setLoading(false);
+          return;
+        }
 
-  if (loading) return <LoadingScreen />;
+        const usuarioTime = resUsuario.data[0];
+
+        // Buscar pontuação atual do time
+        const resPontuacao = await api.get(`/times/${usuarioTime.id}/pontuacao`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        usuarioTime.pontuacao = resPontuacao.data.pontuacao || 0; // garante valor padrão
+        setMeuTime(usuarioTime);
+
+        const rankDoUsuario = usuarioTime.rank?.toLowerCase() || '';
+        setRankSelecionado(rankDoUsuario);
+
+        // Buscar todos os times do mesmo rank
+        const resTimes = await api.get(`/times/elitecup/${rankDoUsuario}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const listaTimes = resTimes.data
+          .map((t) => ({ ...t, ehMeuTime: t.id === usuarioTime.id }))
+          .sort((a, b) => b.pontuacao - a.pontuacao);
+
+        setTimes(listaTimes);
+        setError('');
+      } catch (err) {
+        console.error('Erro ao carregar ranking:', err);
+        setError('Erro ao carregar o ranking.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    carregarRanking();
+  }, [api]);
+
+  if (loading)
+    return (
+      <>
+        <Navbar />
+        <LoadingScreen />
+      </>
+    );
+
+  if (error)
+    return (
+      <>
+        <Navbar />
+        <div className="container">
+          <p className="error-message">{error}</p>
+        </div>
+      </>
+    );
+
+  // Pontuação e barra de progresso
+  const timePontuacao = meuTime?.pontuacao || 0;
+
+  const getRankInfo = (pontuacao) => {
+    if (pontuacao < 800) {
+      return { pontuacaoAtual: pontuacao, pontuacaoProximo: 800 };
+    }
+    return { pontuacaoAtual: pontuacao, pontuacaoProximo: null };
+  };
+
+  const rankInfo = getRankInfo(timePontuacao);
+  const progresso = rankInfo.pontuacaoProximo
+    ? Math.min(100, (rankInfo.pontuacaoAtual / rankInfo.pontuacaoProximo) * 100).toFixed(1)
+    : 100;
+
+  const rankImage = meuTime?.rank ? rankToImage[meuTime.rank.toUpperCase()] : null;
 
   return (
     <>
       <Navbar />
       <div className="ranking-wrapper">
-        {/* Quadro principal da tabela */}
+        {/* Tabela principal */}
         <div className="ranking-container">
-          <h1 className="ranking-title">ELITE CUP</h1>
+          <h1 className="ranking-title">ELITE CUP - {rankSelecionado.toUpperCase()}</h1>
           <div className="ranking-header">
             <span>#</span>
             <span>Time</span>
@@ -77,12 +138,12 @@ function Ranking() {
             {times.map((time, index) => {
               const classificado = time.pontuacao >= 800;
               return (
-                <div key={index} className={`ranking-card ${index === 0 ? 'top-team' : ''}`}>
+                <div key={index} className={`ranking-card ${time.ehMeuTime ? 'meu-time' : ''}`}>
                   <span className="rank-position">#{index + 1}</span>
                   <span className="team-name">{time.nome}</span>
                   <span className="team-points">{time.pontuacao} pts</span>
-                  <span className="team-wins">{time.vitorias}</span>
-                  <span className="team-losses">{time.derrotas}</span>
+                  <span className="team-wins">{time.partidasGanhas}</span>
+                  <span className="team-losses">{time.partidasPerdidas}</span>
                   <span className={`team-status ${classificado ? 'classificado' : 'nao-classificado'}`}>
                     {classificado ? 'Classificado' : 'Não Classificado'}
                   </span>
@@ -92,29 +153,26 @@ function Ranking() {
           </div>
         </div>
 
-        {/* Quadro lateral do Rank */}
-        <div className="rank-box">
-          <img src={rankInfo.img} alt={`Rank ${rankInfo.nome}`} className="rank-icon" />
-          <span className="rank-label">Rank: {rankInfo.nome}</span>
+        {/* Quadro lateral do meu time */}
+        {meuTime && (
+          <div className="rank-box">
+            {rankImage && <img src={rankImage} alt={`Rank ${meuTime.rank}`} className="rank-icon" />}
+            <span className="rank-label">Rank: {meuTime.rank}</span>
 
-          <div className="rank-progress-container">
-            {rankInfo.xpProximo && (
-              <>
-                <div className="rank-progress-bar">
-                  <div
-                    className="rank-progress-fill"
-                    style={{ width: `${progresso}%` }}
-                  ></div>
-                </div>
-                <span className="progress-text">{rankInfo.xpAtual} pontos</span>
-              </>
-            )}
-
-            {rankInfo.xpAtual >= 800 && (
-              <span className="classified-text">Classificados</span>
-            )}
+            <div className="rank-progress-container">
+              <div className="rank-progress-bar">
+                <div className="rank-progress-fill" style={{ width: `${progresso}%` }}></div>
+              </div>
+              {rankInfo.pontuacaoProximo ? (
+                <span className="progress-text">
+                  {rankInfo.pontuacaoAtual} / {rankInfo.pontuacaoProximo} PONTOS
+                </span>
+              ) : (
+                <span className="classified-text">Classificado</span>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </>
   );
