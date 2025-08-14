@@ -94,7 +94,7 @@ function Navbar() {
 
         <span onClick={() => navigate("/home")} className="nav-link">Salas</span>
         <span onClick={() => navigate("/campeonatos")} className="nav-link">Campeonatos</span>
-        <span onClick={() => navigate(`/eliteCup/${rank}`)} className="nav-link">
+        <span onClick={() => navigate("/eliteCup")} className="nav-link">
           ELITE CUP (em breve)
         </span>
 

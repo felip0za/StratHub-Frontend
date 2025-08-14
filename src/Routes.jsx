@@ -16,6 +16,7 @@ import FPL from './Pages/Lobbys/FPL/FPL';
 import EditUser from './Pages/Usuario/EditUser/EditUser';
 import Ranking from './Pages/Ranking/Ranking';
 import Campeonatos from './Pages/Campeonatos/Campeonatos';
+import EditTime from './Pages/Time/EditTime/EditTime';
 
 function MainRoutes() {
   return (
@@ -35,7 +36,7 @@ function MainRoutes() {
           <User />
         </PrivateRoute>
       } />
-      <Route path='/eliteCup/:rank' element={
+      <Route path='/eliteCup' element={
         <PrivateRoute>
           <Ranking />
         </PrivateRoute>
@@ -48,6 +49,11 @@ function MainRoutes() {
       <Route path='/editar-usuario/:id' element={
         <PrivateRoute>
           <EditUser />
+        </PrivateRoute>
+      } />
+      <Route path='/editar-time/:id' element={
+        <PrivateRoute>
+          <EditTime />
         </PrivateRoute>
       } />
       <Route path='/criartime' element={
