@@ -102,51 +102,62 @@ function EditarTime() {
       <div className="editar-time-container">
         <h2>Editar Informações do Time</h2>
         <form className="editar-time-form" onSubmit={handleSubmit}>
-          <div className="imagem-wrapper">
-            <label className="imagem-label">
-              <img
-                src={time.imagemBase64 || avatarDefault}
-                alt="Avatar do Time"
-                className="imagem-preview"
-              />
-              <span className="imagem-overlay">Trocar imagem</span>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-              />
-            </label>
+          {/* Coluna Esquerda */}
+          <div className="left-column">
+            <div className="imagem-wrapper">
+              <label>
+                <img
+                  src={time.imagemBase64 || avatarDefault}
+                  alt="Avatar do Time"
+                  className="imagem-preview"
+                />
+                <span className="imagem-overlay">Trocar Imagem</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="imagem-input"
+                />
+              </label>
+            </div>
           </div>
 
-          <div className="form-fields">
-            <label>Nome</label>
+          {/* Coluna Direita */}
+          <div className="right-column">
+            <label htmlFor="nome">Nome</label>
             <input
               type="text"
+              id="nome"
               name="nome"
               value={time.nome}
               onChange={handleChange}
               required
             />
 
-            <label>Apelido</label>
+            <label htmlFor="apelido">Apelido</label>
             <input
               type="text"
+              id="apelido"
               name="apelido"
               value={time.apelido}
               onChange={handleChange}
             />
 
-            <label>Descrição</label>
+            <label htmlFor="descricao">Descrição</label>
             <textarea
+              id="descricao"
               name="descricao"
               value={time.descricao}
               onChange={handleChange}
               rows={4}
             />
 
-            <button type="submit" className="salvar-btn">
-              Salvar Alterações
-            </button>
+            <div className="buttons">
+              <button type="submit" className="salvar-btn">Salvar</button>
+              <button type="button" className="cancelar-btn" onClick={() => navigate(`/times/${id}`)}>
+                Cancelar
+              </button>
+            </div>
           </div>
         </form>
       </div>

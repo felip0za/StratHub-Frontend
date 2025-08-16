@@ -37,12 +37,30 @@ function Times() {
       const [timeRes, membrosRes, pontuacaoRes] = await Promise.all([
         api.get(`/times/${id}`),
         api.get(`/times/${id}/membros`),
-        api.get(`/times/${id}/pontuacao`) // novo endpoint
+        api.get(`/times/${id}/pontuacao`)
       ]);
+
+      const usuarioNoTime = membrosRes.data.some((m) => m.id === user.id);
+
+      if (!usuarioNoTime) {
+        // Redireciona para o time do usuário
+        try {
+          const { data: meuTime } = await api.get(`/usuarios/${user.id}/time`);
+          if (meuTime?.id) {
+            navigate(`/times/${meuTime.id}`);
+          } else {
+            navigate('/home'); // Caso o usuário não tenha time
+          }
+        } catch (err) {
+          console.error('Erro ao buscar time do usuário:', err);
+          navigate(`/times/${meuTime.id}`);
+        }
+        return;
+      }
 
       setTime({
         ...timeRes.data,
-        pontuacao: pontuacaoRes.data.pontuacao // adiciona ao objeto
+        pontuacao: pontuacaoRes.data.pontuacao
       });
       setMembros(membrosRes.data);
       setError('');
