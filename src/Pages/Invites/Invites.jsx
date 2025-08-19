@@ -26,7 +26,7 @@ function Invites() {
   useEffect(() => {
     if (!userId) return;
 
-    // Função para carregar tudo (com loading)
+    
     const fetchAll = async () => {
       try {
         setLoading(true);
@@ -46,7 +46,7 @@ function Invites() {
       }
     };
 
-    // Função de atualização silenciosa (sem alterar loading)
+    
     const atualizarSilenciosamente = async () => {
       try {
         const [friendsRes, friendReqRes, teamInvitesRes] = await Promise.all([
@@ -59,7 +59,6 @@ function Invites() {
         setTeamInvites(teamInvitesRes.data?.filter(i => i.status === "PENDENTE") || []);
         await verificarTimeUsuario();
       } catch {
-        // opcional: console.log("Erro atualização silenciosa");
       }
     };
 
@@ -67,7 +66,7 @@ function Invites() {
 
     const intervalo = setInterval(() => {
       atualizarSilenciosamente();
-    }, 10000); // a cada 10 segundos
+    }, 1000); // a cada 10 segundos(1000 = 1 segundo)
 
     return () => clearInterval(intervalo);
 

@@ -32,7 +32,6 @@ function Times() {
   const { user } = useAuth();
 
   const carregarDados = async () => {
-    setLoading(true);
     try {
       const [timeRes, membrosRes, pontuacaoRes] = await Promise.all([
         api.get(`/times/${id}`),
@@ -43,13 +42,12 @@ function Times() {
       const usuarioNoTime = membrosRes.data.some((m) => m.id === user.id);
 
       if (!usuarioNoTime) {
-        // Redireciona para o time do usuário
         try {
           const { data: meuTime } = await api.get(`/usuarios/${user.id}/time`);
           if (meuTime?.id) {
             navigate(`/times/${meuTime.id}`);
           } else {
-            navigate('/home'); // Caso o usuário não tenha time
+            navigate('/home');
           }
         } catch (err) {
           console.error('Erro ao buscar time do usuário:', err);
@@ -72,8 +70,15 @@ function Times() {
     }
   };
 
+  
   useEffect(() => {
     carregarDados();
+
+    const intervalo = setInterval(() => {
+      carregarDados();
+    }, 1000); // Atualiza a cada 10 segundos
+
+    return () => clearInterval(intervalo); // Limpa o intervalo ao desmontar
   }, [id, api]);
 
   const buscarAmigos = async () => {
@@ -103,39 +108,36 @@ function Times() {
   const handleAddMember = () => buscarAmigos();
 
   const handleLeaveTeam = async () => {
-  if (window.confirm("Tem certeza que deseja sair do time?")) {
-    try {
-      setLoading(true);
+    if (window.confirm("Tem certeza que deseja sair do time?")) {
+      try {
+        setLoading(true);
 
-      const isDono = user.id === time.idCriador; // corrigido aqui: comparar id do user com idCriador do time
+        const isDono = user.id === time.idCriador;
 
-      if (membros.length === 1 && isDono) {
-        // Usuário é o único membro e é o dono → excluir time
-        await api.delete(`/times/${id}`);
-        alert("Você era o único membro. O time foi excluído.");
-        navigate("/home");
-      } else if (isDono) {
-        alert("Você é o dono do time. Promova outro membro antes de sair.");
-      } else {
-        // Usuário não é dono → pode sair do time
-        await api.post(`/times/${id}/sair`);
-        alert("Você saiu do time.");
-        navigate("/home");
+        if (membros.length === 1 && isDono) {
+          await api.delete(`/times/${id}`);
+          alert("Você era o único membro. O time foi excluído.");
+          navigate("/home");
+        } else if (isDono) {
+          alert("Você é o dono do time. Promova outro membro antes de sair.");
+        } else {
+          await api.post(`/times/${id}/sair`);
+          alert("Você saiu do time.");
+          navigate("/home");
+        }
+
+      } catch (err) {
+        if (err.response?.status === 403) {
+          alert(err.response.data || "Você não tem permissão para realizar esta ação.");
+        } else {
+          alert("Erro ao sair do time ou excluir o time.");
+        }
+        console.error(err);
+      } finally {
+        setLoading(false);
       }
-
-    } catch (err) {
-      if (err.response?.status === 403) {
-        alert(err.response.data || "Você não tem permissão para realizar esta ação.");
-      } else {
-        alert("Erro ao sair do time ou excluir o time.");
-      }
-      console.error(err);
-    } finally {
-      setLoading(false);
     }
-  }
-};
-
+  };
 
   const openContextMenu = (event, member) => {
     event.preventDefault();
