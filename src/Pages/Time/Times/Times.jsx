@@ -103,19 +103,39 @@ function Times() {
   const handleAddMember = () => buscarAmigos();
 
   const handleLeaveTeam = async () => {
-    if (window.confirm("Tem certeza que deseja sair do time?")) {
-      try {
-        setLoading(true);
-        await api.post(`/times/${id}/sair`, { idUsuario: user.id });
+  if (window.confirm("Tem certeza que deseja sair do time?")) {
+    try {
+      setLoading(true);
+
+      const isDono = user.id === time.idCriador; // corrigido aqui: comparar id do user com idCriador do time
+
+      if (membros.length === 1 && isDono) {
+        // Usuário é o único membro e é o dono → excluir time
+        await api.delete(`/times/${id}`);
+        alert("Você era o único membro. O time foi excluído.");
+        navigate("/home");
+      } else if (isDono) {
+        alert("Você é o dono do time. Promova outro membro antes de sair.");
+      } else {
+        // Usuário não é dono → pode sair do time
+        await api.post(`/times/${id}/sair`);
         alert("Você saiu do time.");
         navigate("/home");
-      } catch {
-        alert("Erro ao sair do time.");
-      } finally {
-        setLoading(false);
       }
+
+    } catch (err) {
+      if (err.response?.status === 403) {
+        alert(err.response.data || "Você não tem permissão para realizar esta ação.");
+      } else {
+        alert("Erro ao sair do time ou excluir o time.");
+      }
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
-  };
+  }
+};
+
 
   const openContextMenu = (event, member) => {
     event.preventDefault();

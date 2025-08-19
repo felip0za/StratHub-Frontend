@@ -24,28 +24,54 @@ function Invites() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!userId) return; //Garante que nenhuma requisição será feita enquanto o userId não estiver disponível.
+    if (!userId) return;
+
+    // Função para carregar tudo (com loading)
+    const fetchAll = async () => {
+      try {
+        setLoading(true);
+        const [friendsRes, friendReqRes, teamInvitesRes] = await Promise.all([
+          api.get("/amizade/amigos"),
+          api.get("/amizade/pendentes"),
+          api.get(`/convites/usuario/${userId}`),
+        ]);
+        setFriends(friendsRes.data || []);
+        setFriendRequests(friendReqRes.data || []);
+        setTeamInvites(teamInvitesRes.data?.filter(i => i.status === "PENDENTE") || []);
+        await verificarTimeUsuario();
+      } catch (error) {
+        alert("Erro ao buscar dados. Tente novamente mais tarde.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Função de atualização silenciosa (sem alterar loading)
+    const atualizarSilenciosamente = async () => {
+      try {
+        const [friendsRes, friendReqRes, teamInvitesRes] = await Promise.all([
+          api.get("/amizade/amigos"),
+          api.get("/amizade/pendentes"),
+          api.get(`/convites/usuario/${userId}`),
+        ]);
+        setFriends(friendsRes.data || []);
+        setFriendRequests(friendReqRes.data || []);
+        setTeamInvites(teamInvitesRes.data?.filter(i => i.status === "PENDENTE") || []);
+        await verificarTimeUsuario();
+      } catch {
+        // opcional: console.log("Erro atualização silenciosa");
+      }
+    };
+
     fetchAll();
-    verificarTimeUsuario();
-  }, [userId]);
 
-  const fetchAll = async () => {
-    try {
-      const [friendsRes, friendReqRes, teamInvitesRes] = await Promise.all([
-        api.get("/amizade/amigos"),
-        api.get("/amizade/pendentes"),
-        api.get(`/convites/usuario/${userId}`),
-      ]);
+    const intervalo = setInterval(() => {
+      atualizarSilenciosamente();
+    }, 10000); // a cada 10 segundos
 
-      setFriends(friendsRes.data || []);
-      setFriendRequests(friendReqRes.data || []);
-      setTeamInvites(teamInvitesRes.data?.filter(i => i.status === "PENDENTE") || []);
-    } catch (error) {
-      alert("Erro ao buscar dados. Tente novamente mais tarde.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    return () => clearInterval(intervalo);
+
+  }, [userId, api]);
 
   const verificarTimeUsuario = async () => {
     try {
@@ -72,7 +98,15 @@ function Invites() {
       alert("Convite enviado com sucesso!");
       setSearchResults([]);
       setSearchName("");
-      fetchAll();
+      // Atualiza lista de amigos e convites após enviar convite
+      const [friendsRes, friendReqRes, teamInvitesRes] = await Promise.all([
+        api.get("/amizade/amigos"),
+        api.get("/amizade/pendentes"),
+        api.get(`/convites/usuario/${userId}`),
+      ]);
+      setFriends(friendsRes.data || []);
+      setFriendRequests(friendReqRes.data || []);
+      setTeamInvites(teamInvitesRes.data?.filter(i => i.status === "PENDENTE") || []);
     } catch (err) {
       const msg = err?.response?.data?.message || "Não foi possível enviar o convite.";
       alert(`Erro: ${msg}`);
@@ -96,7 +130,15 @@ function Invites() {
     try {
       await api.delete(`/amizade/remover/${idUsuario}`);
       alert("Amizade removida.");
-      fetchAll();
+      // Atualiza a lista após remover amigo
+      const [friendsRes, friendReqRes, teamInvitesRes] = await Promise.all([
+        api.get("/amizade/amigos"),
+        api.get("/amizade/pendentes"),
+        api.get(`/convites/usuario/${userId}`),
+      ]);
+      setFriends(friendsRes.data || []);
+      setFriendRequests(friendReqRes.data || []);
+      setTeamInvites(teamInvitesRes.data?.filter(i => i.status === "PENDENTE") || []);
     } catch {
       alert("Erro ao remover amizade.");
     }
@@ -119,14 +161,14 @@ function Invites() {
   };
 
   const handleRejectTeamInvite = async (idConvite) => {
-    try {
-      await api.post(`/convites/recusar/${idConvite}`);
-      alert("Convite recusado.");
-      setTeamInvites(prev => prev.filter(invite => invite.id !== idConvite));
-    } catch {
-      alert("Erro ao recusar convite de time.");
-    }
-  };
+  try {
+    await api.post(`/convites/${idConvite}/recusarTime`);
+    alert("Convite recusado.");
+    setTeamInvites(prev => prev.filter(invite => invite.id !== idConvite));
+  } catch {
+    alert("Erro ao recusar convite de time.");
+  }
+};
 
   if (loading) return (<><Navbar /><LoadingScreen /></>);
 
