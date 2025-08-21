@@ -6,6 +6,13 @@ import { useApi } from '../../../Services/API';
 import Icon from '@mdi/react';
 import { mdiUbisoft } from '@mdi/js';
 import LoadingScreen from '../../../Components/LoadingScreen/LoadingScreen';
+import ferro from '../../../assets/ferro.png';
+import bronze from '../../../assets/bronze.png';
+import prata from '../../../assets/prata.png';
+import ouro from '../../../assets/ouro.png';
+import platina from '../../../assets/platina.png';
+import challenger from '../../../assets/challenger.png';
+import master from '../../../assets/master.png';
 
 function User() {
   const { id } = useParams();
@@ -13,10 +20,12 @@ function User() {
   const api = useApi();
 
   const [usuario, setUsuario] = useState(null);
+  const [rank, setRank] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
+    const token = localStorage.getItem('token'); // Supondo que o token está no localStorage
     if (!id) {
       setError('ID do usuário não fornecido.');
       setLoading(false);
@@ -25,8 +34,24 @@ function User() {
 
     async function fetchUsuario() {
       try {
-        const { data } = await api.get(`/usuario/${id}`);
+        const headers = {
+          Authorization: `Bearer ${token}`, // Adicionando o token no cabeçalho da requisição
+        };
+
+        const { data } = await api.get(`/usuario/${id}`, { headers });
         setUsuario(data);
+
+        // Buscar o time do usuário pelo id_usuario
+        try {
+          const { data: timeData } = await api.get(`/usuario/${id}/time`, { headers });
+          if (timeData.rank) {
+            setRank(timeData.rank);
+          }
+        } catch (err) {
+          console.error('Erro ao buscar o time:', err);
+          setError('Erro ao carregar as informações do time.');
+        }
+
       } catch (err) {
         console.error('Erro ao buscar usuário:', err);
         if (err.response?.status === 400 || err.response?.status === 404) {
@@ -69,9 +94,18 @@ function User() {
       : `data:image/png;base64,${usuario.imagemUsuario}`
     : '/default-user.png';
 
-  const imagemRank = usuario.rank?.imagem
-    ? `data:image/png;base64,${usuario.rank.imagem}`
-    : '/default-rank.png';
+  const rankToImage = {
+    FERRO: ferro,
+    BRONZE: bronze,
+    PRATA: prata,
+    OURO: ouro,
+    PLATINA: platina,
+    CHALLENGER: challenger,
+    MASTER: master,
+  };
+
+  const imagemRank = rank ? rankToImage[rank.toUpperCase()] : '/default-rank.png';
+  const nomeRank = rank || 'Sem rank';
 
   return (
     <>
@@ -105,10 +139,10 @@ function User() {
 
         {/* Rank + Títulos */}
         <div className="profile-body">
-          {/* Rank */}
+          {/* Rank do time */}
           <div className="rank-card">
-            <img className="rank-image" src={imagemRank} alt="Rank" />
-            <p className="rank-name">{usuario.rank?.nome || 'Sem rank'}</p>
+            <img className="rank-image" src={imagemRank} alt="Rank do time" />
+            <p className="rank-name">{nomeRank}</p>
           </div>
 
           {/* Títulos */}
