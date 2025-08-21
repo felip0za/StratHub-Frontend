@@ -83,8 +83,6 @@ function Ranking() {
 
         setTimes(listaTimes);
       } catch (err) {
-        
-
         const mensagem =
           err.response?.data?.message ||
           err.message ||

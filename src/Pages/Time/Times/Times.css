@@ -1,4 +1,5 @@
-@import url('https://fonts.cdnfonts.com/css/akira-expanded');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
 
 .container {
   display: flex;
@@ -6,20 +7,21 @@
   justify-content: center;
   align-items: flex-start;
   padding: 40px;
-  font-family: 'Akira Expanded', sans-serif;
+  font-family: 'Poppins', sans-serif;
   background-color: #121212;
   color: white;
   min-height: 100vh;
   flex-wrap: wrap;
 }
 
-/* SEÇÃO ESQUERDA */
+
 .left-section {
   flex: 1;
   max-width: 400px;
   margin-right: 40px;
   box-shadow: 0px 4px 12px rgb(150, 0, 0);
 }
+
 
 .logo-section {
   text-align: center;
@@ -34,7 +36,7 @@
   height: 160px;
   object-fit: cover;
   border-radius: 50%;
-  border: 4px;
+  border: 4px solid #fff;
   margin-bottom: 20px;
 }
 
@@ -82,7 +84,6 @@
   border: none;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  font-family: 'Akira Expanded', sans-serif;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -104,7 +105,7 @@
   max-width: 800px;
 }
 
-/* CARTÃO DE MEMBRO */
+
 .member-card {
   display: flex;
   align-items: center;
@@ -167,7 +168,7 @@
   letter-spacing: 0.05em;
 }
 
-/* BOTÃO ADICIONAR MEMBRO */
+
 .add-member {
   margin-top: 20px;
   background-color: #007bff;
@@ -178,7 +179,6 @@
   cursor: pointer;
   transition: background-color 0.3s ease;
   box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
-  font-family: 'Akira Expanded', sans-serif;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -188,7 +188,6 @@
   background-color: #0056b3;
 }
 
-/* POPUP */
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -248,7 +247,7 @@
   background-color: #218838;
 }
 
-/* CONTEXTUAL */
+
 .contextual-popup {
   position: absolute;
   background-color: #2a2a2a;
@@ -282,7 +281,6 @@
   opacity: 0.9;
 }
 
-/* RANKS */
 .rank-label {
   margin-top: 4px;
   font-size: 13px;
@@ -298,7 +296,7 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
 }
 
-/* Cores por rank */
+
 .rank-ferro {
   background-color: #6e6e6e;
   color: white;
@@ -328,7 +326,7 @@
   color: white;
 }
 
-/* AJUSTES ADICIONADOS */
+
 .rank-image {
   width: 130px;
   height: auto;
@@ -374,4 +372,3 @@
   transition: width 0.5s ease;
   border-radius: 10px;
 }
-

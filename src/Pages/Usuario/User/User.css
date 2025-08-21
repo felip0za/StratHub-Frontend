@@ -1,147 +1,161 @@
-/* Layout geral */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
 .profile-container {
   background-color: #1e1e1e;
-  color: #ffffff;
   min-height: 100vh;
-  padding: 40px 60px;
+  padding: 30px;
+  color: #111;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 32px;
+  gap: 20px;
+  font-family: 'Poppins', sans-serif;
 }
 
-/* Header do perfil */
+/* Header */
 .profile-header {
   display: flex;
-  flex-direction: row;
   align-items: center;
-  gap: 32px;
-  background-color: #2b2b2b;
-  border-radius: 16px;
-  padding: 32px;
-  box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
-  width: 100%;
-  max-width: 800px;
+  gap: 20px;
+  background: #dcdcdc;
+  padding: 25px;
+  border-radius: 25px;
 }
 
-/* Foto de perfil */
 .profile-avatar {
-  width: 180px;
-  height: 180px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   object-fit: cover;
-  border: 4px solid #fff;
+  border: 3px solid #fff;
 }
 
-/* Textos do perfil */
 .profile-text {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-}
-
-.ubisoft-text {
-  display: inline-flex;
-  align-items: center;
-  font-weight: bold;
-  margin-right: 6px;
-  color: #fff; 
-  font-size: large;
-}
-
-.ubisoft-icon {
-  margin-right: 6px;
-  color: #ffffff;
-}
-
-.ubi-connect-valor {
-  color: #888;
-  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-  font-size: large; /* Cor do valor do UbiConnect */
 }
 
 .profile-nome {
-  font-size: 28px;
-  font-weight: bold;
-  color: #ffffff;
+  font-size: 1.8rem;
+  margin: 0;
+  font-weight: 600;
 }
 
 .profile-apelido {
-  color: #888;
-  font-weight: bold;
+  font-weight: 700;
+  color: #000;
 }
 
-.profile-email {
-  font-size: 18px;
-  color: #cccccc;
-}
-
-/* Botões */
-.profile-actions {
+.ubisoft-text {
   display: flex;
-  gap: 16px;
-  justify-content: flex-start;
+  align-items: center;
+  gap: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.ubisoft-icon {
+  vertical-align: middle;
+}
+
+.ubi-connect-valor {
+  color: #333;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+/* Corpo (Rank + Títulos) */
+.profile-body {
+  display: flex;
+  gap: 20px;
+}
+
+/* Rank Card */
+.rank-card {
+  background: #dcdcdc;
+  border-radius: 25px;
+  padding: 20px;
+  width: 200px;
+  text-align: center;
+}
+
+.rank-image {
   width: 100%;
-  max-width: 800px;
+  border-radius: 15px;
 }
 
-.btn {
-  padding: 12px 24px;
-  border: none;
+.rank-name {
+  margin-top: 12px;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+/* Titles */
+.titles-card {
+  flex: 1;
+  background: #dcdcdc;
+  border-radius: 25px;
+  padding: 20px;
+}
+
+.titles-header {
+  font-size: 1.6rem;
+  margin-bottom: 15px;
+  border-bottom: 4px solid #888;
+  padding-bottom: 8px;
+  font-weight: 600;
+}
+
+.titles-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.title-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #aaa;
+  padding: 15px;
+  border-radius: 20px;
+  width: 150px;
+}
+
+.champ-image {
+  width: 100%;
   border-radius: 12px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  background-color: #ff0000;
+  margin-bottom: 8px;
+}
+
+.title-name {
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.no-titles {
+  font-size: 1rem;
+  color: #333;
+}
+
+/* Botão editar */
+.profile-actions {
+  margin-top: 15px;
+}
+
+.btn.edit {
+  background: #007bff;
   color: white;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  transition: 0.2s;
 }
 
-.btn:hover {
-  transform: scale(1.05);
-  background-color: rgb(180, 0, 0);
-}
-
-/* Mensagens de erro ou loading */
-.loading,
-.error-message {
-  color: #ff4c4c;
-  font-size: 18px;
-  font-weight: bold;
-  margin-top: 40px;
-}
-
-/* Responsivo */
-@media (max-width: 768px) {
-  .profile-container {
-    padding: 20px;
-    align-items: center;
-  }
-
-  .profile-header {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .profile-text {
-    align-items: center;
-  }
-
-  .profile-avatar {
-    width: 140px;
-    height: 140px;
-  }
-
-  .profile-nome {
-    font-size: 24px;
-  }
-
-  .profile-email {
-    font-size: 16px;
-  }
-
-  .profile-actions {
-    justify-content: center;
-  }
+.btn.edit:hover {
+  background: #0056b3;
 }

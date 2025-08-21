@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useApi } from '../../../Services/API';
 import Icon from '@mdi/react';
 import { mdiUbisoft } from '@mdi/js';
-import LoadingScreen from '../../../Components/LoadingScreen/LoadingScreen'; // ✅ importado
+import LoadingScreen from '../../../Components/LoadingScreen/LoadingScreen';
 
 function User() {
   const { id } = useParams();
@@ -69,10 +69,15 @@ function User() {
       : `data:image/png;base64,${usuario.imagemUsuario}`
     : '/default-user.png';
 
+  const imagemRank = usuario.rank?.imagem
+    ? `data:image/png;base64,${usuario.rank.imagem}`
+    : '/default-rank.png';
+
   return (
     <>
       <Navbar />
       <div className="profile-container">
+        {/* Header */}
         <div className="profile-header">
           <img
             className="profile-avatar"
@@ -98,6 +103,41 @@ function User() {
           </div>
         </div>
 
+        {/* Rank + Títulos */}
+        <div className="profile-body">
+          {/* Rank */}
+          <div className="rank-card">
+            <img className="rank-image" src={imagemRank} alt="Rank" />
+            <p className="rank-name">{usuario.rank?.nome || 'Sem rank'}</p>
+          </div>
+
+          {/* Títulos */}
+          <div className="titles-card">
+            <h3 className="titles-header">Títulos:</h3>
+            <div className="titles-list">
+              {usuario.titulos && usuario.titulos.length > 0 ? (
+                usuario.titulos.map((titulo, index) => (
+                  <div key={index} className="title-item">
+                    <img
+                      className="champ-image"
+                      src={
+                        titulo.imagem
+                          ? `data:image/png;base64,${titulo.imagem}`
+                          : '/default-campeonato.png'
+                      }
+                      alt={titulo.nome || 'Campeonato'}
+                    />
+                    <p className="title-name">{titulo.nome}</p>
+                  </div>
+                ))
+              ) : (
+                <p className="no-titles">Nenhum título conquistado.</p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Botão editar */}
         <div className="profile-actions">
           <button className="btn edit" onClick={handleEdit}>
             ✏️ Editar Perfil
