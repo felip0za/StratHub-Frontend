@@ -88,14 +88,6 @@ const CreateTime = () => {
             rows="4"
           />
 
-          <label>Imagem:</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            required
-          />
-
           <label>Apelido do Time:</label>
           <input
             type="text"
@@ -103,6 +95,14 @@ const CreateTime = () => {
             onChange={e => setApelidoTime(e.target.value)}
             required
           />
+
+          <label>Imagem:</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            required
+          />  
 
           {teImagemBase64 && (
             <div className="preview-container">

@@ -1,14 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
 .profile-container {
-  background-color: #1e1e1e;
+  background-color: #121212;
   min-height: 100vh;
   padding: 30px;
-  color: #111;
+  color: white;
   display: flex;
   flex-direction: column;
   gap: 20px;
   font-family: 'Poppins', sans-serif;
+  align-items: center;
 }
 
 /* Header */
@@ -16,10 +17,12 @@
   display: flex;
   align-items: center;
   gap: 20px;
-  background: #dcdcdc;
+  background: #1e1e1e;
+  box-shadow: 0px 4px 12px rgb(150, 0, 0);
   padding: 25px;
   border-radius: 25px;
-  width: 1050px;
+  max-width: 1050px;
+  width: 100%;
 }
 
 .profile-avatar {
@@ -28,6 +31,7 @@
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid #fff;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
 }
 
 .profile-text {
@@ -38,12 +42,13 @@
 .profile-nome {
   font-size: 1.8rem;
   margin: 0;
-  font-weight: 600;
+  font-weight: 700;
+  color: white;
 }
 
 .profile-apelido {
   font-weight: 700;
-  color: #000;
+  color: #888;
 }
 
 .ubisoft-text {
@@ -51,7 +56,8 @@
   align-items: center;
   gap: 6px;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
+  color: #ccc;
 }
 
 .ubisoft-icon {
@@ -59,7 +65,7 @@
 }
 
 .ubi-connect-valor {
-  color: #333;
+  color: #fff;
   font-weight: 600;
   font-size: 1rem;
 }
@@ -68,42 +74,56 @@
 .profile-body {
   display: flex;
   gap: 20px;
+  width: 100%;
+  max-width: 1050px;
 }
 
 /* Rank Card */
 .rank-card {
-  background: #dcdcdc;
+  background-color: #1e1e1e;
+  box-shadow: 0px 4px 12px rgb(150, 0, 0);
   border-radius: 25px;
   padding: 20px;
-  width: 200px;
+  width: 220px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .rank-image {
-  width: 100%;
-  border-radius: 15px;
+  width: 100px;
+  height: auto;
+  margin-bottom: 10px;
+  border-radius: 12px;
 }
 
 .rank-name {
-  margin-top: 12px;
   font-size: 1.2rem;
   font-weight: 700;
+  color: white;
+  background-color: #2a2a2a;
+  padding: 6px 12px;
+  border-radius: 12px;
+  text-transform: uppercase;
 }
 
 /* Titles */
 .titles-card {
   flex: 1;
-  background: #dcdcdc;
+  background: #1e1e1e;
   border-radius: 25px;
   padding: 20px;
+  box-shadow: 0px 4px 12px rgba(150, 0, 0, 0.5);
 }
 
 .titles-header {
   font-size: 1.6rem;
   margin-bottom: 15px;
-  border-bottom: 4px solid #888;
+  border-bottom: 4px solid #ff1e00;
   padding-bottom: 8px;
-  font-weight: 600;
+  font-weight: 700;
+  color: #fff;
 }
 
 .titles-list {
@@ -116,10 +136,16 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: #aaa;
+  background: #2a2a2a;
   padding: 15px;
   border-radius: 20px;
   width: 150px;
+  box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.title-item:hover {
+  transform: scale(1.05);
 }
 
 .champ-image {
@@ -132,11 +158,12 @@
   font-size: 1rem;
   font-weight: 600;
   text-align: center;
+  color: white;
 }
 
 .no-titles {
   font-size: 1rem;
-  color: #333;
+  color: #bbb;
 }
 
 /* Botão editar */
@@ -145,18 +172,34 @@
 }
 
 .btn.edit {
-  background: #007bff;
+  background: crimson;
   color: white;
   border: none;
   padding: 12px 20px;
   border-radius: 12px;
   cursor: pointer;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   font-family: 'Poppins', sans-serif;
-  transition: 0.2s;
+  transition: background-color 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .btn.edit:hover {
-  background: #0056b3;
+  background: #9b0000;
+}
+
+/* Erro */
+.error-message {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #ff4d4d;
+  text-align: center;
+  background-color: #2a2a2a;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0px 4px 12px rgba(255, 0, 0, 0.3);
+  max-width: 600px;
+  margin: 40px auto 0 auto;
 }

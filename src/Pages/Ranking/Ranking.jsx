@@ -3,7 +3,7 @@ import { useApi } from '../../Services/API';
 import Navbar from '../../Components/Navbar/Navbar';
 import LoadingScreen from '../../Components/LoadingScreen/LoadingScreen';
 
-import ferro from '../../assets/ferro.png';
+import Ferro from '../../assets/ferro.png';
 import bronze from '../../assets/bronze.png';
 import prata from '../../assets/prata.png';
 import ouro from '../../assets/ouro.png';
@@ -23,7 +23,7 @@ function Ranking() {
   const api = useApi();
 
   const rankToImage = {
-    FERRO: ferro,
+    FERRO: Ferro,
     BRONZE: bronze,
     PRATA: prata,
     OURO: ouro,
@@ -34,14 +34,16 @@ function Ranking() {
 
   useEffect(() => {
     let intervalo;
+    let mounted = true;
 
     const buscarDados = async (exibirLoading = false) => {
+      if (!mounted) return;
+
       try {
         if (exibirLoading) setLoading(true);
         setError('');
 
         const resUsuario = await api.get('/times/usuario');
-        
         let usuarioTime = resUsuario.data;
 
         if (!usuarioTime) {
@@ -52,18 +54,17 @@ function Ranking() {
           return;
         }
 
-        if (Array.isArray(usuarioTime)) {
-          usuarioTime = usuarioTime[0];
-        }
+        if (Array.isArray(usuarioTime)) usuarioTime = usuarioTime[0];
 
         if (!usuarioTime?.id) {
+          setError('Você não faz parte de nenhum time.');
           setMeuTime(null);
           setTimes([]);
-          setError('Você não faz parte de nenhum time.');
           if (exibirLoading) setLoading(false);
           return;
         }
 
+        if (!mounted) return;
         setMeuTime(usuarioTime);
 
         const rankUpper = (usuarioTime.rank || '').toUpperCase();
@@ -81,8 +82,10 @@ function Ranking() {
           .map((t) => ({ ...t, ehMeuTime: t.id === usuarioTime.id }))
           .sort((a, b) => b.pontuacao - a.pontuacao);
 
+        if (!mounted) return;
         setTimes(listaTimes);
       } catch (err) {
+        if (!mounted) return;
         const mensagem =
           err.response?.data?.message ||
           err.message ||
@@ -90,7 +93,7 @@ function Ranking() {
 
         setError(mensagem);
       } finally {
-        if (exibirLoading) setLoading(false);
+        if (mounted && exibirLoading) setLoading(false);
       }
     };
 
@@ -100,7 +103,10 @@ function Ranking() {
       buscarDados(false);
     }, 10000);
 
-    return () => clearInterval(intervalo);
+    return () => {
+      mounted = false;
+      clearInterval(intervalo);
+    };
   }, [api]);
 
   if (loading)
