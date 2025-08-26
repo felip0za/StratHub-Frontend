@@ -4,8 +4,10 @@ import './Cadastro.css';
 import { useNavigate } from 'react-router-dom';
 
 const Cadastro = () => {
-  const [nome, setNome] = useState('');
+  const [step, setStep] = useState(1); // controla o estágio atual
   const [email, setEmail] = useState('');
+  const [confirmEmail, setConfirmEmail] = useState('');
+  const [nome, setNome] = useState('');
   const [senha, setSenha] = useState('');
   const [ubiConnect, setUbiConnect] = useState('');
   const [imagemUsuario, setImagemUsuario] = useState('');
@@ -14,6 +16,24 @@ const Cadastro = () => {
   const navigate = useNavigate();
 
   const api = useApi();
+
+  const handleNext = () => {
+    if (step === 1 && !email) {
+      setError('Digite um e-mail válido.');
+      return;
+    }
+    if (step === 2 && confirmEmail !== email) {
+      setError('O e-mail de confirmação não corresponde.');
+      return;
+    }
+    setError('');
+    setStep(step + 1);
+  };
+
+  const handleBack = () => {
+    setError('');
+    setStep(step - 1);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,7 +44,7 @@ const Cadastro = () => {
       nome,
       email,
       senha,
-      ubiConnect, // aqui estava errado no seu código original
+      ubiConnect,
       imagemUsuario,
     };
 
@@ -50,7 +70,7 @@ const Cadastro = () => {
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      const base64String = reader.result.split(',')[1]; // Remove prefixo "data:image/..."
+      const base64String = reader.result.split(',')[1]; // remove prefixo
       setImagemUsuario(base64String);
     };
     reader.readAsDataURL(file);
@@ -58,64 +78,95 @@ const Cadastro = () => {
 
   return (
     <div className="register-container">
-      <h2>Cadastro</h2>
+      <h2>Cadastro - Etapa {step} de 3</h2>
       {error && <div className="error-text">{error}</div>}
 
-      <form onSubmit={handleSubmit}>
-        <label>Nome</label>
-        <input
-          type="text"
-          value={nome}
-          onChange={(e) => setNome(e.target.value)}
-          required
-        />
-
-        <label>UbisoftConnect</label>
-        <input
-          type="text"
-          value={ubiConnect}
-          onChange={(e) => setUbiConnect(e.target.value)}
-          required
-        />
-
-        <label>Email</label>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-
-        <label>Senha</label>
-        <input
-          type="password"
-          value={senha}
-          onChange={(e) => setSenha(e.target.value)}
-          required
-        />
-
-        <label>Imagem de perfil</label>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImageChange}
-        />
-
-        {imagemUsuario && (
-          <div className="preview-container">
-            <p>Pré-visualização da imagem:</p>
-            <img
-              src={`data:image/png;base64,${imagemUsuario}`}
-              alt="Pré-visualização"
-              className="preview-img"
-            />
+      {/* ETAPA 1 - EMAIL */}
+      {step === 1 && (
+        <form onSubmit={(e) => e.preventDefault()}>
+          <label>Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <div className="wizard-buttons">
+            <button type="button" onClick={handleNext}>Próximo</button>
           </div>
-        )}
+        </form>
+      )}
 
-        <button type="submit" disabled={isLoading}>
-          {isLoading ? 'Cadastrando...' : 'Cadastrar'}
-        </button>
-      </form>
+      {/* ETAPA 2 - CONFIRMAR EMAIL */}
+      {step === 2 && (
+        <form onSubmit={(e) => e.preventDefault()}>
+          <label>Confirme seu Email</label>
+          <input
+            type="email"
+            value={confirmEmail}
+            onChange={(e) => setConfirmEmail(e.target.value)}
+            required
+          />
+          <div className="wizard-buttons">
+            <button type="button" onClick={handleBack}>Voltar</button>
+            <button type="button" onClick={handleNext}>Próximo</button>
+          </div>
+        </form>
+      )}
+
+      {/* ETAPA 3 - DADOS DO PERFIL */}
+      {step === 3 && (
+        <form onSubmit={handleSubmit}>
+          <label>Apelido</label>
+          <input
+            type="text"
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
+            required
+          />
+
+          <label>UbisoftConnect</label>
+          <input
+            type="text"
+            value={ubiConnect}
+            onChange={(e) => setUbiConnect(e.target.value)}
+            required
+          />
+
+          <label>Senha</label>
+          <input
+            type="password"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+            required
+          />
+
+          <label>Imagem de perfil</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+          />
+
+          {imagemUsuario && (
+            <div className="preview-container">
+              <p>Pré-visualização da imagem:</p>
+              <img
+                src={`data:image/png;base64,${imagemUsuario}`}
+                alt="Pré-visualização"
+                className="preview-img"
+              />
+            </div>
+          )}
+
+          <div className="wizard-buttons">
+            <button type="button" onClick={handleBack}>Voltar</button>
+            <button type="submit" disabled={isLoading}>
+              {isLoading ? 'Cadastrando...' : 'Cadastrar'}
+            </button>
+          </div>
+        </form>
+      )}
     </div>
   );
 };

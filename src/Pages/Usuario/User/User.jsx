@@ -118,6 +118,7 @@ function User() {
 
         <div className="profile-body">
           <div className="rank-card">
+            <h3 className="rank-title">Rank do time:</h3>
             <img className="rank-image" src={imagemRank} alt="Rank do time" />
             <p className="rank-name">{nomeRank}</p>
           </div>

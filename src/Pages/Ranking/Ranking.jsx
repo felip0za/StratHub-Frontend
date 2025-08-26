@@ -47,17 +47,17 @@ function Ranking() {
         let usuarioTime = resUsuario.data;
 
         if (!usuarioTime) {
-          setError('Nenhum dado recebido do servidor.');
+          setError('Voce nao Possui um time.');
           setMeuTime(null);
-          setTimes([]);
           if (exibirLoading) setLoading(false);
           return;
         }
 
         if (Array.isArray(usuarioTime)) usuarioTime = usuarioTime[0];
 
-        if (!usuarioTime?.id) {
-          setError('Você não faz parte de nenhum time.');
+        // 🚨 Se usuário não possui time (id ou id_time null)
+        if (!usuarioTime?.id || !usuarioTime?.id_time) {
+          setError('Você não possui time.');
           setMeuTime(null);
           setTimes([]);
           if (exibirLoading) setLoading(false);
@@ -150,7 +150,6 @@ function Ranking() {
         <div className="ranking-container">
           <h1 className="ranking-title">ELITE CUP - {rankSelecionado}</h1>
           <div className="ranking-header">
-            <span>#</span>
             <span>Time</span>
             <span>Pontuação</span>
             <span>Vitórias</span>
