@@ -6,6 +6,8 @@ import { useApi } from '../../../Services/API';
 import Icon from '@mdi/react';
 import { mdiUbisoft } from '@mdi/js';
 import LoadingScreen from '../../../Components/LoadingScreen/LoadingScreen';
+
+// Imagens dos ranks
 import ferro from '../../../assets/ferro.png';
 import bronze from '../../../assets/bronze.png';
 import prata from '../../../assets/prata.png';
@@ -13,6 +15,7 @@ import ouro from '../../../assets/ouro.png';
 import platina from '../../../assets/platina.png';
 import challenger from '../../../assets/challenger.png';
 import master from '../../../assets/master.png';
+import noRank from '../../../assets/noRank.png'; // <-- sua imagem de "sem rank"
 
 function User() {
   const { id } = useParams();
@@ -25,49 +28,49 @@ function User() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-  const token = localStorage.getItem('token');
-  if (!id) {
-    setError('ID do usuário não fornecido.');
-    setLoading(false);
-    return;
-  }
-
-  async function fetchUsuario() {
-    try {
-      const headers = { Authorization: `Bearer ${token}` };
-      const { data: usuarioData } = await api.get(`/usuario/${id}`, { headers });
-      setUsuario(usuarioData);
-
-      // Pega o ID do time do usuário (ajuste conforme seu JSON)
-      const timeId = usuarioData.time?.id || usuarioData.idTime;
-      if (timeId) {
-        try {
-          const { data: timeData } = await api.get(`/times/${timeId}`, { headers });
-          setTime(timeData);
-        } catch (err) {
-          console.error('Erro ao buscar o time:', err);
-          // Opcional: setTime(null) ou mensagem de erro
-        }
-      } else {
-        setTime(null); // usuário sem time
-      }
-
-    } catch (err) {
-      console.error('Erro ao buscar usuário:', err);
-      if (err.response?.status === 400 || err.response?.status === 404) {
-        setError('Usuário não encontrado.');
-      } else if (err.response?.status === 403) {
-        setError('Acesso negado. Faça login novamente.');
-      } else {
-        setError('Erro ao carregar os dados do usuário.');
-      }
-    } finally {
+    const token = localStorage.getItem('token');
+    if (!id) {
+      setError('ID do usuário não fornecido.');
       setLoading(false);
+      return;
     }
-  }
 
-  fetchUsuario();
-}, [id, api]);
+    async function fetchUsuario() {
+      try {
+        const headers = { Authorization: `Bearer ${token}` };
+        const { data: usuarioData } = await api.get(`/usuario/${id}`, { headers });
+        setUsuario(usuarioData);
+
+        // Pega o ID do time do usuário (ajuste conforme seu JSON)
+        const timeId = usuarioData.time?.id || usuarioData.idTime;
+        if (timeId) {
+          try {
+            const { data: timeData } = await api.get(`/times/${timeId}`, { headers });
+            setTime(timeData);
+          } catch (err) {
+            console.error('Erro ao buscar o time:', err);
+            setTime(null);
+          }
+        } else {
+          setTime(null); // usuário sem time
+        }
+
+      } catch (err) {
+        console.error('Erro ao buscar usuário:', err);
+        if (err.response?.status === 400 || err.response?.status === 404) {
+          setError('Usuário não encontrado.');
+        } else if (err.response?.status === 403) {
+          setError('Acesso negado. Faça login novamente.');
+        } else {
+          setError('Erro ao carregar os dados do usuário.');
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchUsuario();
+  }, [id, api]);
 
   const handleEdit = () => {
     navigate(`/editar-usuario/${id}`);
@@ -90,10 +93,22 @@ function User() {
       )
     : '/default-user.png';
 
-  const rankToImage = { FERRO: ferro, BRONZE: bronze, PRATA: prata, OURO: ouro,
-                        PLATINA: platina, CHALLENGER: challenger, MASTER: master };
+  // Mapeamento de ranks
+  const rankToImage = { 
+    FERRO: ferro, 
+    BRONZE: bronze, 
+    PRATA: prata, 
+    OURO: ouro,
+    PLATINA: platina, 
+    CHALLENGER: challenger, 
+    MASTER: master 
+  };
 
-  const imagemRank = time?.rank ? rankToImage[time.rank.toUpperCase()] : '/default-rank.png';
+  // Verificação do rank
+  const imagemRank = time?.rank 
+    ? (rankToImage[time.rank.toUpperCase()] || noRank) 
+    : noRank;
+
   const nomeRank = time?.rank || 'Sem rank';
 
   return (

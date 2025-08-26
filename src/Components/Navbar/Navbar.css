@@ -4,7 +4,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 20px;
+    padding: 10px 30px;
     background-color: #1a1a1a;
 }
 
@@ -15,7 +15,7 @@
 
 .nav-links {
     display: flex;
-    gap: 10px;
+    gap: 30px; /* Reduzido de 100px para 30px */
 }
 
 .nav-link {
@@ -34,16 +34,10 @@
     font-size: 18px;
     padding: 5px;
     transition: 0.3s;
-    margin-right: -100px;
+    /* ❌ Removido: margin-right: -100px; */
 }
 
-.nav-link:hover {
-    font-size: 20px;
-    padding: 8px;
-    color: rgb(180, 0, 0);
-    transition: 0.3s;
-}
-
+.nav-link:hover,
 .nav-link-friends:hover {
     font-size: 20px;
     padding: 8px;

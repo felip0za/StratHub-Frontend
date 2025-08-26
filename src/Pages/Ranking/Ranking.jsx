@@ -3,7 +3,7 @@ import { useApi } from '../../Services/API';
 import Navbar from '../../Components/Navbar/Navbar';
 import LoadingScreen from '../../Components/LoadingScreen/LoadingScreen';
 
-import Ferro from '../../assets/ferro.png';
+import ferro from '../../assets/ferro.png';
 import bronze from '../../assets/bronze.png';
 import prata from '../../assets/prata.png';
 import ouro from '../../assets/ouro.png';
@@ -23,7 +23,7 @@ function Ranking() {
   const api = useApi();
 
   const rankToImage = {
-    FERRO: Ferro,
+    FERRO: ferro,
     BRONZE: bronze,
     PRATA: prata,
     OURO: ouro,
@@ -55,8 +55,8 @@ function Ranking() {
 
         if (Array.isArray(usuarioTime)) usuarioTime = usuarioTime[0];
 
-        // 🚨 Se usuário não possui time (id ou id_time null)
-        if (!usuarioTime?.id || !usuarioTime?.id_time) {
+        // Se o usuário não tem nenhum identificador de time
+        if (!usuarioTime?.id && !usuarioTime?.id_time) {
           setError('Você não possui time.');
           setMeuTime(null);
           setTimes([]);
