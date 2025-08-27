@@ -77,7 +77,7 @@
 
 .edit-logo,
 .leave-team {
-  background-color: crimson;
+  background-color: rgb(180, 0, 0);
   color: white;
   padding: 10px;
   border-radius: 8px;
@@ -91,7 +91,7 @@
 
 .edit-logo:hover,
 .leave-team:hover {
-  background-color: #9b0000;
+  background-color: #5f0000;
 }
 
 /* SEÇÃO DO TIME */
