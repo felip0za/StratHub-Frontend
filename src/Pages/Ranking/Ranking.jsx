@@ -47,7 +47,7 @@ function Ranking() {
         let usuarioTime = resUsuario.data;
 
         if (!usuarioTime) {
-          setError('Voce nao Possui um time.');
+          setError('Você não possui um time.');
           setMeuTime(null);
           if (exibirLoading) setLoading(false);
           return;
@@ -55,7 +55,6 @@ function Ranking() {
 
         if (Array.isArray(usuarioTime)) usuarioTime = usuarioTime[0];
 
-        // Se o usuário não tem nenhum identificador de time
         if (!usuarioTime?.id && !usuarioTime?.id_time) {
           setError('Você não possui time.');
           setMeuTime(null);
@@ -108,6 +107,16 @@ function Ranking() {
       clearInterval(intervalo);
     };
   }, [api]);
+
+  // Scroll automático até o time do usuário
+  useEffect(() => {
+    if (meuTime) {
+      const meuTimeCard = document.querySelector('.meu-time');
+      if (meuTimeCard) {
+        meuTimeCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }, [meuTime, times]);
 
   if (loading)
     return (
