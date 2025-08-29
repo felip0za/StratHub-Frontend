@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+ import React, { useState } from 'react';
 import { useApi } from '../../Services/API';
 import './Cadastro.css';
 import { useNavigate } from 'react-router-dom';
 
 const Cadastro = () => {
-  const [step, setStep] = useState(1); // controla o estágio atual
+  const [step, setStep] = useState(1);
   const [email, setEmail] = useState('');
   const [confirmEmail, setConfirmEmail] = useState('');
   const [nome, setNome] = useState('');
@@ -40,16 +40,19 @@ const Cadastro = () => {
     setIsLoading(true);
     setError('');
 
+    // Ajustado para os nomes corretos do backend
     const usuarioParaEnvio = {
-      nome,
-      email,
-      senha,
-      ubiConnect,
-      imagemUsuario,
+      email: email,
+      senha: senha,
+      nome: nome,
+      ubiConnect: ubiConnect,
+      imagemUsuario: imagemUsuario || null,
+      rank: "Unranked", // valor default
+      kd: 0.0 // valor default
     };
 
     try {
-      await api.post('/usuario/cadastrar', usuarioParaEnvio);
+      const response = await api.post('/usuario/cadastrar', usuarioParaEnvio);
       alert('Cadastro realizado com sucesso!');
       navigate('/login');
     } catch (err) {
@@ -70,7 +73,7 @@ const Cadastro = () => {
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      const base64String = reader.result.split(',')[1]; // remove prefixo
+      const base64String = reader.result.split(',')[1];
       setImagemUsuario(base64String);
     };
     reader.readAsDataURL(file);
