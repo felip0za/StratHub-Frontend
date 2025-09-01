@@ -1,68 +1,155 @@
+/* Container principal do cadastro */
 .register-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
-  
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1f1f1f, #3f3f3f);
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* Título */
 .register-container h2 {
   margin-bottom: 20px;
   color: #fff;
+  font-size: 28px;
+  text-align: center;
+  letter-spacing: 0.5px;
 }
 
+/* Formulário */
 .register-container form {
   display: flex;
   flex-direction: column;
-  width: 320px;
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  padding: 25px;
+  background-color: #1e1e1e;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  color: #fff;
+  transition: all 0.3s ease;
 }
 
+/* Labels */
 .register-container label {
   margin-bottom: 5px;
-  font-weight: 500;
-  color: #222;
+  font-weight: 600;
+  color: #ddd;
+  font-size: 14px;
 }
 
+/* Inputs */
 .register-container input {
   margin-bottom: 15px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  padding: 12px;
+  border: 1px solid #555;
+  border-radius: 8px;
+  background-color: #2b2b2b;
+  color: #fff;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
 }
 
+/* Input desabilitado (para rank/kd) */
+.register-container input:disabled {
+  background-color: #3a3a3a;
+  color: #ccc;
+  border-color: #444;
+  cursor: not-allowed;
+}
+
+/* Input focado */
+.register-container input:focus {
+  outline: none;
+  border-color: #d40000;
+}
+
+/* Botões */
 .register-container button {
-  padding: 10px;
+  padding: 12px;
   font-size: 16px;
   background-color: #d40000;
   color: #fff;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
+  margin-top: 5px;
 }
 
 .register-container button:hover {
   background-color: #a00000;
+  transform: translateY(-2px);
 }
 
+/* Preview da imagem */
 .preview-container {
   text-align: center;
   margin-bottom: 15px;
 }
 
+.preview-container p {
+  margin-bottom: 5px;
+  color: #ccc;
+  font-size: 13px;
+}
+
 .preview-img {
   max-width: 100%;
   max-height: 150px;
-  border-radius: 4px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid #555;
 }
 
+/* Mensagens de erro */
 .error-text {
-  color: red;
+  color: #ff6b6b;
   margin-bottom: 10px;
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Botões de navegação do wizard */
+.wizard-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.wizard-buttons button {
+  flex: 1;
+  margin: 0 5px;
+}
+
+/* Indicador de carregamento */
+.fetching-loader {
+  font-size: 13px;
+  color: #aaa;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* Responsivo */
+@media (max-width: 480px) {
+  .register-container form {
+    padding: 20px;
+    width: 100%;
+  }
+
+  .register-container h2 {
+    font-size: 22px;
+  }
+
+  .wizard-buttons {
+    flex-direction: column;
+  }
+
+  .wizard-buttons button {
+    margin: 5px 0;
+  }
 }
