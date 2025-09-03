@@ -140,7 +140,13 @@ function EditarTime() {
               id="apelido"
               name="apelido"
               value={time.apelido}
-              onChange={handleChange}
+              onChange={(e) => {
+                const valor = e.target.value;
+                if (valor.length <= 5) {
+                  handleChange(e);
+                }
+              }}
+              maxLength={5}
             />
 
             <label htmlFor="descricao">Descrição</label>

@@ -122,20 +122,35 @@ function User() {
               {usuario.apelidoTime && <span className="profile-apelido">{usuario.apelidoTime} | </span>}
               {usuario.nome || 'Nome não disponível'}
             </h1>
+
             <p className="profile-email">
               <strong className="ubisoft-text">
                 <Icon path={mdiUbisoft} size={1} className="ubisoft-icon" /> UbiConnect:
               </strong>{' '}
               <span className="ubi-connect-valor">{usuario.ubiConnect || 'Não informado'}</span>
             </p>
+
+            {/* ✅ K/D Ratio exibido abaixo */}
+            <p className="profile-kd">
+              <strong>K/D:</strong>{''} {/* ainda estamos esperando a API retornar o K/D */}
+              <span>{usuario.kd !== undefined && usuario.kd !== null ? usuario.kd.toFixed(2) : 'Não disponível'}</span>
+            </p>
           </div>
         </div>
+
 
         <div className="profile-body">
           <div className="rank-card">
             <h3 className="rank-title">Rank do time:</h3>
             <img className="rank-image" src={imagemRank} alt="Rank do time" />
             <p className="rank-name">{nomeRank}</p>
+          </div>
+
+          {/* ✅ Rank do usuário exibido abaixo */}
+          <div className="rank-card">
+            <h3 className="rank-title">Rank do usuário:</h3>
+            <img className="rank-image" src={noRank} alt="Sem rank" /> {/* esperando acesso a API */}
+            <p className="rank-name">Sem rank</p>
           </div>
           <div className="titles-card">
             <h3 className="titles-header">Títulos:</h3>
@@ -159,6 +174,7 @@ function User() {
             </div>
           </div>
         </div>
+      
 
         <div className="profile-actions">
           <button className="btn edit" onClick={handleEdit}>✏️ Editar Perfil</button>

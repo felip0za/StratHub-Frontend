@@ -11,6 +11,12 @@
 .nav-logo {
     width: 100px;
     cursor: pointer;
+    transition: 1s;
+}
+
+.nav-logo:hover{
+    transform: scale(1.1);
+    transition: 1s;
 }
 
 .nav-links {
@@ -44,6 +50,8 @@
     color: rgb(180, 0, 0);
     transition: 0.3s;
 }
+
+
 
 .user-info {
     display: flex;
@@ -83,6 +91,11 @@
     color: white;
 }
 
+.friends-icon:hover {
+    font-size: 22px;
+    color: rgb(180, 0, 0);;
+    transition: 0.3s;
+}
 .user-tooltip {
     position: absolute;
     top: 50px;
@@ -95,7 +108,7 @@
     z-index: 999;
     min-width: 140px;
     text-align: center;
-    font-family: 'Akira Expanded', sans-serif;
+    font-family: 'Poppins', sans-serif;
     animation: fadeIn 0.3s ease-in-out;
 }
 
@@ -106,6 +119,7 @@
     justify-content: center;
     gap: 10px;
     margin-bottom: 6px;
+    font-family: "Poppins", sans-serif;
 }
 
 .tooltip-logo {
@@ -120,12 +134,14 @@
     font-weight: bold;
     color: rgb(255, 255, 255);
     text-align: left;
+    font-family: "Poppins", sans-serif;
 }
 
 .tooltip-name.nao-possui {
     font-size: 14px;
     color: rgb(255, 80, 80);
     font-weight: bold;
+    font-family: "Poppins", sans-serif;
 }
 
 @keyframes fadeIn {

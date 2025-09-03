@@ -3,8 +3,9 @@ import { useApi } from "../../Services/API";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import StratHub from "/src/assets/StratHub.png";
-import { FaUsers } from "react-icons/fa";
-import './Navbar.css';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUserGroup } from "@fortawesome/free-solid-svg-icons";
+import "./Navbar.css";
 
 function Navbar() {
   const { userId } = useAuth();
@@ -13,53 +14,62 @@ function Navbar() {
   const location = useLocation();
 
   const [usuario, setUsuario] = useState(null);
-  const [loadingUser, setLoadingUser] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [timeInfo, setTimeInfo] = useState(null);
   const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
-    if (!userId) {
-      setUsuario(null);
-      setLoadingUser(false);
-      return;
-    }
+    const carregarUsuario = async () => {
+      if (!userId) {
+        setUsuario(null);
+        setLoading(false);
+        return;
+      }
 
-    async function fetchUsuario() {
       try {
         const { data } = await api.get(`/usuario/${userId}`);
         setUsuario(data);
-        setLoadingUser(false);
 
+        // Busca o time, se houver
         const idTime = data.idTime || data.id_time;
         if (idTime) {
           const res = await api.get(`/times/${idTime}`);
           setTimeInfo(res.data);
         }
 
+        // Redirecionar para time ou criação se estiver na raiz "/"
         if (location.pathname === "/") {
           navigate(idTime ? `/times/${idTime}` : "/criartime");
         }
-      } catch (err) {
-        console.error("Erro ao buscar usuário:", err);
+      } catch (error) {
+        console.error("Erro ao buscar dados do usuário:", error);
         setUsuario(null);
-        setLoadingUser(false);
+      } finally {
+        setLoading(false);
       }
-    }
+    };
 
-    fetchUsuario();
+    carregarUsuario();
   }, [userId, api, location.pathname, navigate]);
 
-  if (loadingUser) {
+  // Enquanto carrega, mostra header mínimo
+  if (loading) {
     return (
       <header>
         <nav className="nav">
-          <img src={StratHub} alt="Logo" className="nav-logo" onClick={() => navigate("/")} />
+          <img
+            src={StratHub}
+            alt="Logo"
+            className="nav-logo"
+            onClick={() => navigate("/")}
+          />
           <span>Carregando...</span>
         </nav>
       </header>
     );
   }
 
+  // Usuário não autenticado
   if (!usuario) {
     return (
       <header>
@@ -67,45 +77,49 @@ function Navbar() {
           <img
             src={StratHub}
             alt="Logo do sistema"
-            onClick={() => navigate("/")}
             className="nav-logo"
+            onClick={() => navigate("/")}
           />
-          <span onClick={() => navigate("/login")} className="nav-link">Entrar</span>
-          <span onClick={() => navigate("/cadastro")} className="nav-link">Cadastrar</span>
+          <span className="nav-link" onClick={() => navigate("/login")}>
+            Entrar
+          </span>
+          <span className="nav-link" onClick={() => navigate("/cadastro")}>
+            Cadastrar
+          </span>
         </nav>
       </header>
     );
   }
 
+  // Usuário autenticado
   const imagemPerfil = usuario.imagemUsuario || "/default-avatar.png";
   const nomeUsuario = usuario.nome || "Usuário";
   const idTime = usuario.idTime || usuario.id_time;
-  const rank = usuario.rank || "default"; // Evita erro de variável indefinida
 
   return (
     <header>
       <nav className="nav">
         <img
           src={StratHub}
-          alt="Logo do sistema"
-          onClick={() => navigate("/")}
+          alt="Logo"
           className="nav-logo"
+          onClick={() => navigate("/")}
         />
 
-        <span onClick={() => navigate("/home")} className="nav-link">Salas</span>
-        <span onClick={() => navigate("/campeonatos")} className="nav-link">Campeonatos</span>
-        <span onClick={() => navigate("/eliteCup")} className="nav-link">ELITE CUP</span>
-        <span onClick={() => navigate("/home")} className="nav-link">Comunidades(em teste)</span>
+        <span className="nav-link" onClick={() => navigate("/home")}>Salas</span>
+        <span className="nav-link" onClick={() => navigate("/campeonatos")}>Campeonatos</span>
+        <span className="nav-link" onClick={() => navigate("/eliteCup")}>ELITE CUP</span>
+        <span className="nav-link" onClick={() => navigate("/home")}>Comunidades</span>
 
         <span
-          onClick={() => navigate(idTime ? `/times/${idTime}` : "/criartime")}
           className="nav-link"
+          onClick={() => navigate(idTime ? `/times/${idTime}` : "/criartime")}
         >
           Time
         </span>
 
-        <span onClick={() => navigate("/amigos")} className="nav-link-friends">
-          <FaUsers className="friends-icon" />
+        <span className="nav-link-friends" onClick={() => navigate("/amigos")}>
+          <FontAwesomeIcon icon={faUserGroup} className="friends-icon" />
         </span>
 
         <div

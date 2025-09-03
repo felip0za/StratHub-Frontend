@@ -1,33 +1,28 @@
-import React, { useState } from 'react';
+ import React, { useState } from 'react';
 import { useApi } from '../../Services/API';
 import './Cadastro.css';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 
 const Cadastro = () => {
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({
-    email: '',
-    confirmEmail: '',
-    nome: '',
-    senha: '',
-    ubiConnect: '',
-    imagemUsuario: '',
-    rank: 'Unranked',
-    kd: 0.0,
-  });
+  const [email, setEmail] = useState('');
+  const [confirmEmail, setConfirmEmail] = useState('');
+  const [nome, setNome] = useState('');
+  const [senha, setSenha] = useState('');
+  const [ubiConnect, setUbiConnect] = useState('');
+  const [imagemUsuario, setImagemUsuario] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isFetchingStats, setIsFetchingStats] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
   const api = useApi();
 
   const handleNext = () => {
-    if (step === 1 && !formData.email) {
+    if (step === 1 && !email) {
       setError('Digite um e-mail válido.');
       return;
     }
-    if (step === 2 && formData.confirmEmail !== formData.email) {
+    if (step === 2 && confirmEmail !== email) {
       setError('O e-mail de confirmação não corresponde.');
       return;
     }
@@ -40,59 +35,24 @@ const Cadastro = () => {
     setStep(step - 1);
   };
 
-  const handleChange = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const fetchR6Stats = async (ubiConnect) => {
-    setIsFetchingStats(true);
-    try {
-      const response = await axios.get(`http://localhost:8080/api/stats/${ubiConnect}`);
-      const segments = response.data.data.segments;
-      const rankedSegment = segments.find(seg => seg.type === 'ranked');
-
-      if (rankedSegment) {
-        const rank = rankedSegment.stats.rank.metadata.name || 'Desconhecido';
-        const kd = rankedSegment.stats.kd.value || 0.0;
-
-        setFormData((prev) => ({
-          ...prev,
-          rank: rank,
-          kd: parseFloat(kd.toFixed(2)),
-        }));
-      } else {
-        setFormData((prev) => ({
-          ...prev,
-          rank: 'Desconhecido',
-          kd: 0.0,
-        }));
-      }
-    } catch (err) {
-      console.error('Erro ao buscar stats do R6 (via backend):', err);
-      setFormData((prev) => ({
-        ...prev,
-        rank: 'Erro ao buscar',
-        kd: 0.0,
-      }));
-    } finally {
-      setIsFetchingStats(false);
-    }
-  };
-
-  const handleUbiConnectChange = (value) => {
-    handleChange('ubiConnect', value);
-    if (value && value.length > 2) {
-      fetchR6Stats(value);
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
 
+    // Ajustado para os nomes corretos do backend
+    const usuarioParaEnvio = {
+      email: email,
+      senha: senha,
+      nome: nome,
+      ubiConnect: ubiConnect,
+      imagemUsuario: imagemUsuario || null,
+      rank: "Unranked", // valor default
+      kd: 0.0 // valor default
+    };
+
     try {
-      await api.post('/usuario/cadastrar', formData);
+      const response = await api.post('/usuario/cadastrar', usuarioParaEnvio);
       alert('Cadastro realizado com sucesso!');
       navigate('/login');
     } catch (err) {
@@ -114,117 +74,102 @@ const Cadastro = () => {
     const reader = new FileReader();
     reader.onloadend = () => {
       const base64String = reader.result.split(',')[1];
-      handleChange('imagemUsuario', base64String);
+      setImagemUsuario(base64String);
     };
     reader.readAsDataURL(file);
-  };
-
-  const renderStep = () => {
-    switch (step) {
-      case 1:
-        return (
-          <>
-            <label>Email</label>
-            <input
-              type="email"
-              value={formData.email}
-              onChange={(e) => handleChange('email', e.target.value)}
-              required
-            />
-            <div className="wizard-buttons">
-              <button type="button" onClick={handleNext}>Próximo</button>
-            </div>
-          </>
-        );
-      case 2:
-        return (
-          <>
-            <label>Confirme seu Email</label>
-            <input
-              type="email"
-              value={formData.confirmEmail}
-              onChange={(e) => handleChange('confirmEmail', e.target.value)}
-              required
-            />
-            <div className="wizard-buttons">
-              <button type="button" onClick={handleBack}>Voltar</button>
-              <button type="button" onClick={handleNext}>Próximo</button>
-            </div>
-          </>
-        );
-      case 3:
-        return (
-          <>
-            <label>Apelido</label>
-            <input
-              type="text"
-              value={formData.nome}
-              onChange={(e) => handleChange('nome', e.target.value)}
-              required
-            />
-
-            <label>UbisoftConnect</label>
-            <input
-              type="text"
-              value={formData.ubiConnect}
-              onChange={(e) => handleUbiConnectChange(e.target.value)}
-              required
-            />
-
-            {isFetchingStats && <p className="fetching-loader">Buscando stats do R6 Tracker...</p>}
-
-            <label>Rank (R6)</label>
-            <input type="text" value={formData.rank} disabled />
-
-            <label>K/D (R6)</label>
-            <input type="text" value={formData.kd} disabled />
-
-            <label>Senha</label>
-            <input
-              type="password"
-              value={formData.senha}
-              onChange={(e) => handleChange('senha', e.target.value)}
-              required
-            />
-
-            <label>Imagem de perfil</label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-            />
-
-            {formData.imagemUsuario && (
-              <div className="preview-container">
-                <p>Pré-visualização da imagem:</p>
-                <img
-                  src={`data:image/png;base64,${formData.imagemUsuario}`}
-                  alt="Pré-visualização"
-                  className="preview-img"
-                />
-              </div>
-            )}
-
-            <div className="wizard-buttons">
-              <button type="button" onClick={handleBack}>Voltar</button>
-              <button type="submit" disabled={isLoading}>
-                {isLoading ? 'Cadastrando...' : 'Cadastrar'}
-              </button>
-            </div>
-          </>
-        );
-      default:
-        return null;
-    }
   };
 
   return (
     <div className="register-container">
       <h2>Cadastro - Etapa {step} de 3</h2>
       {error && <div className="error-text">{error}</div>}
-      <form onSubmit={handleSubmit}>
-        {renderStep()}
-      </form>
+
+      {/* ETAPA 1 - EMAIL */}
+      {step === 1 && (
+        <form onSubmit={(e) => e.preventDefault()}>
+          <label>Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <div className="wizard-buttons">
+            <button type="button" onClick={handleNext}>Próximo</button>
+          </div>
+        </form>
+      )}
+
+      {/* ETAPA 2 - CONFIRMAR EMAIL */}
+      {step === 2 && (
+        <form onSubmit={(e) => e.preventDefault()}>
+          <label>Confirme seu Email</label>
+          <input
+            type="email"
+            value={confirmEmail}
+            onChange={(e) => setConfirmEmail(e.target.value)}
+            required
+          />
+          <div className="wizard-buttons">
+            <button type="button" onClick={handleBack}>Voltar</button>
+            <button type="button" onClick={handleNext}>Próximo</button>
+          </div>
+        </form>
+      )}
+
+      {/* ETAPA 3 - DADOS DO PERFIL */}
+      {step === 3 && (
+        <form onSubmit={handleSubmit}>
+          <label>Apelido</label>
+          <input
+            type="text"
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
+            required
+          />
+
+          <label>UbisoftConnect</label>
+          <input
+            type="text"
+            value={ubiConnect}
+            onChange={(e) => setUbiConnect(e.target.value)}
+            required
+          />
+
+          <label>Senha</label>
+          <input
+            type="password"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+            required
+          />
+
+          <label>Imagem de perfil</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+          />
+
+          {imagemUsuario && (
+            <div className="preview-container">
+              <p>Pré-visualização da imagem:</p>
+              <img
+                src={`data:image/png;base64,${imagemUsuario}`}
+                alt="Pré-visualização"
+                className="preview-img"
+              />
+            </div>
+          )}
+
+          <div className="wizard-buttons">
+            <button type="button" onClick={handleBack}>Voltar</button>
+            <button type="submit" disabled={isLoading}>
+              {isLoading ? 'Cadastrando...' : 'Cadastrar'}
+            </button>
+          </div>
+        </form>
+      )}
     </div>
   );
 };

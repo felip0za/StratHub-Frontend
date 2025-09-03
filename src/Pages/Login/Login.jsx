@@ -4,7 +4,7 @@ import { useApi } from "../../Services/API";
 import StratHub from "/src/assets/StratHub.png";
 import './Login.css';
 import { useAuth } from "../../contexts/AuthContext";
-import LoadingScreen from "../../Components/LoadingScreen/LoadingScreen"; // ✅ importar
+import LoadingScreen from "../../Components/LoadingScreen/LoadingScreen";
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -24,10 +24,14 @@ function Login() {
       const response = await api.post('/usuario/login', { email, senha });
       const dados = response.data;
 
+      console.log("Resposta do login:", dados);
+
       if (dados.token && dados.id) {
         login(dados);
+        console.log("Redirecionando para /home");
         navigate('/home');
       } else {
+        console.log("Resposta sem token ou id");
         setError("Resposta inválida do servidor. Tente novamente.");
       }
     } catch (err) {
@@ -39,10 +43,10 @@ function Login() {
   };
 
   const handleClickSignin = () => {
+    console.log("Redirecionando para /cadastro");
     navigate('/cadastro');
   };
 
-  // ✅ se estiver carregando, mostra o componente de loading
   if (isLoading) {
     return <LoadingScreen />;
   }
