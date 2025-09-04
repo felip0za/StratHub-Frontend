@@ -5,18 +5,43 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #1f1f1f, #3f3f3f);
   padding: 20px;
+  background: linear-gradient(135deg, #121212, #2a2a2a);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Título */
-.register-container h2 {
-  margin-bottom: 20px;
-  color: #fff;
-  font-size: 28px;
+/* Caixa principal do formulário */
+.register-box {
+  background-color: #1e1e1e;
+  padding: 30px 35px;
+  border-radius: 14px;
+  max-width: 420px;
+  width: 100%;
+  color: #eee;
   text-align: center;
-  letter-spacing: 0.5px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  transition: box-shadow 0.3s ease;
+}
+
+.register-box:hover {
+  box-shadow: 0 15px 40px rgba(212, 0, 0, 0.7);
+}
+
+/* Título */
+.register-box h2 {
+  margin-bottom: 10px;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #f44336;
+}
+
+/* Subtítulo ou indicador de etapa */
+.step-indicator {
+  margin-bottom: 25px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #bbb;
 }
 
 /* Formulário */
@@ -24,125 +49,204 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 400px;
-  padding: 25px;
-  background-color: #1e1e1e;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-  color: #fff;
-  transition: all 0.3s ease;
 }
 
 /* Labels */
 .register-container label {
-  margin-bottom: 5px;
+  margin-bottom: 8px;
+  font-size: 15px;
   font-weight: 600;
-  color: #ddd;
-  font-size: 14px;
+  color: #ccc;
+  text-align: left;
 }
 
 /* Inputs */
 .register-container input {
-  margin-bottom: 15px;
-  padding: 12px;
-  border: 1px solid #555;
-  border-radius: 8px;
+  width: 100%;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  font-size: 15px;
+  color: #f1f1f1;
   background-color: #2b2b2b;
-  color: #fff;
-  font-size: 14px;
-  transition: border-color 0.3s ease;
+  border: 1.5px solid #444;
+  border-radius: 10px;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Input desabilitado (para rank/kd) */
-.register-container input:disabled {
-  background-color: #3a3a3a;
-  color: #ccc;
-  border-color: #444;
-  cursor: not-allowed;
+.register-container input::placeholder {
+  color: #777;
+  opacity: 1;
 }
 
-/* Input focado */
 .register-container input:focus {
   outline: none;
-  border-color: #d40000;
+  border-color: #f44336;
+  box-shadow: 0 0 8px #f44336aa;
+}
+
+/* Input desabilitado */
+.register-container input:disabled {
+  background-color: #3a3a3a;
+  color: #999;
+  border-color: #555;
+  cursor: not-allowed;
 }
 
 /* Botões */
 .register-container button {
-  padding: 12px;
-  font-size: 16px;
-  background-color: #d40000;
+  padding: 14px 0;
+  font-size: 17px;
+  font-weight: 600;
   color: #fff;
+  background-color: #f44336;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 5px;
+  user-select: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.register-container button:hover {
-  background-color: #a00000;
-  transform: translateY(-2px);
+.register-container button:hover:not(:disabled) {
+  background-color: #d32f2f;
+  transform: translateY(-3px);
 }
 
-/* Preview da imagem */
-.preview-container {
-  text-align: center;
-  margin-bottom: 15px;
-}
-
-.preview-container p {
-  margin-bottom: 5px;
-  color: #ccc;
-  font-size: 13px;
-}
-
-.preview-img {
-  max-width: 100%;
-  max-height: 150px;
-  border-radius: 8px;
-  object-fit: cover;
-  border: 1px solid #555;
-}
-
-/* Mensagens de erro */
-.error-text {
-  color: #ff6b6b;
-  margin-bottom: 10px;
-  font-size: 13px;
-  font-weight: 500;
-  text-align: center;
+.register-container button:disabled {
+  background-color: #b94a4a;
+  cursor: not-allowed;
+  transform: none;
 }
 
 /* Botões de navegação do wizard */
 .wizard-buttons {
   display: flex;
   justify-content: space-between;
-  margin-top: 10px;
+  margin-top: 15px;
+  gap: 12px; /* Espaçamento mais consistente */
 }
 
 .wizard-buttons button {
   flex: 1;
-  margin: 0 5px;
+  margin: 0;
 }
 
-/* Indicador de carregamento */
-.fetching-loader {
-  font-size: 13px;
-  color: #aaa;
+/* Preview da imagem */
+.preview-container {
+  margin: 10px 0 25px;
   text-align: center;
-  margin-bottom: 10px;
+}
+
+.preview-container p {
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #bbb;
+}
+
+.preview-img {
+  max-width: 100%;
+  max-height: 160px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 2px solid #444;
+  box-shadow: 0 0 10px #f44336aa;
+}
+
+/* Mensagens de erro */
+.error-text {
+  margin-bottom: 15px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ff6b6b;
+  text-align: center;
+  user-select: none;
+}
+
+/* Animações básicas (fade-in suave) */
+.fade-in {
+  animation: fadeInUp 0.45s ease forwards;
+}
+
+/* ... (seu CSS anterior continua igual acima) ... */
+
+/* Container de OCR (Imagem de Rank e KD) */
+.ocr-section {
+  padding: 15px;
+  background-color: #2a2a2a;
+  border: 1px dashed #555;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+
+/* Destacar campos extraídos automaticamente */
+.register-container input[readonly] {
+  background-color: #3a3a3a;
+  color: #ccc;
+  border-color: #666;
+  font-style: italic;
+}
+
+/* Mensagem de carregamento OCR */
+.fetching-loader {
+  margin-bottom: 15px;
+  font-size: 14px;
+  color: #ff8a65;
+  font-weight: 600;
+  animation: pulseText 1s infinite ease-in-out;
+  text-align: center;
+}
+
+/* Animação suave para loader */
+@keyframes pulseText {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
+}
+
+/* Responsividade da imagem extraída */
+.preview-img {
+  width: 100%;
+  height: auto;
+  max-height: 200px;
+  border-radius: 12px;
+  object-fit: contain;
+  border: 2px solid #444;
+  box-shadow: 0 0 10px #f44336aa;
+}
+
+/* Ajuste para campos OCR lado a lado em telas largas */
+@media (min-width: 600px) {
+  .ocr-fields {
+    display: flex;
+    gap: 12px;
+  }
+
+  .ocr-fields input {
+    flex: 1;
+  }
+}
+
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Responsivo */
 @media (max-width: 480px) {
-  .register-container form {
-    padding: 20px;
-    width: 100%;
+  .register-box {
+    padding: 25px 20px;
+    max-width: 100%;
   }
 
-  .register-container h2 {
-    font-size: 22px;
+  .register-box h2 {
+    font-size: 24px;
   }
 
   .wizard-buttons {
@@ -150,6 +254,6 @@
   }
 
   .wizard-buttons button {
-    margin: 5px 0;
+    margin: 8px 0;
   }
 }
