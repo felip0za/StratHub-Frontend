@@ -7,7 +7,7 @@ import Icon from '@mdi/react';
 import { mdiUbisoft } from '@mdi/js';
 import LoadingScreen from '../../../Components/LoadingScreen/LoadingScreen';
 
-// Imagens dos ranks
+// Imagens dos ranks do time
 import ferro from '../../../assets/ferro.png';
 import bronze from '../../../assets/bronze.png';
 import prata from '../../../assets/prata.png';
@@ -15,7 +15,13 @@ import ouro from '../../../assets/ouro.png';
 import platina from '../../../assets/platina.png';
 import challenger from '../../../assets/challenger.png';
 import master from '../../../assets/master.png';
-import noRank from '../../../assets/noRank.png'; // <-- sua imagem de "sem rank"
+import noRank from '../../../assets/noRank.png';
+
+// Imagens dos ranks do usuário (R6)
+import cobre2 from '../../../assets/ranks/cobre/cobre2.png';
+import cobre3 from '../../../assets/ranks/cobre/cobre3.png';
+// Adicione outros ranks conforme necessidade
+// import bronze1 from '...'; import bronze2 from '...'; etc.
 
 function User() {
   const { id } = useParams();
@@ -41,7 +47,6 @@ function User() {
         const { data: usuarioData } = await api.get(`/usuario/${id}`, { headers });
         setUsuario(usuarioData);
 
-        // Pega o ID do time do usuário (ajuste conforme seu JSON)
         const timeId = usuarioData.time?.id || usuarioData.idTime;
         if (timeId) {
           try {
@@ -52,7 +57,7 @@ function User() {
             setTime(null);
           }
         } else {
-          setTime(null); // usuário sem time
+          setTime(null);
         }
 
       } catch (err) {
@@ -93,7 +98,7 @@ function User() {
       )
     : '/default-user.png';
 
-  // Mapeamento de ranks
+  // Mapeamento de ranks do time
   const rankToImage = { 
     FERRO: ferro, 
     BRONZE: bronze, 
@@ -104,12 +109,24 @@ function User() {
     MASTER: master 
   };
 
-  // Verificação do rank
-  const imagemRank = time?.rank 
+  const imagemRankTime = time?.rank 
     ? (rankToImage[time.rank.toUpperCase()] || noRank) 
     : noRank;
+  const nomeRankTime = time?.rank || 'Sem rank';
 
-  const nomeRank = time?.rank || 'Sem rank';
+  // Mapeamento de ranks do usuário (R6)
+  const rankUsuarioToImage = {
+    'COBRE2': cobre2,
+    'COBRE3': cobre3,
+    // Adicione outros ranks aqui
+  };
+
+  // Remove espaços e deixa maiúsculas para casar com o mapa
+  const rankUsuarioKey = usuario.rank ? usuario.rank.replace(/\s+/g, '').toUpperCase() : '';
+  const imagemRankUsuario = rankUsuarioKey && rankUsuarioToImage[rankUsuarioKey]
+    ? rankUsuarioToImage[rankUsuarioKey]
+    : noRank;
+  const nomeRankUsuario = usuario.rank || 'Sem rank';
 
   return (
     <>
@@ -130,28 +147,29 @@ function User() {
               <span className="ubi-connect-valor">{usuario.ubiConnect || 'Não informado'}</span>
             </p>
 
-            {/* ✅ K/D Ratio exibido abaixo */}
             <p className="profile-kd">
-              <strong>K/D:</strong>{''} {/* ainda estamos esperando a API retornar o K/D */}
+              <strong>K/D:</strong>{' '}
               <span>{usuario.kd !== undefined && usuario.kd !== null ? usuario.kd.toFixed(2) : 'Não disponível'}</span>
             </p>
           </div>
         </div>
 
-
         <div className="profile-body">
+          {/* Rank do time */}
           <div className="rank-card">
             <h3 className="rank-title">Rank do time:</h3>
-            <img className="rank-image" src={imagemRank} alt="Rank do time" />
-            <p className="rank-name">{nomeRank}</p>
+            <img className="rank-image" src={imagemRankTime} alt="Rank do time" />
+            <p className="rank-name">{nomeRankTime}</p>
           </div>
 
-          {/* ✅ Rank do usuário exibido abaixo */}
-          <div className="rank-card">
+          {/* Rank do usuário */}
+          <div className="rank-usuario-card">
             <h3 className="rank-title">Rank do usuário:</h3>
-            <img className="rank-image" src={noRank} alt="Sem rank" /> {/* esperando acesso a API */}
-            <p className="rank-name">Sem rank</p>
+            <img className="rank-usuario-image" src={imagemRankUsuario} alt={nomeRankUsuario} />
+            <p className="rank-usuario-name">{nomeRankUsuario}</p>
           </div>
+
+          {/* Títulos */}
           <div className="titles-card">
             <h3 className="titles-header">Títulos:</h3>
             <div className="titles-list">
@@ -174,7 +192,6 @@ function User() {
             </div>
           </div>
         </div>
-      
 
         <div className="profile-actions">
           <button className="btn edit" onClick={handleEdit}>✏️ Editar Perfil</button>

@@ -11,9 +11,9 @@ import platina from '../../assets/platina.png';
 import challenger from '../../assets/challenger.png';
 import master from '../../assets/master.png';
 
-import './Ranking.css';
+import './EliteCup.css';
 
-function Ranking() {
+function EliteCup() {
   const [times, setTimes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -89,7 +89,6 @@ function Ranking() {
           err.response?.data?.message ||
           err.message ||
           'Erro ao carregar o ranking.';
-
         setError(mensagem);
       } finally {
         if (mounted && exibirLoading) setLoading(false);
@@ -108,7 +107,6 @@ function Ranking() {
     };
   }, [api]);
 
-  // Scroll automático até o time do usuário
   useEffect(() => {
     if (meuTime) {
       const meuTimeCard = document.querySelector('.meu-time');
@@ -159,8 +157,10 @@ function Ranking() {
         <div className="ranking-container">
           <h1 className="ranking-title">ELITE CUP - {rankSelecionado}</h1>
           <div className="ranking-header">
+            <span>Posição</span>
+            <span>Logo</span>
             <span>Time</span>
-            <span>Pontuação</span>
+            <span>Pontos</span>
             <span>Vitórias</span>
             <span>Derrotas</span>
             <span>Status</span>
@@ -168,9 +168,16 @@ function Ranking() {
           <div className="ranking-list">
             {times.map((time, index) => {
               const classificado = time.pontuacao >= 800;
+              const imagemTime = time.imagemBase64
+                ? `data:image/*;base64,${time.imagemBase64}`
+                : "/default-team.png";
+
               return (
                 <div key={time.id} className={`ranking-card ${time.ehMeuTime ? 'meu-time' : ''}`}>
                   <span className="rank-position">#{index + 1}</span>
+                  <span className="rank-logo">
+                    <img src={imagemTime} alt={time.nome} className="team-logo" />
+                  </span>
                   <span className="team-name">{time.nome}</span>
                   <span className="team-points">{time.pontuacao} pts</span>
                   <span className="team-wins">{time.partidasGanhas}</span>
@@ -208,4 +215,4 @@ function Ranking() {
   );
 }
 
-export default Ranking;
+export default EliteCup;

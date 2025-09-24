@@ -30,7 +30,6 @@
   height: 120px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #fff;
   box-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
 }
 
@@ -78,32 +77,36 @@
   max-width: 1050px;
 }
 
-/* Rank Card */
-.rank-card {
-  background-color: #1e1e1e;
-  box-shadow: 0px 4px 12px rgb(150, 0, 0);
-  border-radius: 25px;
-  padding: 20px;
-  width: 220px;
-  text-align: center;
+/* Ambos os rank cards com o mesmo tamanho */
+.rank-card,
+.rank-usuario-card {
+  width: 250px; 
+  padding: 25px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  background-color: #1e1e1e;
+  box-shadow: 0px 4px 12px rgb(150, 0, 0);
+  border-radius: 25px;
 }
 
-.rank-image {
-  width: 100px;
+/* Imagens uniformes */
+.rank-image,
+.rank-usuario-image {
+  width: 140px; /* ajusta para um tamanho médio */
   height: auto;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
   border-radius: 12px;
 }
 
-.rank-name {
-  font-size: 1.2rem;
+/* Nomes uniformes */
+.rank-name,
+.rank-usuario-name {
+  font-size: 1.4rem;
   font-weight: 700;
   color: white;
   background-color: #2a2a2a;
-  padding: 6px 12px;
+  padding: 8px 16px;
   border-radius: 12px;
   text-transform: uppercase;
 }
