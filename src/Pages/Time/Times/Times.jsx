@@ -70,15 +70,14 @@ function Times() {
     }
   };
 
-  
   useEffect(() => {
     carregarDados();
 
     const intervalo = setInterval(() => {
       carregarDados();
-    }, 1000); // Atualiza a cada 10 segundos
+    }, 1000);
 
-    return () => clearInterval(intervalo); // Limpa o intervalo ao desmontar
+    return () => clearInterval(intervalo);
   }, [id, api]);
 
   const buscarAmigos = async () => {
@@ -325,15 +324,21 @@ function Times() {
                     {member.nome}
                     {member.id === time.idCriador && ' (Dono)'}
                   </strong>
-                  <p className="profile-email">
-                    <strong className="ubisoft-label">
-                      <Icon path={mdiUbisoft} size={1} className="ubisoft-icon" />
-                      UbiConnect:
-                    </strong>{' '}
-                    <span className="ubisoft-valor">
-                      {member.ubiConnect || 'Não informado'}
-                    </span>
-                  </p>
+
+                  <div className="profile-stats" style={{ display: 'flex', flexDirection: 'column', gap: '0px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0px' }}>
+                      <span className="ubisoft-label">
+                        <Icon path={mdiUbisoft} size={1} className="ubisoft-icon" />
+                        UbiConnect:
+                      </span>
+                      <span className="ubisoft-valor">{member.ubiConnect || 'Não informado'}</span>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0px' }}>
+                      <span className="ubisoft-label">K/D:</span>
+                      <span className="ubisoft-valor">{member.kd !== undefined ? member.kd.toFixed(2) : "N/A"}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))

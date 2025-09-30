@@ -141,10 +141,7 @@ function User() {
             </h1>
 
             <p className="profile-email">
-              <strong className="ubisoft-text">
-                <Icon path={mdiUbisoft} size={1} className="ubisoft-icon" /> UbiConnect:
-              </strong>{' '}
-              <span className="ubi-connect-valor">{usuario.ubiConnect || 'Não informado'}</span>
+              <strong className="ubisoft-text"><Icon path={mdiUbisoft} size={1} className="ubisoft-icon" /> UbiConnect:</strong><span className="ubi-connect-valor">{usuario.ubiConnect || 'Não informado'}</span>
             </p>
 
             <p className="profile-kd">

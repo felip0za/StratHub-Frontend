@@ -1,164 +1,196 @@
-.home-container {
-  padding: 50px 5vw;
-  background: linear-gradient(to bottom, #0e0e0e, #1a1a1a);
+/* === Fonte global === */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+* {
+  font-family: 'Poppins', sans-serif;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* === Página principal === */
+.home-page {
+  background-color: #0e0e0e;
+  color: #fff;
   min-height: 100vh;
+}
+
+/* === Header com título e botões === */
+.home-header {
   display: flex;
-  flex-direction: column;
-  gap: 60px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30px 10%;
+  background: linear-gradient(to right, #1b1b1b, #111);
+  box-shadow: 0 3px 8px rgba(230, 0, 35, 0.25);
 }
 
-.home-title,
-.type-title {
-  color: #ffffff;
-  font-size: 32px;
-  font-weight: 700;
-  text-align: center;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  margin-bottom: 0;
+.home-header h1 {
+  font-size: 2rem;
+  font-weight: 600;
 }
 
-.card-section {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
+.header-buttons button {
+  margin-left: 15px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.card-container {
+.btn-criar {
+  background-color: #e60023;
+  color: white;
+}
+
+.btn-criar:hover {
+  background-color: #c1001d;
+}
+
+.btn-meus {
+  background-color: #292929;
+  color: #fff;
+}
+
+.btn-meus:hover {
+  background-color: #3a3a3a;
+}
+
+/* === Container e pesquisa === */
+.home-container {
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+
+.campo-pesquisa {
+  width: 100%;
+  padding: 12px 16px;
+  margin-bottom: 30px;
+  border-radius: 10px;
+  border: none;
+  background-color: #1a1a1a;
+  color: #fff;
+  font-size: 16px;
+  outline: none;
+  box-shadow: 0 0 0 2px transparent;
+  transition: box-shadow 0.3s ease;
+}
+
+.campo-pesquisa:focus {
+  box-shadow: 0 0 0 2px #e60023;
+}
+
+/* === Grid de lobbys === */
+.lobby-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
   gap: 25px;
 }
 
-.card-box,
-.card-box-enter-lobby {
-  background-color: #191919;
-  border: 2px solid transparent;
-  border-radius: 15px;
-  padding: 22px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
+/* === Card do lobby === */
+.lobby-card {
+  background: #161616;
+  border-radius: 12px;
   overflow: hidden;
-}
-
-.card-box:hover,
-.card-box-enter-lobby:hover {
-  transform: translateY(-6px);
-  border-image: linear-gradient(45deg, #7d0808, #ff0000) 1;
-  box-shadow: 0 0 20px rgba(255, 64, 129, 0.15);
-}
-
-.card-box-enter-lobby {
-  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-  color: #000;
-}
-
-.card-box-enter-lobby .card-description {
-  color: #222;
-}
-
-.card-content {
+  box-shadow: 0 4px 12px rgba(230, 0, 35, 0.15);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
   display: flex;
   flex-direction: column;
+  padding: 15px 18px;
+}
+
+.lobby-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(230, 0, 35, 0.35);
+}
+
+/* Header do card */
+.lobby-header {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  text-align: center;
-  gap: 12px;
+  margin-bottom: 12px;
 }
 
-.card-points {
-  font-size: 22px;
-  font-weight: 800;
-  color: #ff4081;
-  text-shadow: 0 0 5px rgba(255, 64, 129, 0.5);
-}
-
-.card-title {
+.lobby-name {
   font-size: 20px;
-  font-weight: bold;
-  color: #ffffff;
+  font-weight: 600;
+  color: #fff;
 }
 
-.card-description {
+.lobby-points {
   font-size: 14px;
-  color: #bdbdbd;
-  padding: 0 5px;
+  font-weight: 600;
+  color: #ffe600;
 }
 
-.card-info {
+/* Avatares */
+.lobby-players {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  font-size: 13px;
-  color: #e0e0e0;
-  margin-top: 10px;
-}
-
-.card-avatars {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 12px;
   gap: 8px;
-  flex-wrap: nowrap;
-  position: relative;
-  max-width: 160px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
 }
 
-.avatar-img {
-  width: 36px;
-  height: 36px;
+.lobby-players img {
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #fff;
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
-  transition: transform 0.3s ease;
-  cursor: pointer;
+  border: 2px solid #333;
+  background: #2a2a2a;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.avatar-img:not(:first-child) {
-  margin-left: -12px;
+.lobby-players img:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 6px rgba(255, 50, 50, 0.5);
 }
 
-.avatar-img:hover {
-  transform: scale(1.2);
-  z-index: 10;
-  box-shadow: 0 0 10px #ff4081;
-}
-
-.extra-count {
+/* Footer do card */
+.lobby-footer {
+  display: flex;
+  justify-content: space-between;
   font-size: 14px;
-  color: #fff;
-  background-color: #ff4081;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-weight: 700;
-  margin-left: 8px;
-  box-shadow: 0 0 6px rgba(255, 64, 129, 0.6);
-  user-select: none;
+  font-weight: 500;
+  color: #bbb;
 }
 
-.card-present-count {
-  margin-top: 8px;
-  font-size: 14px;
-  color: #ddd;
+/* Botão Entrar (se quiser usar) */
+.btn-entrar {
+  margin-top: 10px;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 25px;
+  font-size: 15px;
   font-weight: 600;
-  text-align: center;
+  background-color: #e60023;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-@media (max-width: 600px) {
-  .home-title,
-  .type-title {
-    font-size: 22px;
+.btn-entrar:hover {
+  background-color: #c1001d;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .home-header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
   }
 
-  .card-container {
-    grid-template-columns: 1fr;
+  .header-buttons {
+    display: flex;
+    gap: 10px;
   }
 
-  .card-box,
-  .card-box-enter-lobby {
-    padding: 18px;
+  .home-header h1 {
+    font-size: 1.6rem;
   }
 }

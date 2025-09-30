@@ -16,7 +16,7 @@
 .profile-header {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 25px;
   background: #1e1e1e;
   box-shadow: 0px 4px 12px rgb(150, 0, 0);
   padding: 25px;
@@ -30,12 +30,13 @@
   height: 120px;
   border-radius: 50%;
   object-fit: cover;
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.15);
 }
 
 .profile-text {
   display: flex;
   flex-direction: column;
+  gap: 8px; /* espaçamento entre linhas */
 }
 
 .profile-nome {
@@ -50,7 +51,8 @@
   color: #888;
 }
 
-.ubisoft-text {
+/* UbiConnect */
+.profile-email {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -59,14 +61,30 @@
   color: #ccc;
 }
 
+.ubisoft-text {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .ubisoft-icon {
-  vertical-align: middle;
+  margin-right: 4px;
 }
 
 .ubi-connect-valor {
-  color: #fff;
+  color: #ddd;
   font-weight: 600;
   font-size: 1rem;
+}
+
+/* KD */
+.profile-kd {
+  font-size: 1rem;
+  color: #ddd;
+}
+
+.profile-kd strong {
+  margin-right: 6px;
 }
 
 /* Corpo (Rank + Títulos) */
@@ -88,12 +106,13 @@
   background-color: #1e1e1e;
   box-shadow: 0px 4px 12px rgb(150, 0, 0);
   border-radius: 25px;
+  text-align: center;
 }
 
 /* Imagens uniformes */
 .rank-image,
 .rank-usuario-image {
-  width: 140px; /* ajusta para um tamanho médio */
+  width: 140px;
   height: auto;
   margin-bottom: 15px;
   border-radius: 12px;

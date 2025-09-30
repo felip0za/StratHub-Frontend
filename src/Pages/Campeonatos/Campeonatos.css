@@ -1,23 +1,68 @@
+/* === Fonte global === */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+* {
+  font-family: 'Poppins', sans-serif;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* === Página principal === */
 .campeonatos-page {
   background-color: #0e0e0e;
-  color: white;
+  color: #fff;
   min-height: 100vh;
-  /* font-family removido para usar padrão do sistema */
 }
 
+/* === Header com título e botões === */
+.campeonatos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30px 10%;
+  background: linear-gradient(to right, #1b1b1b, #111);
+  box-shadow: 0 3px 8px rgba(230, 0, 35, 0.25);
+}
+
+.campeonatos-header h1 {
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.header-buttons button {
+  margin-left: 15px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-criar {
+  background-color: #e60023;
+  color: white;
+}
+
+.btn-criar:hover {
+  background-color: #c1001d;
+}
+
+.btn-meus {
+  background-color: #292929;
+  color: #fff;
+}
+
+.btn-meus:hover {
+  background-color: #3a3a3a;
+}
+
+/* === Container e pesquisa === */
 .campeonatos-container {
-  max-width: 900px;
-  margin: auto;
-  padding: 40px 20px;
-}
-
-.campeonatos-container h1 {
-  text-align: center;
-  margin-bottom: 30px;
-  font-size: 32px;
-  font-weight: bold;
-  color: #ffffff;
-  /* font-family removido */
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 0 20px;
 }
 
 .campo-pesquisa {
@@ -27,71 +72,142 @@
   border-radius: 10px;
   border: none;
   background-color: #1a1a1a;
-  color: white;
+  color: #fff;
   font-size: 16px;
   outline: none;
   box-shadow: 0 0 0 2px transparent;
-  transition: box-shadow 0.3s;
-  /* font-family removido */
+  transition: box-shadow 0.3s ease;
 }
 
 .campo-pesquisa:focus {
-  box-shadow: 0 0 0 2px red;
+  box-shadow: 0 0 0 2px #e60023;
 }
 
-.campeonatos-lista {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+/* === Grid de campeonatos === */
+.campeonatos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 25px;
+}
+
+/* === Card do campeonato === */
+.card {
+  background: #161616;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(230, 0, 35, 0.15);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
   display: flex;
   flex-direction: column;
-  gap: 20px;
 }
 
-.campeonato-item {
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(230, 0, 35, 0.35);
+}
+
+/* Imagem do card */
+.card-img {
+  position: relative;
+}
+
+.card-img img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+
+/* Status */
+.status {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 12px;
+  font-size: 13px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.status.aberto {
+  background-color: rgba(49, 209, 88, 0.15);
+  color: #31d158;
+}
+
+.status.fechado {
+  background-color: rgba(209, 49, 49, 0.15);
+  color: #d13131;
+}
+
+/* Corpo do card */
+.card-body {
+  padding: 15px 18px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #1e1e1e;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.05);
-  transition: transform 0.2s, box-shadow 0.3s;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.campeonato-item:hover {
-  transform: scale(1.02);
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.1);
+.card-body h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #fff;
 }
 
-.campeonato-nome,
-.campeonato-times {
-  font-size: 18px;
-  font-weight: bold;
-  flex: 1;
-  text-align: left;
-  /* font-family removido */
+.horario {
+  font-size: 14px;
+  font-weight: 400;
+  color: #bbb;
+  letter-spacing: 0.5px;
 }
 
-.campeonato-times {
-  text-align: center;
-  font-weight: normal;
-  color: #bdbdbd;
+.detalhes,
+.organizador {
+  font-size: 14px;
+  color: #999;
+  line-height: 1.3;
 }
 
-.campeonato-botao {
-  background-color: red;
-  color: white;
+/* Botões do card */
+.btn-entrar,
+.btn-fechado {
+  margin-top: 10px;
   border: none;
-  padding: 12px 24px;
-  border-radius: 30px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  font-weight: bold;
-  /* font-family removido */
+  padding: 10px 22px;
+  border-radius: 25px;
+  font-size: 15px;
+  font-weight: 600;
+  transition: all 0.3s ease;
 }
 
-.campeonato-botao:hover {
-  background-color: #cc0000;
+.btn-entrar {
+  background-color: #e60023;
+  color: #fff;
+  cursor: pointer;
+}
+
+.btn-entrar:hover {
+  background-color: #c1001d;
+}
+
+.btn-fechado {
+  background-color: #444;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+/* === Responsividade === */
+@media (max-width: 768px) {
+  .campeonatos-header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+  }
+
+  .header-buttons {
+    display: flex;
+    gap: 10px;
+  }
+
+  .campeonatos-header h1 {
+    font-size: 1.6rem;
+  }
 }

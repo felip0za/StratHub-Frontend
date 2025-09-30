@@ -1,7 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 
 import PrivateRoute from './Components/PrivateRoute/PrivateRoute';
-import Lendpage from './Pages/Lendpage/Lendpage';
 import Login from './Pages/Login/Login';
 import Cadastro from './Pages/Cadastro/Cadastro';
 import Chatbox from './Pages/Chatbox/Chatbox';
@@ -17,11 +16,12 @@ import EditUser from './Pages/Usuario/EditUser/EditUser';
 import EliteCup from './Pages/EliteCup/EliteCup';
 import Campeonatos from './Pages/Campeonatos/Campeonatos';
 import EditTime from './Pages/Time/EditTime/EditTime';
+import Landpage from './Pages/Landpage/Landpage';
 
 function MainRoutes() {
   return (
     <Routes>
-      <Route path='/' element={<Lendpage />} />
+      <Route path='/' element={<Landpage />} />
       <Route path='/login' element={<Login />} />
       <Route path='/cadastro' element={<Cadastro />} />
       <Route path='/home' element={<Home />} />
