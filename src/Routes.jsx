@@ -17,6 +17,7 @@ import EliteCup from './Pages/EliteCup/EliteCup';
 import Campeonatos from './Pages/Campeonatos/Campeonatos';
 import EditTime from './Pages/Time/EditTime/EditTime';
 import Landpage from './Pages/Landpage/Landpage';
+import CriarCampeonatos from './Pages/Campeonatos/CriarCampeonatos/CriarCampeonatos';
 
 function MainRoutes() {
   return (
@@ -44,6 +45,11 @@ function MainRoutes() {
       <Route path='/times/:id' element={
         <PrivateRoute>
           <Times />
+        </PrivateRoute>
+      } />
+      <Route path='/criar-campeonatos' element={
+        <PrivateRoute>
+          <CriarCampeonatos/>
         </PrivateRoute>
       } />
       <Route path='/editar-usuario/:id' element={

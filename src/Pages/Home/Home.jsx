@@ -77,7 +77,7 @@ function Home() {
       <div className="home-page">
         {/* === Header da página === */}
         <div className="home-header">
-          <h1>🔥 Lobbys</h1>
+          <h1>⚔️ Lobbys</h1>
           <div className="header-buttons">
             <button className="btn-criar">+ Criar Lobby</button>
             <button className="btn-meus">Meus Lobbys</button>

@@ -20,7 +20,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 30px 10%;
+  padding: 20px 10%;
   background: linear-gradient(to right, #1b1b1b, #111);
   box-shadow: 0 3px 8px rgba(230, 0, 35, 0.25);
 }

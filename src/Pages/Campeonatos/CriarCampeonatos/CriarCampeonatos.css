@@ -1,0 +1,140 @@
+/* ===== Container principal ===== */
+.campeonatos-create-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 25px;
+  background: #161616;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(230, 0, 35, 0.25);
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* ===== Título ===== */
+.campeonatos-create-title {
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #e60023;
+  letter-spacing: 0.5px;
+}
+
+/* ===== Formulário ===== */
+.campeonatos-create-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ===== Campos ===== */
+.campeonatos-create-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.campeonatos-create-label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #ddd;
+}
+
+/* ===== Inputs e Select ===== */
+.campeonatos-create-input,
+.campeonatos-create-select {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: none;
+  background: #222;
+  color: #fff;
+  font-size: 15px;
+  outline: none;
+  transition: border 0.2s ease, background 0.2s ease;
+}
+
+.campeonatos-create-input:focus,
+.campeonatos-create-select:focus {
+  border: 1px solid #e60023;
+  background: #1a1a1a;
+}
+
+/* ===== Botões de seleção (pago/grátis ou qtd equipes) ===== */
+.campeonatos-create-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.campeonatos-create-option {
+  flex: 1;
+  padding: 12px;
+  text-align: center;
+  border-radius: 8px;
+  background: #222;
+  font-weight: 600;
+  color: #fff;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: background 0.3s, border 0.3s, transform 0.2s;
+}
+
+.campeonatos-create-option:hover {
+  background: #2a2a2a;
+  transform: scale(1.03);
+}
+
+.campeonatos-create-option.active {
+  background: #e60023;
+  border-color: #ff4b4b;
+}
+
+/* ===== Prévia da Imagem ===== */
+.campeonatos-create-preview {
+  width: 100%;
+  max-height: 180px;
+  object-fit: cover;
+  margin-top: 10px;
+  border-radius: 8px;
+  border: 2px solid #444;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.campeonatos-create-preview:hover {
+  transform: scale(1.02);
+  border-color: #e60023;
+}
+
+/* ===== Botão Principal ===== */
+.campeonatos-create-button {
+  width: 100%;
+  padding: 12px;
+  background: #e60023;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.campeonatos-create-button:hover {
+  background: #c1001d;
+  transform: scale(1.02);
+}
+
+.campeonatos-create-button:disabled {
+  background: #555;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ===== Mensagem de erro ===== */
+.campeonatos-create-error {
+  color: #ff4b4b;
+  text-align: center;
+  margin-top: -5px;
+  font-size: 14px;
+  font-weight: 500;
+}
