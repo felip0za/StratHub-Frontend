@@ -70,7 +70,7 @@ function Campeonatos() {
 
           <div className="campeonatos-grid">
             {campeonatosFiltrados.map((c) => {
-              // Aplicando a mesma lógica do Base64
+              // Define a imagem do campeonato
               const imagemCampeonato = c.imagemBase64
                 ? `data:image/*;base64,${c.imagemBase64}`
                 : "https://via.placeholder.com/400x200?text=Sem+Imagem";
@@ -80,9 +80,7 @@ function Campeonatos() {
                   <div className="card-img">
                     <img src={imagemCampeonato} alt={c.nome} />
                     <span
-                      className={`status ${
-                        c.status === "ABERTO" ? "aberto" : "fechado"
-                      }`}
+                      className={`status ${c.status === "ABERTO" ? "aberto" : "fechado"}`}
                     >
                       {c.status === "ABERTO" ? "Aberto" : "Fechado"}
                     </span>
