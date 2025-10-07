@@ -10,12 +10,14 @@ export function useApi() {
       baseURL: 'http://localhost:8080',
     });
 
+    // Sempre adiciona Authorization se o token existir
     instance.interceptors.request.use(
       config => {
         if (token) {
-          config.headers['Authorization'] = `Bearer ${token}`;
-        } else {
-          delete config.headers['Authorization'];
+          config.headers = {
+            ...config.headers,
+            'Authorization': `Bearer ${token}`,
+          };
         }
         return config;
       },

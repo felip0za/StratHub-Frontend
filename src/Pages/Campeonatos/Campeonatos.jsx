@@ -3,33 +3,30 @@ import "./Campeonatos.css";
 import Navbar from "../../Components/Navbar/Navbar";
 import LoadingScreen from "../../Components/LoadingScreen/LoadingScreen";
 import { useNavigate } from "react-router-dom";
-import { useApi } from "../../Services/API"; // 🔹 importa serviço de API
+import { useApi } from "../../Services/API";
 
 function Campeonatos() {
   const [campeonatos, setCampeonatos] = useState([]);
   const [filtro, setFiltro] = useState("");
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const api = useApi(); // 🔹 instância da API
+  const api = useApi();
 
-  // Botão para criar campeonatos
   const handleClickCriarCampeonatos = (e) => {
     e.preventDefault();
     navigate("/criar-campeonatos");
   };
 
-  // Botão para ir para "Meus Campeonatos"
   const handleClickMeusCampeonatos = (e) => {
     e.preventDefault();
     navigate("/meus-campeonatos");
   };
 
-  // 🔹 Buscar dados da API
   useEffect(() => {
     const fetchCampeonatos = async () => {
       try {
         setLoading(true);
-        const response = await api.get("/campeonatos"); // GET da API
+        const response = await api.get("/campeonatos");
         setCampeonatos(response.data);
       } catch (error) {
         console.error("Erro ao carregar campeonatos:", error);
@@ -37,12 +34,11 @@ function Campeonatos() {
         setLoading(false);
       }
     };
-
     fetchCampeonatos();
   }, [api]);
 
   const campeonatosFiltrados = campeonatos.filter((c) =>
-    c.descricao.toLowerCase().includes(filtro.toLowerCase())
+    c.nome.toLowerCase().includes(filtro.toLowerCase())
   );
 
   if (loading) return <LoadingScreen />;
@@ -51,26 +47,18 @@ function Campeonatos() {
     <>
       <Navbar />
       <div className="campeonatos-page">
-        {/* Cabeçalho */}
         <div className="campeonatos-header">
           <h1>🏆 Campeonatos</h1>
           <div className="header-buttons">
-            <button
-              className="btn-criar"
-              onClick={handleClickCriarCampeonatos}
-            >
+            <button className="btn-criar" onClick={handleClickCriarCampeonatos}>
               + Criar Campeonato
             </button>
-            <button
-              className="btn-meus"
-              onClick={handleClickMeusCampeonatos}
-            >
+            <button className="btn-meus" onClick={handleClickMeusCampeonatos}>
               Meus Campeonatos
             </button>
           </div>
         </div>
 
-        {/* Conteúdo */}
         <div className="campeonatos-container">
           <input
             type="text"
@@ -81,45 +69,44 @@ function Campeonatos() {
           />
 
           <div className="campeonatos-grid">
-            {campeonatosFiltrados.map((c) => (
-              <div key={c.id} className="card">
-                {/* Imagem */}
-                <div className="card-img">
-                  <img
-                    src={
-                      c.imagemCampeonato ||
-                      "https://via.placeholder.com/400x200?text=Sem+Imagem"
-                    }
-                    alt={c.descricao}
-                  />
-                  <span
-                    className={`status ${
-                      c.status === "Aberto" ? "aberto" : "fechado"
-                    }`}
-                  >
-                    {c.status}
-                  </span>
-                </div>
+            {campeonatosFiltrados.map((c) => {
+              // Aplicando a mesma lógica do Base64
+              const imagemCampeonato = c.imagemBase64
+                ? `data:image/*;base64,${c.imagemBase64}`
+                : "https://via.placeholder.com/400x200?text=Sem+Imagem";
 
-                {/* Conteúdo do card */}
-                <div className="card-body">
-                  <h2>{c.descricao}</h2>
-                  <p className="detalhes">
-                    Tipo: {c.tipo} • Máx. {c.maxEquipes} equipes
-                  </p>
-                  <p className="organizador">
-                    Organizado por <strong>{c.criadorId}</strong>
-                  </p>
-                  {c.status === "Aberto" ? (
-                    <button className="btn-entrar">Participar</button>
-                  ) : (
-                    <button className="btn-fechado" disabled>
-                      Fechado
-                    </button>
-                  )}
+              return (
+                <div key={c.id} className="card">
+                  <div className="card-img">
+                    <img src={imagemCampeonato} alt={c.nome} />
+                    <span
+                      className={`status ${
+                        c.status === "ABERTO" ? "aberto" : "fechado"
+                      }`}
+                    >
+                      {c.status === "ABERTO" ? "Aberto" : "Fechado"}
+                    </span>
+                  </div>
+
+                  <div className="card-body">
+                    <h2>{c.nome}</h2>
+                    <p className="detalhes">
+                      Tipo: {c.tipo === "GRATUITO" ? "Gratuito" : "Pago"} • Máx. {c.maxEquipes} equipes
+                    </p>
+                    <p className="organizador">
+                      Organizado por <strong>{c.criador?.nome || "Desconhecido"}</strong>
+                    </p>
+                    {c.status === "ABERTO" ? (
+                      <button className="btn-entrar">Participar</button>
+                    ) : (
+                      <button className="btn-fechado" disabled>
+                        Fechado
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

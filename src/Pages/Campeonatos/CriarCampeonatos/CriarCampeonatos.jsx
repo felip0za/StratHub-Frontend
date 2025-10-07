@@ -1,51 +1,63 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import "./CriarCampeonatos.css";
 import Navbar from "../../../Components/Navbar/Navbar";
+import { useApi } from "../../../Services/API";
+import { useAuth } from "../../../contexts/AuthContext";
 
-function CriarCampeonatos({ userId }) {
+function CriarCampeonatos() {
   const navigate = useNavigate();
+  const api = useApi();
+  const { user, token } = useAuth();
+  const userId = user?.id;
 
-  const [descricao, setDescricao] = useState("");
-  const [imagem, setImagem] = useState("");
-  const [tipo, setTipo] = useState("GRATIS");
-  const [status, setStatus] = useState("ABERTO");
-  const [valorPremiacao, setValorPremiacao] = useState(""); 
-  const [valorEquipe, setValorEquipe] = useState(0);
-  const [maxEquipes, setMaxEquipes] = useState(16);
+  const [formData, setFormData] = useState({
+    nome: "",
+    descricao: "",
+    imagemBase64: "",    // <-- agora armazena a imagem em Base64
+    previewImagem: "",   // para preview
+    tipo: "GRATUITO",
+    status: "ABERTO",
+    valor: "",
+    maxEquipes: 4
+  });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Converter imagem para base64
+  useEffect(() => {
+    console.log("Usuário logado:", user);
+    console.log("Token:", token);
+    console.log("userId:", userId);
+  }, [user, token, userId]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  // --- Upload da imagem do campeonato ---
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setImagem(reader.result);
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setError("❌ Por favor, selecione um arquivo de imagem válido.");
+      return;
     }
-  };
 
-  // Calcular valor por equipe
-  const calcularValorEquipe = (premio, equipes) => {
-    if (premio && equipes > 0) {
-      setValorEquipe((premio / equipes).toFixed(2));
-    } else {
-      setValorEquipe(0);
-    }
-  };
+    setError("");
 
-  const handleValorPremiacao = (e) => {
-    const valor = e.target.value;
-    setValorPremiacao(valor);
-    calcularValorEquipe(valor, maxEquipes);
-  };
-
-  const handleMaxEquipes = (e) => {
-    const qtd = Number(e.target.value);
-    setMaxEquipes(qtd);
-    calcularValorEquipe(valorPremiacao, qtd);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64 = reader.result;
+      setFormData(prev => ({
+        ...prev,
+        previewImagem: base64,
+        imagemBase64: base64.split(",")[1] // <-- remove o prefixo data:image/...;base64,
+      }));
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e) => {
@@ -53,29 +65,47 @@ function CriarCampeonatos({ userId }) {
     setLoading(true);
     setError("");
 
-    if (tipo === "PAGO" && (!valorPremiacao || Number(valorPremiacao) <= 0)) {
-      setError("Informe um valor válido para a premiação do campeonato pago.");
+    if (!formData.nome || formData.nome.trim() === "") {
+      setError("❌ O nome do campeonato é obrigatório.");
       setLoading(false);
       return;
     }
 
-    try {
-      const novoCampeonato = {
-        descricao,
-        imagemCampeonato: imagem,
-        tipo,
-        status,
-        maxEquipes,
-        criadorId: userId,
-        valorPorEquipe: tipo === "PAGO" ? Number(valorEquipe) : 0,
-        valorPremiacao: tipo === "PAGO" ? Number(valorPremiacao) : 0,
-      };
+    if (formData.maxEquipes < 4) {
+      setError("❌ O campeonato deve ter pelo menos 4 equipes.");
+      setLoading(false);
+      return;
+    }
 
-      await axios.post("http://localhost:8080/api/campeonatos", novoCampeonato);
+    if (formData.tipo === "PAGO" && (!formData.valor || Number(formData.valor) <= 0)) {
+      setError("❌ Informe um valor válido para o campeonato pago.");
+      setLoading(false);
+      return;
+    }
+
+    if (!userId) {
+      setError("❌ Usuário não autenticado. Faça login novamente.");
+      setLoading(false);
+      return;
+    }
+
+    const novoCampeonato = {
+      ...formData,
+      valor: formData.tipo === "PAGO" ? Number(formData.valor) : 0,
+      idCriador: userId
+    };
+
+    try {
+      await api.post("/campeonatos", novoCampeonato, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       alert("✅ Campeonato criado com sucesso!");
       navigate("/campeonatos");
     } catch (err) {
-      setError("❌ Erro ao criar campeonato. Tente novamente.");
+      console.error("Erro ao criar campeonato:", err.response || err);
+      setError(err.response?.data?.message || "❌ Erro ao criar campeonato. Tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -86,38 +116,52 @@ function CriarCampeonatos({ userId }) {
       <Navbar />
       <div className="campeonatos-create-container">
         <h1 className="campeonatos-create-title">Criar Campeonato</h1>
-
         <form className="campeonatos-create-form" onSubmit={handleSubmit}>
-          {/* Descrição */}
+          {/* Nome */}
           <div className="campeonatos-create-field">
-            <label className="campeonatos-create-label">
-              Descrição do Campeonato:
-            </label>
+            <label className="campeonatos-create-label">Nome:</label>
             <input
               type="text"
+              name="nome"
               className="campeonatos-create-input"
-              value={descricao}
-              onChange={(e) => setDescricao(e.target.value)}
+              value={formData.nome}
+              onChange={handleChange}
               placeholder="Ex: Campeonato R6 Brasil"
               required
             />
           </div>
 
+          {/* Descrição */}
+          <div className="campeonatos-create-field">
+            <label className="campeonatos-create-label">Descrição:</label>
+            <input
+              type="text"
+              name="descricao"
+              className="campeonatos-create-input"
+              value={formData.descricao}
+              onChange={handleChange}
+              placeholder="Descrição do campeonato"
+            />
+          </div>
+
           {/* Imagem */}
           <div className="campeonatos-create-field">
-            <label className="campeonatos-create-label">Imagem do Campeonato:</label>
+            <label className="campeonatos-create-label">Imagem:</label>
             <input
               type="file"
               accept="image/*"
               className="campeonatos-create-input"
               onChange={handleImageChange}
             />
-            {imagem && (
-              <img
-                src={imagem}
-                alt="Prévia"
-                className="campeonatos-create-preview"
-              />
+            {formData.previewImagem && (
+              <div className="preview-container">
+                <p>Pré-visualização:</p>
+                <img
+                  src={formData.previewImagem}
+                  alt="Prévia"
+                  className="campeonatos-create-preview"
+                />
+              </div>
             )}
           </div>
 
@@ -125,26 +169,40 @@ function CriarCampeonatos({ userId }) {
           <div className="campeonatos-create-field">
             <label className="campeonatos-create-label">Tipo:</label>
             <select
+              name="tipo"
               className="campeonatos-create-select"
-              value={tipo}
-              onChange={(e) => setTipo(e.target.value)}
+              value={formData.tipo}
+              onChange={handleChange}
             >
-              <option value="GRATIS">Grátis</option>
+              <option value="GRATUITO">Gratuito</option>
               <option value="PAGO">Pago</option>
             </select>
           </div>
 
-          {/* Número de equipes */}
+          {/* Status */}
           <div className="campeonatos-create-field">
-            <label className="campeonatos-create-label">
-              Número máximo de equipes:
-            </label>
+            <label className="campeonatos-create-label">Status:</label>
             <select
+              name="status"
               className="campeonatos-create-select"
-              value={maxEquipes}
-              onChange={handleMaxEquipes}
+              value={formData.status}
+              onChange={handleChange}
             >
-              {[4, 8, 12, 16, 32, 64].map((qtd) => (
+              <option value="ABERTO">Aberto</option>
+              <option value="FECHADO">Fechado</option>
+            </select>
+          </div>
+
+          {/* Máximo de Equipes */}
+          <div className="campeonatos-create-field">
+            <label className="campeonatos-create-label">Número máximo de equipes:</label>
+            <select
+              name="maxEquipes"
+              className="campeonatos-create-select"
+              value={formData.maxEquipes}
+              onChange={handleChange}
+            >
+              {[4, 8, 12, 16].map(qtd => (
                 <option key={qtd} value={qtd}>
                   {qtd} equipes
                 </option>
@@ -152,31 +210,24 @@ function CriarCampeonatos({ userId }) {
             </select>
           </div>
 
-          {/* Valor de premiação */}
-          {tipo === "PAGO" && (
-            <>
-              <div className="campeonatos-create-field">
-                <label className="campeonatos-create-label">
-                  Valor da Premiação (R$):
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  className="campeonatos-create-input"
-                  value={valorPremiacao}
-                  onChange={handleValorPremiacao}
-                  placeholder="Ex: 800"
-                  required
-                />
-              </div>
-
-              <div className="campeonatos-create-field">
-                <p className="campeonatos-create-info">
-                  💰 Cada equipe deve pagar: <strong>R$ {valorEquipe}</strong>
-                </p>
-              </div>
-            </>
+          {/* Valor */}
+          {formData.tipo === "PAGO" && (
+            <div className="campeonatos-create-field">
+              <label className="campeonatos-create-label">
+                Valor da Premiação (R$):
+              </label>
+              <input
+                type="number"
+                name="valor"
+                min="0"
+                step="0.01"
+                className="campeonatos-create-input"
+                value={formData.valor}
+                onChange={handleChange}
+                placeholder="Ex: 800"
+                required
+              />
+            </div>
           )}
 
           <button
