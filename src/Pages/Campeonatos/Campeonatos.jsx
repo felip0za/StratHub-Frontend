@@ -5,38 +5,39 @@ import LoadingScreen from "../../Components/LoadingScreen/LoadingScreen";
 import { useNavigate } from "react-router-dom";
 import { useApi } from "../../Services/API";
 
-function Campeonatos() {
+const Campeonatos = () => {
   const [campeonatos, setCampeonatos] = useState([]);
   const [filtro, setFiltro] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
   const navigate = useNavigate();
   const api = useApi();
 
-  const handleClickCriarCampeonatos = (e) => {
-    e.preventDefault();
-    navigate("/criar-campeonatos");
-  };
+  // --- Navegação ---
+  const handleCriarCampeonato = () => navigate("/criar-campeonatos");
+  const handleMeusCampeonatos = () => navigate("/meus-campeonatos");
 
-  const handleClickMeusCampeonatos = (e) => {
-    e.preventDefault();
-    navigate("/meus-campeonatos");
-  };
-
+  // --- Buscar campeonatos ---
   useEffect(() => {
     const fetchCampeonatos = async () => {
       try {
         setLoading(true);
+        setError("");
         const response = await api.get("/campeonatos");
         setCampeonatos(response.data);
-      } catch (error) {
-        console.error("Erro ao carregar campeonatos:", error);
+      } catch (err) {
+        console.error("Erro ao carregar campeonatos:", err);
+        setError("❌ Não foi possível carregar os campeonatos. Tente novamente.");
       } finally {
         setLoading(false);
       }
     };
+
     fetchCampeonatos();
   }, [api]);
 
+  // --- Filtragem ---
   const campeonatosFiltrados = campeonatos.filter((c) =>
     c.nome.toLowerCase().includes(filtro.toLowerCase())
   );
@@ -48,16 +49,18 @@ function Campeonatos() {
       <Navbar />
       <div className="campeonatos-page">
         <div className="campeonatos-header">
-          <h1>🏆 Campeonatos</h1>
+          <h1 className="campeonatos-title">🏆 Campeonatos</h1>
           <div className="header-buttons">
-            <button className="btn-criar" onClick={handleClickCriarCampeonatos}>
+            <button className="btn-criar" onClick={handleCriarCampeonato}>
               + Criar Campeonato
             </button>
-            <button className="btn-meus" onClick={handleClickMeusCampeonatos}>
+            <button className="btn-meus" onClick={handleMeusCampeonatos}>
               Meus Campeonatos
             </button>
           </div>
         </div>
+
+        {error && <p className="campeonatos-error">{error}</p>}
 
         <div className="campeonatos-container">
           <input
@@ -69,47 +72,51 @@ function Campeonatos() {
           />
 
           <div className="campeonatos-grid">
-            {campeonatosFiltrados.map((c) => {
-              // Define a imagem do campeonato
-              const imagemCampeonato = c.imagemBase64
-                ? `data:image/*;base64,${c.imagemBase64}`
-                : "https://via.placeholder.com/400x200?text=Sem+Imagem";
+            {campeonatosFiltrados.length > 0 ? (
+              campeonatosFiltrados.map((c) => {
+                // Usando diretamente imagemCampeonato, que já vem com prefixo data:image/png;base64,
+                const imagemCampeonato =
+                  c.imagemCampeonato || "https://via.placeholder.com/400x200?text=Sem+Imagem";
 
-              return (
-                <div key={c.id} className="card">
-                  <div className="card-img">
-                    <img src={imagemCampeonato} alt={c.nome} />
-                    <span
-                      className={`status ${c.status === "ABERTO" ? "aberto" : "fechado"}`}
-                    >
-                      {c.status === "ABERTO" ? "Aberto" : "Fechado"}
-                    </span>
-                  </div>
+                return (
+                  <div key={c.id} className="card">
+                    <div className="card-img">
+                      <img src={imagemCampeonato} alt={c.nome} />
+                      <span
+                        className={`status ${c.status === "ABERTO" ? "aberto" : "fechado"}`}
+                      >
+                        {c.status === "ABERTO" ? "Aberto" : "Fechado"}
+                      </span>
+                    </div>
 
-                  <div className="card-body">
-                    <h2>{c.nome}</h2>
-                    <p className="detalhes">
-                      Tipo: {c.tipo === "GRATUITO" ? "Gratuito" : "Pago"} • Máx. {c.maxEquipes} equipes
-                    </p>
-                    <p className="organizador">
-                      Organizado por <strong>{c.criador?.nome || "Desconhecido"}</strong>
-                    </p>
-                    {c.status === "ABERTO" ? (
-                      <button className="btn-entrar">Participar</button>
-                    ) : (
-                      <button className="btn-fechado" disabled>
-                        Fechado
-                      </button>
-                    )}
+                    <div className="card-body">
+                      <h2>{c.nome}</h2>
+                      <p className="detalhes">
+                        Tipo: {c.tipo === "GRATUITO" ? "Gratuito" : "Pago"} •
+                        Máx. {c.maxEquipes} equipes
+                      </p>
+                      <p className="organizador">
+                        Organizado por <strong>{c.criador?.nome || "Desconhecido"}</strong>
+                      </p>
+                      {c.status === "ABERTO" ? (
+                        <button className="btn-entrar">Participar</button>
+                      ) : (
+                        <button className="btn-fechado" disabled>
+                          Fechado
+                        </button>
+                      )}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })
+            ) : (
+              <p className="nenhum-campeonato">Nenhum campeonato encontrado.</p>
+            )}
           </div>
         </div>
       </div>
     </>
   );
-}
+};
 
 export default Campeonatos;
