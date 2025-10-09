@@ -18,6 +18,8 @@ import Campeonatos from './Pages/Campeonatos/Campeonatos';
 import EditTime from './Pages/Time/EditTime/EditTime';
 import Landpage from './Pages/Landpage/Landpage';
 import CriarCampeonatos from './Pages/Campeonatos/CriarCampeonatos/CriarCampeonatos';
+import ListarCampeonatos from './Pages/Campeonatos/ListarCampeonatos/ListarCampeonatos';
+import InfoEditCampeonatos from './Pages/Campeonatos/ExibirInformaçoesCampeonatos/InfoEditCampeonatos';
 
 function MainRoutes() {
   return (
@@ -37,6 +39,7 @@ function MainRoutes() {
           <User />
         </PrivateRoute>
       } />
+
       <Route path='/eliteCup' element={
         <PrivateRoute>
           <EliteCup />
@@ -52,6 +55,19 @@ function MainRoutes() {
           <CriarCampeonatos/>
         </PrivateRoute>
       } />
+
+      <Route path='/meus-campeonatos' element={
+        <PrivateRoute>
+          <ListarCampeonatos />
+        </PrivateRoute>
+      } />
+
+      <Route path='/info-campeonato/:id' element={
+        <PrivateRoute>
+          <InfoEditCampeonatos />
+        </PrivateRoute>
+      } />
+      
       <Route path='/editar-usuario/:id' element={
         <PrivateRoute>
           <EditUser />

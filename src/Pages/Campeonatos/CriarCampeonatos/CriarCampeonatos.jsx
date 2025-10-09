@@ -22,7 +22,6 @@ const CriarCampeonatos = () => {
   const { user, token } = useAuth();
   const userId = user?.id;
 
-  // ===== Função de seleção de imagem =====
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -34,7 +33,7 @@ const CriarCampeonatos = () => {
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      const base64 = reader.result.split(',')[1]; // remove prefixo data:image
+      const base64 = reader.result.split(',')[1];
       setImagemBase64(base64);
       setPreviewImagem(reader.result);
       setError('');
@@ -42,7 +41,6 @@ const CriarCampeonatos = () => {
     reader.readAsDataURL(file);
   };
 
-  // ===== Função de envio do formulário =====
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -73,7 +71,7 @@ const CriarCampeonatos = () => {
       status,
       valor: tipo === 'PAGO' ? Number(valor) : 0,
       maxEquipes,
-      imagemCampeonato: imagemBase64, // nome atualizado conforme DTO
+      imagemCampeonato: imagemBase64,
       idCriador: userId
     };
 
@@ -95,16 +93,27 @@ const CriarCampeonatos = () => {
     }
   };
 
+  // Botão de voltar
+  const handleVoltar = () => navigate(-1);
+
   return (
     <>
       <Navbar />
+
+      {/* Botão de voltar fora da box */}
+      <div>
+        <button className="btn-voltar" onClick={handleVoltar}>
+          ← Voltar
+        </button>
+      </div>
+
       <div className="campeonatos-create-container">
         <h1 className="campeonatos-create-title">Criar Novo Campeonato</h1>
 
         {error && <div className="campeonatos-create-error">{error}</div>}
 
         <form onSubmit={handleSubmit} className="campeonatos-create-form">
-          {/* Nome */}
+          {/* Campos do formulário */}
           <div className="campeonatos-create-field">
             <label className="campeonatos-create-label">Nome do Campeonato:</label>
             <input
@@ -116,7 +125,6 @@ const CriarCampeonatos = () => {
             />
           </div>
 
-          {/* Descrição */}
           <div className="campeonatos-create-field">
             <label className="campeonatos-create-label">Descrição:</label>
             <textarea
@@ -128,7 +136,6 @@ const CriarCampeonatos = () => {
             />
           </div>
 
-          {/* Imagem */}
           <div className="campeonatos-create-field">
             <label className="campeonatos-create-label">Imagem:</label>
             <input
@@ -147,7 +154,6 @@ const CriarCampeonatos = () => {
             )}
           </div>
 
-          {/* Tipo */}
           <div className="campeonatos-create-field">
             <label className="campeonatos-create-label">Tipo:</label>
             <select
@@ -160,7 +166,6 @@ const CriarCampeonatos = () => {
             </select>
           </div>
 
-          {/* Valor (só aparece se pago) */}
           {tipo === 'PAGO' && (
             <div className="campeonatos-create-field">
               <label className="campeonatos-create-label">Valor (R$):</label>
@@ -176,7 +181,6 @@ const CriarCampeonatos = () => {
             </div>
           )}
 
-          {/* Status */}
           <div className="campeonatos-create-field">
             <label className="campeonatos-create-label">Status:</label>
             <select
@@ -189,7 +193,6 @@ const CriarCampeonatos = () => {
             </select>
           </div>
 
-          {/* Máximo de equipes */}
           <div className="campeonatos-create-field">
             <label className="campeonatos-create-label">Máximo de Equipes:</label>
             <select
@@ -205,7 +208,6 @@ const CriarCampeonatos = () => {
             </select>
           </div>
 
-          {/* Botão */}
           <button
             type="submit"
             className="campeonatos-create-button"

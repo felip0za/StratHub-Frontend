@@ -1,0 +1,175 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+.campeonatos-page {
+  background-color: #0e0e0e;
+  color: #fff;
+  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
+}
+
+.campeonatos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 10%;
+  background: linear-gradient(to right, #1b1b1b, #111);
+  box-shadow: 0 3px 8px rgba(255, 1, 1, 0.25); /* vermelho atualizado */
+}
+
+.campeonatos-header h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.header-buttons button {
+  margin-left: 15px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+}
+
+.btn-criar {
+  background-color: #ff0101; /* vermelho principal */
+  color: white;
+}
+
+.btn-criar:hover {
+  background-color: #c10001; /* hover mais escuro */
+}
+
+.btn-meus {
+  background-color: #292929;
+  color: #fff;
+}
+
+.btn-meus:hover {
+  background-color: #3a3a3a;
+}
+
+.campeonatos-container {
+  max-width: 1300px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.campo-pesquisa {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: none;
+  background-color: #1a1a1a;
+  color: #fff;
+  font-size: 16px;
+  outline: none;
+  margin-bottom: 25px;
+  box-shadow: 0 0 0 2px transparent;
+  transition: box-shadow 0.3s ease;
+}
+
+.campo-pesquisa:focus {
+  box-shadow: 0 0 0 2px #ff0101;
+}
+
+/* === Tabela === */
+.tabela-container {
+  overflow-x: auto;
+  border-radius: 12px;
+  background-color: #111;
+  box-shadow: 0 0 12px rgba(255, 1, 1, 0.15);
+}
+
+.tabela-campeonatos {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+.tabela-campeonatos th,
+.tabela-campeonatos td {
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+.campeonato-img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.tabela-campeonatos thead {
+  background-color: #1a1a1a;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
+
+.tabela-campeonatos tbody tr {
+  background-color: #181818;
+  border-bottom: 1px solid #2a2a2a;
+  transition: background 0.3s ease;
+}
+
+.tabela-campeonatos tbody tr:nth-child(even) {
+  background-color: #202020;
+}
+
+.tabela-campeonatos tbody tr:hover {
+  background-color: #2b2b2b;
+}
+
+.status-ativo {
+  color: #31d158;
+  font-weight: 600;
+}
+
+.status-finalizado {
+  color: #ff0101;
+  font-weight: 600;
+}
+
+.btn-info {
+  background-color: #ff0101;
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+
+.btn-info:hover {
+  background-color: #c10001;
+}
+
+.nenhum {
+  text-align: center;
+  color: #aaa;
+  padding: 20px;
+}
+
+.erro {
+  color: #ff0101;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .campeonatos-header {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .tabela-campeonatos th,
+  .tabela-campeonatos td {
+    padding: 10px;
+    font-size: 14px;
+  }
+}

@@ -1,0 +1,183 @@
+/* === PÁGINA === */
+.detalhes-pagina {
+  background: #0e0e0e;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 30px 10px;
+}
+
+.detalhes-box {
+  background: #161616;
+  border-radius: 20px;
+  padding: 25px;
+  max-width: 900px;
+  width: 100%;
+  box-shadow: 0 0 20px rgba(255, 1, 1, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* === HEADER === */
+.header-box {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  flex-wrap: wrap;
+}
+
+.logo-box img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.info-box {
+  flex: 1;
+}
+
+.info-box h1 {
+  margin: 0;
+  color: #ff0101;
+}
+
+.tags-box {
+  display: flex;
+  gap: 10px;
+  margin: 5px 0;
+}
+
+.tag-tipo,
+.tag-status {
+  padding: 5px 12px;
+  border-radius: 12px;
+  font-weight: 600;
+  color: #fff;
+  display: inline-block;
+  /* Removido o background sólido */
+  background: transparent;
+
+  /* Adiciona sombra atrás para destacar */
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+
+/* Cores do texto conforme tipo/status */
+.tag-tipo.gratuito {}
+.tag-tipo.pago {color: #ff0101;}
+.tag-status.aberto {}
+.tag-status.encerrado {color: #ff0101;}
+
+
+.botoes-box {
+  display: flex;
+  gap: 10px;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+
+.btn-editar, .btn-voltar {
+  background: #ff0101;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-editar:hover, .btn-voltar:hover {
+  background: #c10001;
+}
+
+/* === CARDS === */
+.card-desc, .card-equipes, .card-chaves, .card-eliminatorias, .card-campeao {
+  background: #1b1b1b;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(255, 1, 1, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* === EQUIPES === */
+.card-equipes ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.card-equipes li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #222;
+  padding: 6px 12px;
+  border-radius: 8px;
+}
+
+.logo-time {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ff0101;
+}
+
+/* === CHAVEAMENTO === */
+.grid-chaves {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.grupo-chaves {
+  background: #222;
+  border-radius: 10px;
+  padding: 10px;
+  flex: 1 1 150px;
+}
+
+/* === ELIMINATÓRIAS === */
+.card-eliminatorias img {
+  width: 100%;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+/* === CAMPEÃO === */
+.info-campeao {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.info-campeao img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid #ff0101;
+  object-fit: cover;
+}
+
+/* === RESPONSIVIDADE === */
+@media (max-width: 768px) {
+  .header-box {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .botoes-box {
+    margin-left: 0;
+  }
+
+  .card-equipes ul {
+    flex-direction: column;
+  }
+}
