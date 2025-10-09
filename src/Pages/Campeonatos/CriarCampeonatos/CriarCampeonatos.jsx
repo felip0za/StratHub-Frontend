@@ -58,26 +58,33 @@ const CriarCampeonatos = () => {
       return;
     }
 
+    // Para campeonatos pagos, a premiação é obrigatória
     if (tipo === 'PAGO' && (!valorPremiacao || Number(valorPremiacao) <= 0)) {
-      setError('❌ Informe o valor de premiação (obrigatório) para campeonatos pagos.');
+      setError('❌ Informe o valor da premiação (obrigatório) para campeonatos pagos.');
       setLoading(false);
       return;
     }
 
-    // Calcular valor de inscrição por equipe
-    const valorInscricao = tipo === 'PAGO' ? Number(valorPremiacao) / maxEquipes : 0;
+    // Cálculo de valores
+    const totalPremiacao = tipo === 'PAGO' ? Number(valorPremiacao) : 0;
+    const valorPorEquipe = tipo === 'PAGO' ? totalPremiacao / maxEquipes : 0;
+
+    // Data atual (LocalDateTime)
+    const agora = new Date();
+    const dataInicio = agora.toISOString().slice(0, 19); // formato compatível com LocalDateTime
 
     const novoCampeonato = {
       nome,
       descricao,
       tipo,
       status,
-      valor: valorInscricao,                    // valor de inscrição por equipe
-      valorPremiacao: valorPremiacao ? Number(valorPremiacao) : null,
+      valor: totalPremiacao,           // valor total da premiação
+      valorPorEquipe: valorPorEquipe,  // valor dividido entre as equipes
       maxEquipes,
       imagemCampeonato: imagemBase64,
-      idCriador: userId,
-      dataFim: null                              // dataFim será definida quando o campeonato for encerrado
+      dataInicio,
+      dataFim: null,
+      idCriador: userId
     };
 
     try {
@@ -117,6 +124,7 @@ const CriarCampeonatos = () => {
 
         <form onSubmit={handleSubmit} className="campeonatos-create-form">
 
+          {/* Nome */}
           <div className="campeonatos-create-field">
             <label className="campeonatos-create-label">Nome do Campeonato:</label>
             <input
@@ -128,6 +136,7 @@ const CriarCampeonatos = () => {
             />
           </div>
 
+          {/* Descrição */}
           <div className="campeonatos-create-field">
             <label className="campeonatos-create-label">Descrição:</label>
             <textarea
@@ -139,6 +148,7 @@ const CriarCampeonatos = () => {
             />
           </div>
 
+          {/* Imagem */}
           <div className="campeonatos-create-field">
             <label className="campeonatos-create-label">Imagem:</label>
             <input
@@ -157,6 +167,7 @@ const CriarCampeonatos = () => {
             )}
           </div>
 
+          {/* Tipo */}
           <div className="campeonatos-create-field">
             <label className="campeonatos-create-label">Tipo de Campeonato:</label>
             <select
@@ -169,11 +180,9 @@ const CriarCampeonatos = () => {
             </select>
           </div>
 
-          {/* Premiação */}
+          {/* Valor da premiação */}
           <div className="campeonatos-create-field">
-            <label className="campeonatos-create-label">
-              Valor da Premiação (R$):
-            </label>
+            <label className="campeonatos-create-label">Valor da Premiação (R$):</label>
             <input
               type="number"
               min="0"
@@ -185,16 +194,12 @@ const CriarCampeonatos = () => {
             />
             {tipo === 'PAGO' && (
               <small className="campeonatos-create-hint">
-                Valor total da premiação. O valor de inscrição por equipe será calculado automaticamente.
-              </small>
-            )}
-            {tipo === 'GRATUITO' && (
-              <small className="campeonatos-create-hint">
-                Opcional. Informe a premiação se desejar.
+                O valor total da premiação será dividido igualmente entre as equipes.
               </small>
             )}
           </div>
 
+          {/* Status */}
           <div className="campeonatos-create-field">
             <label className="campeonatos-create-label">Status:</label>
             <select
@@ -203,10 +208,12 @@ const CriarCampeonatos = () => {
               className="campeonatos-create-select"
             >
               <option value="ABERTO">Aberto</option>
+              <option value="EM_ANDAMENTO">Em andamento</option>
               <option value="FECHADO">Fechado</option>
             </select>
           </div>
 
+          {/* Máximo de equipes */}
           <div className="campeonatos-create-field">
             <label className="campeonatos-create-label">Máximo de Equipes:</label>
             <select
