@@ -10,7 +10,7 @@ const CriarCampeonatos = () => {
   const [descricao, setDescricao] = useState('');
   const [tipo, setTipo] = useState('GRATUITO');
   const [status, setStatus] = useState('ABERTO');
-  const [valor, setValor] = useState('');
+  const [valorPremiacao, setValorPremiacao] = useState('');
   const [maxEquipes, setMaxEquipes] = useState(4);
   const [imagemBase64, setImagemBase64] = useState('');
   const [previewImagem, setPreviewImagem] = useState('');
@@ -47,7 +47,7 @@ const CriarCampeonatos = () => {
     setLoading(true);
 
     if (!nome.trim() || !descricao.trim() || !imagemBase64) {
-      setError('❌ Preencha todos os campos e selecione uma imagem.');
+      setError('❌ Preencha todos os campos obrigatórios.');
       setLoading(false);
       return;
     }
@@ -58,21 +58,26 @@ const CriarCampeonatos = () => {
       return;
     }
 
-    if (tipo === 'PAGO' && (!valor || Number(valor) <= 0)) {
-      setError('❌ Informe um valor válido para o campeonato pago.');
+    if (tipo === 'PAGO' && (!valorPremiacao || Number(valorPremiacao) <= 0)) {
+      setError('❌ Informe o valor de premiação (obrigatório) para campeonatos pagos.');
       setLoading(false);
       return;
     }
+
+    // Calcular valor de inscrição por equipe
+    const valorInscricao = tipo === 'PAGO' ? Number(valorPremiacao) / maxEquipes : 0;
 
     const novoCampeonato = {
       nome,
       descricao,
       tipo,
       status,
-      valor: tipo === 'PAGO' ? Number(valor) : 0,
+      valor: valorInscricao,                    // valor de inscrição por equipe
+      valorPremiacao: valorPremiacao ? Number(valorPremiacao) : null,
       maxEquipes,
       imagemCampeonato: imagemBase64,
-      idCriador: userId
+      idCriador: userId,
+      dataFim: null                              // dataFim será definida quando o campeonato for encerrado
     };
 
     try {
@@ -93,14 +98,12 @@ const CriarCampeonatos = () => {
     }
   };
 
-  // Botão de voltar
   const handleVoltar = () => navigate(-1);
 
   return (
     <>
       <Navbar />
 
-      {/* Botão de voltar fora da box */}
       <div>
         <button className="btn-voltar" onClick={handleVoltar}>
           ← Voltar
@@ -113,7 +116,7 @@ const CriarCampeonatos = () => {
         {error && <div className="campeonatos-create-error">{error}</div>}
 
         <form onSubmit={handleSubmit} className="campeonatos-create-form">
-          {/* Campos do formulário */}
+
           <div className="campeonatos-create-field">
             <label className="campeonatos-create-label">Nome do Campeonato:</label>
             <input
@@ -155,7 +158,7 @@ const CriarCampeonatos = () => {
           </div>
 
           <div className="campeonatos-create-field">
-            <label className="campeonatos-create-label">Tipo:</label>
+            <label className="campeonatos-create-label">Tipo de Campeonato:</label>
             <select
               value={tipo}
               onChange={(e) => setTipo(e.target.value)}
@@ -166,20 +169,31 @@ const CriarCampeonatos = () => {
             </select>
           </div>
 
-          {tipo === 'PAGO' && (
-            <div className="campeonatos-create-field">
-              <label className="campeonatos-create-label">Valor (R$):</label>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                value={valor}
-                onChange={(e) => setValor(e.target.value)}
-                className="campeonatos-create-input"
-                required
-              />
-            </div>
-          )}
+          {/* Premiação */}
+          <div className="campeonatos-create-field">
+            <label className="campeonatos-create-label">
+              Valor da Premiação (R$):
+            </label>
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              value={valorPremiacao}
+              onChange={(e) => setValorPremiacao(e.target.value)}
+              className="campeonatos-create-input"
+              required={tipo === 'PAGO'}
+            />
+            {tipo === 'PAGO' && (
+              <small className="campeonatos-create-hint">
+                Valor total da premiação. O valor de inscrição por equipe será calculado automaticamente.
+              </small>
+            )}
+            {tipo === 'GRATUITO' && (
+              <small className="campeonatos-create-hint">
+                Opcional. Informe a premiação se desejar.
+              </small>
+            )}
+          </div>
 
           <div className="campeonatos-create-field">
             <label className="campeonatos-create-label">Status:</label>

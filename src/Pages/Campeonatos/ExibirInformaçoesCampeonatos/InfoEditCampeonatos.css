@@ -40,7 +40,6 @@
 
 .info-box h1 {
   margin: 0;
-  color: #ff0101;
 }
 
 .tags-box {
@@ -56,20 +55,12 @@
   font-weight: 600;
   color: #fff;
   display: inline-block;
-  /* Removido o background sólido */
   background: transparent;
-
-  /* Adiciona sombra atrás para destacar */
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
 }
 
-
-/* Cores do texto conforme tipo/status */
-.tag-tipo.gratuito {}
-.tag-tipo.pago {color: #ff0101;}
-.tag-status.aberto {}
-.tag-status.encerrado {color: #ff0101;}
-
+.tag-tipo.pago { color: #ff0101; }
+.tag-status.fechado { color: #ff0101; }
 
 .botoes-box {
   display: flex;
@@ -78,7 +69,8 @@
   flex-wrap: wrap;
 }
 
-.btn-editar, .btn-voltar {
+.btn-editar,
+.btn-voltar {
   background: #ff0101;
   color: #fff;
   border: none;
@@ -89,12 +81,17 @@
   transition: background 0.2s ease;
 }
 
-.btn-editar:hover, .btn-voltar:hover {
+.btn-editar:hover,
+.btn-voltar:hover {
   background: #c10001;
 }
 
 /* === CARDS === */
-.card-desc, .card-equipes, .card-chaves, .card-eliminatorias, .card-campeao {
+.card-desc,
+.card-equipes,
+.card-chaves,
+.card-eliminatorias,
+.card-campeao {
   background: #1b1b1b;
   border-radius: 15px;
   padding: 20px;
@@ -166,6 +163,91 @@
   object-fit: cover;
 }
 
+/* === MODAL DE EDIÇÃO === */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal-content {
+  background: #161616;
+  padding: 25px;
+  border-radius: 15px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 0 20px rgba(255,1,1,0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.modal-field label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.modal-field input,
+.modal-field select {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid #333;
+  background: #1b1b1b;
+  color: #fff;
+}
+
+.preview-modal-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ff0101;
+  margin-top: 10px;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.modal-buttons button {
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.modal-buttons button:first-child {
+  background: #555;
+  color: #fff;
+}
+
+.modal-buttons button:first-child:hover {
+  background: #777;
+}
+
+.modal-buttons button:last-child {
+  background: #ff0101;
+  color: #fff;
+}
+
+.modal-buttons button:last-child:hover {
+  background: #c10001;
+}
+
 /* === RESPONSIVIDADE === */
 @media (max-width: 768px) {
   .header-box {
@@ -179,5 +261,9 @@
 
   .card-equipes ul {
     flex-direction: column;
+  }
+
+  .modal-content {
+    width: 95%;
   }
 }

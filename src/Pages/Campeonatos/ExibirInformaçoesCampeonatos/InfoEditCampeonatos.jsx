@@ -9,6 +9,13 @@ const InfoEditCampeonatos = () => {
   const [campeonato, setCampeonato] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editNome, setEditNome] = useState('');
+  const [editDataFim, setEditDataFim] = useState('');
+  const [editStatus, setEditStatus] = useState('');
+  const [editImagem, setEditImagem] = useState('');
+  const [previewImagem, setPreviewImagem] = useState('');
+  const [saving, setSaving] = useState(false);
 
   const { id } = useParams();
   const navigate = useNavigate();
@@ -29,13 +36,57 @@ const InfoEditCampeonatos = () => {
     fetchCampeonato();
   }, [api, id]);
 
-  const handleEditar = () => navigate(`/editar-campeonato/${id}`);
   const handleVoltar = () => navigate('/campeonatos');
 
-  // Função helper para garantir que a imagem sempre tenha o prefixo base64 correto
   const formatarImagem = (img) => {
     if (!img || img === '') return 'https://via.placeholder.com/200?text=Sem+Imagem';
     return img.startsWith('data:image') ? img : `data:image/png;base64,${img}`;
+  };
+
+  const abrirModal = () => {
+    setEditNome(campeonato.nome);
+    setEditDataFim(campeonato.dataFim || '');
+    setEditStatus(campeonato.status);
+    setEditImagem(campeonato.imagemCampeonato || '');
+    setPreviewImagem(formatarImagem(campeonato.imagemCampeonato));
+    setModalOpen(true);
+  };
+
+  const handleImagemChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64 = reader.result.split(',')[1];
+      setEditImagem(base64);
+      setPreviewImagem(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSalvarEdicao = async () => {
+    setSaving(true);
+    try {
+      await api.put(`/campeonatos/${id}`, {
+        nome: editNome,
+        dataFim: editDataFim || null,
+        status: editStatus,
+        imagemCampeonato: editImagem || null
+      });
+      alert('✅ Campeonato atualizado com sucesso!');
+      setModalOpen(false);
+      // Recarregar dados do campeonato
+      const response = await api.get(`/campeonatos/${id}`);
+      setCampeonato(response.data);
+    } catch (err) {
+      console.error('Erro ao atualizar campeonato:', err);
+      alert('❌ Erro ao atualizar campeonato.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (loading) return <LoadingScreen />;
@@ -61,19 +112,15 @@ const InfoEditCampeonatos = () => {
             <div className="info-box">
               <h1>{campeonato.nome}</h1>
               <div className="tags-box">
-                <span className={`tag-tipo ${campeonato.tipo.toLowerCase()}`}>
-                  {campeonato.tipo}
-                </span>
-                <span className={`tag-status ${campeonato.status.toLowerCase()}`}>
-                  {campeonato.status}
-                </span>
+                <span className={`tag-tipo ${campeonato.tipo.toLowerCase()}`}>{campeonato.tipo}</span>
+                <span className={`tag-status ${campeonato.status.toLowerCase()}`}>{campeonato.status}</span>
               </div>
-              <p>{campeonato.dataInicio} - {campeonato.dataFim}</p>
+              <p>{campeonato.dataInicio} - {campeonato.dataFim || '-'}</p>
               <p>Entrada: {campeonato.tipo === 'GRATUITO' ? 'Gratuito' : `R$ ${Number(campeonato.valor || 0).toFixed(2)}`}</p>
               <p>Prêmio: {campeonato.premio || '-'}</p>
             </div>
             <div className="botoes-box">
-              <button className="btn-editar" onClick={handleEditar}>Editar</button>
+              <button className="btn-editar" onClick={abrirModal}>Editar</button>
               <button className="btn-voltar" onClick={handleVoltar}>Voltar</button>
             </div>
           </div>
@@ -84,58 +131,56 @@ const InfoEditCampeonatos = () => {
             <p>{campeonato.descricao || '-'}</p>
           </div>
 
-          {/* EQUIPES */}
-          {campeonato.equipes && campeonato.equipes.length > 0 && (
-            <div className="card-equipes">
-              <h2>Equipes Participantes</h2>
-              <ul>
-                {campeonato.equipes.map((time, idx) => (
-                  <li key={idx}>
-                    {time.nome} {time.logo && <img src={formatarImagem(time.logo)} alt={time.nome} className="logo-time" />}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* CHAVEAMENTO */}
-          {campeonato.chaves && Object.keys(campeonato.chaves).length > 0 && (
-            <div className="card-chaves">
-              <h2>Chaveamento</h2>
-              <div className="grid-chaves">
-                {Object.entries(campeonato.chaves).map(([grupo, times]) => (
-                  <div key={grupo} className="grupo-chaves">
-                    <h3>Grupo {grupo}</h3>
-                    {times.map((item, idx) => (
-                      <p key={idx}>{item.time} - {item.pontos} pts</p>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* ELIMINATÓRIAS */}
-          {campeonato.imagemEliminatorias && (
-            <div className="card-eliminatorias">
-              <h2>Eliminatórias</h2>
-              <img src={formatarImagem(campeonato.imagemEliminatorias)} alt="Eliminatórias" />
-            </div>
-          )}
-
-          {/* CAMPEÃO */}
-          {campeonato.campeao && (
-            <div className="card-campeao">
-              <h2>Campeão</h2>
-              <div className="info-campeao">
-                <img src={formatarImagem(campeonato.campeao.logo)} alt={campeonato.campeao.nome} />
-                <span>{campeonato.campeao.nome}</span>
-              </div>
-            </div>
-          )}
-
         </div>
       </div>
+
+      {/* MODAL DE EDIÇÃO */}
+      {modalOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2>Editar Campeonato</h2>
+
+            <div className="modal-field">
+              <label>Nome do Campeonato:</label>
+              <input
+                type="text"
+                value={editNome}
+                onChange={(e) => setEditNome(e.target.value)}
+              />
+            </div>
+
+            <div className="modal-field">
+              <label>Data de Fim:</label>
+              <input
+                type="date"
+                value={editDataFim}
+                onChange={(e) => setEditDataFim(e.target.value)}
+              />
+            </div>
+
+            <div className="modal-field">
+              <label>Status:</label>
+              <select value={editStatus} onChange={(e) => setEditStatus(e.target.value)}>
+                <option value="ABERTO">Aberto</option>
+                <option value="FECHADO">Fechado</option>
+              </select>
+            </div>
+
+            <div className="modal-field">
+              <label>Imagem do Campeonato:</label>
+              <input type="file" accept="image/*" onChange={handleImagemChange} />
+              {previewImagem && <img src={previewImagem} alt="Preview" className="preview-modal-img" />}
+            </div>
+
+            <div className="modal-buttons">
+              <button onClick={() => setModalOpen(false)} disabled={saving}>Cancelar</button>
+              <button onClick={handleSalvarEdicao} disabled={saving}>
+                {saving ? 'Salvando...' : 'Salvar'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
