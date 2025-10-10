@@ -42,6 +42,20 @@ const Campeonatos = () => {
     c.nome.toLowerCase().includes(filtro.toLowerCase())
   );
 
+  // --- Formata status para exibição ---
+  const formatarStatus = (status) => {
+    switch (status) {
+      case "ABERTO":
+        return { texto: "Aberto", classe: "aberto" };
+      case "EM_ANDAMENTO":
+        return { texto: "Em andamento", classe: "em_andamento" };
+      case "FECHADO":
+        return { texto: "Fechado", classe: "fechado" };
+      default:
+        return { texto: "-", classe: "" };
+    }
+  };
+
   if (loading) return <LoadingScreen />;
 
   return (
@@ -74,26 +88,22 @@ const Campeonatos = () => {
           <div className="campeonatos-grid">
             {campeonatosFiltrados.length > 0 ? (
               campeonatosFiltrados.map((c) => {
-                // Usando diretamente imagemCampeonato, que já vem com prefixo data:image/png;base64,
                 const imagemCampeonato =
                   c.imagemCampeonato || "https://via.placeholder.com/400x200?text=Sem+Imagem";
+
+                const status = formatarStatus(c.status);
 
                 return (
                   <div key={c.id} className="card">
                     <div className="card-img">
                       <img src={imagemCampeonato} alt={c.nome} />
-                      <span
-                        className={`status ${c.status === "ABERTO" ? "aberto" : "fechado"}`}
-                      >
-                        {c.status === "ABERTO" ? "Aberto" : "Fechado"}
-                      </span>
+                      <span className={`status ${status.classe}`}>{status.texto}</span>
                     </div>
 
                     <div className="card-body">
                       <h2>{c.nome}</h2>
                       <p className="detalhes">
-                        Tipo: {c.tipo === "GRATUITO" ? "Gratuito" : "Pago"} •
-                        Máx. {c.maxEquipes} equipes
+                        Tipo: {c.tipo === "GRATUITO" ? "Gratuito" : "Pago"} • Máx. {c.maxEquipes} equipes
                       </p>
                       <p className="organizador">
                         Organizado por <strong>{c.criador?.nome || "Desconhecido"}</strong>

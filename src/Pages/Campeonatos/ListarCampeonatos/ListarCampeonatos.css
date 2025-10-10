@@ -52,7 +52,7 @@
 }
 
 .campeonatos-container {
-  max-width: 1300px;
+  max-width: 1600px;
   margin: 40px auto;
   padding: 0 20px;
 }
@@ -126,6 +126,11 @@
 
 .status-ativo {
   color: #31d158;
+  font-weight: 600;
+}
+
+.status-em-andamento {
+  color: #f5a623;
   font-weight: 600;
 }
 

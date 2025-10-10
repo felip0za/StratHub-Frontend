@@ -10,7 +10,7 @@ const CriarCampeonatos = () => {
   const [descricao, setDescricao] = useState('');
   const [tipo, setTipo] = useState('GRATUITO');
   const [status, setStatus] = useState('ABERTO');
-  const [valorPremiacao, setValorPremiacao] = useState('');
+  const [valorPremiacao, setValorPremiacao] = useState('0');
   const [maxEquipes, setMaxEquipes] = useState(4);
   const [imagemBase64, setImagemBase64] = useState('');
   const [previewImagem, setPreviewImagem] = useState('');
@@ -58,28 +58,25 @@ const CriarCampeonatos = () => {
       return;
     }
 
-    // Para campeonatos pagos, a premiação é obrigatória
     if (tipo === 'PAGO' && (!valorPremiacao || Number(valorPremiacao) <= 0)) {
       setError('❌ Informe o valor da premiação (obrigatório) para campeonatos pagos.');
       setLoading(false);
       return;
     }
 
-    // Cálculo de valores
-    const totalPremiacao = tipo === 'PAGO' ? Number(valorPremiacao) : 0;
+    const totalPremiacao = Number(valorPremiacao) || 0;
     const valorPorEquipe = tipo === 'PAGO' ? totalPremiacao / maxEquipes : 0;
 
-    // Data atual (LocalDateTime)
     const agora = new Date();
-    const dataInicio = agora.toISOString().slice(0, 19); // formato compatível com LocalDateTime
+    const dataInicio = agora.toISOString().slice(0, 19);
 
     const novoCampeonato = {
       nome,
       descricao,
       tipo,
-      status,
-      valor: totalPremiacao,           // valor total da premiação
-      valorPorEquipe: valorPorEquipe,  // valor dividido entre as equipes
+      status: 'ABERTO', // sempre aberto
+      valor: totalPremiacao,
+      valorPorEquipe: tipo === 'PAGO' ? valorPorEquipe : 0,
       maxEquipes,
       imagemCampeonato: imagemBase64,
       dataInicio,
@@ -190,27 +187,13 @@ const CriarCampeonatos = () => {
               value={valorPremiacao}
               onChange={(e) => setValorPremiacao(e.target.value)}
               className="campeonatos-create-input"
-              required={tipo === 'PAGO'}
+              required
             />
             {tipo === 'PAGO' && (
               <small className="campeonatos-create-hint">
                 O valor total da premiação será dividido igualmente entre as equipes.
               </small>
             )}
-          </div>
-
-          {/* Status */}
-          <div className="campeonatos-create-field">
-            <label className="campeonatos-create-label">Status:</label>
-            <select
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              className="campeonatos-create-select"
-            >
-              <option value="ABERTO">Aberto</option>
-              <option value="EM_ANDAMENTO">Em andamento</option>
-              <option value="FECHADO">Fechado</option>
-            </select>
           </div>
 
           {/* Máximo de equipes */}

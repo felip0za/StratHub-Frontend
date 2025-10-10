@@ -46,6 +46,26 @@ const ListarCampeonatos = () => {
 
   const campeonatosFiltrados = filtrarCampeonatos(campeonatos);
 
+  // Função para formatar o status
+  const formatarStatus = (status) => {
+    switch (status) {
+      case 'ABERTO':
+      case 'ATIVO':
+        return { texto: 'Aberto', classe: 'status-ativo' };
+      case 'EM_ANDAMENTO':
+        return { texto: 'Em andamento', classe: 'status-em-andamento' };
+      case 'FECHADO':
+        return { texto: 'Fechado', classe: 'status-finalizado' };
+      default:
+        return { texto: '-', classe: '' };
+    }
+  };
+
+  // Função para formatar datas apenas com DD/MM/YYYY
+  const formatarData = (data) => {
+    return data ? new Date(data).toLocaleDateString('pt-BR') : '-';
+  };
+
   if (loading) return <LoadingScreen />;
 
   return (
@@ -80,10 +100,14 @@ const ListarCampeonatos = () => {
               <thead>
                 <tr>
                   <th>Foto</th>
-                  <th>Nome do Campeonato</th>
+                  <th>Nome</th>
                   <th>Descrição</th>
-                  <th>Máximo de Equipes</th>
-                  <th>Valor</th>
+                  <th>Máx. Equipes</th>
+                  <th>Tipo</th>
+                  <th>Valor por Equipe</th>
+                  <th>Prêmio</th>
+                  <th>Data Início</th>
+                  <th>Data Fim</th>
                   <th>Status</th>
                   <th>Ações</th>
                 </tr>
@@ -96,6 +120,8 @@ const ListarCampeonatos = () => {
                         ? `data:image/png;base64,${c.imagemCampeonato}`
                         : "https://via.placeholder.com/50?text=Sem+Imagem";
 
+                    const status = formatarStatus(c.status);
+
                     return (
                       <tr key={c.id}>
                         <td>
@@ -106,26 +132,22 @@ const ListarCampeonatos = () => {
                           />
                         </td>
                         <td>{c.nome}</td>
-                        <td>{c.descricao}</td>
+                        <td>{c.descricao || '-'}</td>
                         <td>{c.maxEquipes}</td>
+                        <td>{c.tipo === 'GRATUITO' ? 'Gratuito' : 'Pago'}</td>
                         <td>
                           {c.tipo === 'GRATUITO'
                             ? 'Gratuito'
-                            : c.valor
-                            ? `R$ ${Number(c.valor).toFixed(2)}`
+                            : c.valorPorEquipe
+                            ? `R$ ${Number(c.valorPorEquipe).toFixed(2)}`
                             : 'R$ 0,00'}
                         </td>
-                        <td
-                          className={
-                            c.status === 'ATIVO' || c.status === 'ABERTO'
-                              ? 'status-ativo'
-                              : 'status-finalizado'
-                          }
-                        >
-                          {c.status === 'ATIVO' || c.status === 'ABERTO'
-                            ? 'Aberto'
-                            : 'Finalizado'}
+                        <td>
+                          {c.valor !== null ? `R$ ${Number(c.valor).toFixed(2)}` : '-'}
                         </td>
+                        <td>{formatarData(c.dataInicio)}</td>
+                        <td>{c.dataFim ? formatarData(c.dataFim) : 'A definir'}</td>
+                        <td className={status.classe}>{status.texto}</td>
                         <td>
                           <button
                             className="btn-info"
@@ -139,7 +161,7 @@ const ListarCampeonatos = () => {
                   })
                 ) : (
                   <tr>
-                    <td colSpan="6" className="nenhum">
+                    <td colSpan="11" className="nenhum">
                       Nenhum campeonato encontrado.
                     </td>
                   </tr>

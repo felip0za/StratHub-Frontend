@@ -18,8 +18,8 @@ import master from '../../../assets/master.png';
 import noRank from '../../../assets/noRank.png';
 
 // Imagens dos ranks do usuário (R6)
-import cobre2 from '../../../assets/ranks/cobre/cobre2.png';
-import cobre3 from '../../../assets/ranks/cobre/cobre3.png';
+import COBREII from '../../../assets/ranks/cobre/COBREII.png';
+import COBREIII from '../../../assets/ranks/cobre/COBREIII.png';
 // Adicione outros ranks conforme necessidade
 // import bronze1 from '...'; import bronze2 from '...'; etc.
 
@@ -116,8 +116,8 @@ function User() {
 
   // Mapeamento de ranks do usuário (R6)
   const rankUsuarioToImage = {
-    'COBRE2': cobre2,
-    'COBRE3': cobre3,
+    'COBREII': COBREII,
+    'COBREIII': COBREIII,
     // Adicione outros ranks aqui
   };
 

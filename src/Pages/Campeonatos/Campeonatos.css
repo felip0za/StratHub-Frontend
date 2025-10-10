@@ -161,8 +161,12 @@
   color: #31d158;
 }
 
+.status.em_andamento {
+  color: #f5a623;
+}
+
 .status.fechado {
-  color: #d13131;
+  color: #c1001d;
 }
 
 /* === Texto do card === */
