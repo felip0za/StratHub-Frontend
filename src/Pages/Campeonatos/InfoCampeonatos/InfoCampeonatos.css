@@ -1,0 +1,40 @@
+/* CampeonatoDetalhes.css */
+.detalhes-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #1e1e1e;
+  color: #fff;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(0,0,0,0.5);
+}
+
+.campeonato-img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.btn-entrar {
+  background-color: #4CAF50;
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+.btn-entrar:hover {
+  background-color: #45a049;
+}
+
+.loading {
+  text-align: center;
+  font-size: 18px;
+  margin-top: 50px;
+}

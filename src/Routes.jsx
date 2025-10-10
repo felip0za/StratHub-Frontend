@@ -20,6 +20,7 @@ import Landpage from './Pages/Landpage/Landpage';
 import CriarCampeonatos from './Pages/Campeonatos/CriarCampeonatos/CriarCampeonatos';
 import ListarCampeonatos from './Pages/Campeonatos/ListarCampeonatos/ListarCampeonatos';
 import InfoEditCampeonatos from './Pages/Campeonatos/ExibirInformaçoesCampeonatos/InfoEditCampeonatos';
+import InfoCampeonatos from './Pages/Campeonatos/Campeonatos';
 
 function MainRoutes() {
   return (
@@ -59,6 +60,12 @@ function MainRoutes() {
       <Route path='/meus-campeonatos' element={
         <PrivateRoute>
           <ListarCampeonatos />
+        </PrivateRoute>
+      } />
+
+      <Route path='/info-campeonato' element={
+        <PrivateRoute>
+          <InfoCampeonatos />
         </PrivateRoute>
       } />
 

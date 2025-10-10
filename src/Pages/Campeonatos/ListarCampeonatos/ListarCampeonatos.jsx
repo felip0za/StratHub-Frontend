@@ -139,11 +139,11 @@ const ListarCampeonatos = () => {
                           {c.tipo === 'GRATUITO'
                             ? 'Gratuito'
                             : c.valorPorEquipe
-                            ? `R$ ${Number(c.valorPorEquipe).toFixed(2)}`
-                            : 'R$ 0,00'}
+                            ? `R$:${Number(c.valorPorEquipe).toFixed(2)}`
+                            : 'R$:0,00'}
                         </td>
                         <td>
-                          {c.valor !== null ? `R$ ${Number(c.valor).toFixed(2)}` : '-'}
+                          {c.valor !== null ? `R$:${Number(c.valor).toFixed(2)}` : '-'}
                         </td>
                         <td>{formatarData(c.dataInicio)}</td>
                         <td>{c.dataFim ? formatarData(c.dataFim) : 'A definir'}</td>

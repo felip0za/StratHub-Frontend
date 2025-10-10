@@ -42,6 +42,11 @@ const Campeonatos = () => {
     c.nome.toLowerCase().includes(filtro.toLowerCase())
   );
 
+  // --- Navegar para detalhes do campeonato ---
+  const handleClick = (id) => {
+    navigate(`/info-campeonato/${id}`);
+  };
+
   // --- Formata status para exibição ---
   const formatarStatus = (status) => {
     switch (status) {
@@ -103,13 +108,15 @@ const Campeonatos = () => {
                     <div className="card-body">
                       <h2>{c.nome}</h2>
                       <p className="detalhes">
-                        Tipo: {c.tipo === "GRATUITO" ? "Gratuito" : "Pago"} • Máx. {c.maxEquipes} equipes
+                        Tipo: {c.tipo === "GRATIS" ? "Gratuito" : "Pago"} • Máx. {c.maxEquipes} equipes
                       </p>
                       <p className="organizador">
                         Organizado por <strong>{c.criador?.nome || "Desconhecido"}</strong>
                       </p>
                       {c.status === "ABERTO" ? (
-                        <button className="btn-entrar">Participar</button>
+                        <button className="btn-entrar" onClick={() => handleClick(c.id)}>
+                          Participar
+                        </button>
                       ) : (
                         <button className="btn-fechado" disabled>
                           Fechado
