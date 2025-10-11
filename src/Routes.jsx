@@ -21,6 +21,7 @@ import CriarCampeonatos from './Pages/Campeonatos/CriarCampeonatos/CriarCampeona
 import ListarCampeonatos from './Pages/Campeonatos/ListarCampeonatos/ListarCampeonatos';
 import InfoEditCampeonatos from './Pages/Campeonatos/ExibirInformaçoesCampeonatos/InfoEditCampeonatos';
 import InfoCampeonatos from './Pages/Campeonatos/Campeonatos';
+import CampeonatoDetalhes from './Pages/Campeonatos/CampeonatosDetalhes/CampeonatosDetalhes';
 
 function MainRoutes() {
   return (
@@ -72,6 +73,12 @@ function MainRoutes() {
       <Route path='/info-campeonato/:id' element={
         <PrivateRoute>
           <InfoEditCampeonatos />
+        </PrivateRoute>
+      } />
+
+      <Route path='/campeonatos/:id' element={
+        <PrivateRoute>
+          <CampeonatoDetalhes />
         </PrivateRoute>
       } />
       

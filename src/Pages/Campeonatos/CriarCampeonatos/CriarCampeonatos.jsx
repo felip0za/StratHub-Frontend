@@ -14,6 +14,8 @@ const CriarCampeonatos = () => {
   const [maxEquipes, setMaxEquipes] = useState(4);
   const [imagemBase64, setImagemBase64] = useState('');
   const [previewImagem, setPreviewImagem] = useState('');
+  const [plataforma, setPlataforma] = useState('PC'); // PC ou CONSOLE
+  const [consoleTipo, setConsoleTipo] = useState(''); // AMBOS, XBOX, PS
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -25,12 +27,10 @@ const CriarCampeonatos = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     if (!file.type.startsWith('image/')) {
       setError('❌ Selecione um arquivo de imagem válido.');
       return;
     }
-
     const reader = new FileReader();
     reader.onloadend = () => {
       const base64 = reader.result.split(',')[1];
@@ -58,31 +58,31 @@ const CriarCampeonatos = () => {
       return;
     }
 
-    if (tipo === 'PAGO' && (!valorPremiacao || Number(valorPremiacao) <= 0)) {
-      setError('❌ Informe o valor da premiação (obrigatório) para campeonatos pagos.');
-      setLoading(false);
-      return;
-    }
-
     const totalPremiacao = Number(valorPremiacao) || 0;
-    const valorPorEquipe = tipo === 'PAGO' ? totalPremiacao / maxEquipes : 0;
-
-    const agora = new Date();
-    const dataInicio = agora.toISOString().slice(0, 19);
 
     const novoCampeonato = {
       nome,
       descricao,
       tipo,
-      status: 'ABERTO', // sempre aberto
+      status: 'ABERTO',
       valor: totalPremiacao,
-      valorPorEquipe: tipo === 'PAGO' ? valorPorEquipe : 0,
       maxEquipes,
       imagemCampeonato: imagemBase64,
-      dataInicio,
+      dataInicio: new Date().toISOString(),
       dataFim: null,
-      idCriador: userId
+      idCriador: userId,
+      plataforma,
+      console: plataforma === 'CONSOLE' ? consoleTipo : null
     };
+
+    if (tipo === 'PAGO') {
+      if (totalPremiacao <= 0) {
+        setError('❌ Informe o valor da premiação (obrigatório) para campeonatos pagos.');
+        setLoading(false);
+        return;
+      }
+      novoCampeonato.valorPorEquipe = totalPremiacao / maxEquipes;
+    }
 
     try {
       await api.post('/campeonatos', novoCampeonato, {
@@ -94,8 +94,7 @@ const CriarCampeonatos = () => {
     } catch (err) {
       console.error('Erro ao criar campeonato:', err);
       setError(
-        err.response?.data?.message ||
-        '❌ Erro ao criar campeonato. Tente novamente.'
+        err.response?.data?.message || '❌ Erro ao criar campeonato. Tente novamente.'
       );
     } finally {
       setLoading(false);
@@ -120,7 +119,6 @@ const CriarCampeonatos = () => {
         {error && <div className="campeonatos-create-error">{error}</div>}
 
         <form onSubmit={handleSubmit} className="campeonatos-create-form">
-
           {/* Nome */}
           <div className="campeonatos-create-field">
             <label className="campeonatos-create-label">Nome do Campeonato:</label>
@@ -164,7 +162,7 @@ const CriarCampeonatos = () => {
             )}
           </div>
 
-          {/* Tipo */}
+          {/* Tipo de Campeonato */}
           <div className="campeonatos-create-field">
             <label className="campeonatos-create-label">Tipo de Campeonato:</label>
             <select
@@ -177,7 +175,7 @@ const CriarCampeonatos = () => {
             </select>
           </div>
 
-          {/* Valor da premiação */}
+          {/* Valor da premiação (sempre visível) */}
           <div className="campeonatos-create-field">
             <label className="campeonatos-create-label">Valor da Premiação (R$):</label>
             <input
@@ -187,13 +185,12 @@ const CriarCampeonatos = () => {
               value={valorPremiacao}
               onChange={(e) => setValorPremiacao(e.target.value)}
               className="campeonatos-create-input"
-              required
             />
-            {tipo === 'PAGO' && (
-              <small className="campeonatos-create-hint">
-                O valor total da premiação será dividido igualmente entre as equipes.
-              </small>
-            )}
+            <small className="campeonatos-create-hint">
+              {tipo === 'PAGO'
+                ? `O valor total da premiação será dividido entre as equipes: cada equipe pagará R$ ${(Number(valorPremiacao) / maxEquipes).toFixed(2)}.`
+                : `Este campeonato é gratuito; o valor da premiação será de R$ ${Number(valorPremiacao).toFixed(2)}.`}
+            </small>
           </div>
 
           {/* Máximo de equipes */}
@@ -211,6 +208,35 @@ const CriarCampeonatos = () => {
               ))}
             </select>
           </div>
+
+          {/* Plataforma */}
+          <div className="campeonatos-create-field">
+            <label className="campeonatos-create-label">Plataforma:</label>
+            <select
+              value={plataforma}
+              onChange={(e) => setPlataforma(e.target.value)}
+              className="campeonatos-create-select"
+            >
+              <option value="PC">PC</option>
+              <option value="CONSOLE">Console</option>
+            </select>
+          </div>
+
+          {/* Console (aparece somente se plataforma = CONSOLE) */}
+          {plataforma === 'CONSOLE' && (
+            <div className="campeonatos-create-field">
+              <label className="campeonatos-create-label">Console:</label>
+              <select
+                value={consoleTipo}
+                onChange={(e) => setConsoleTipo(e.target.value)}
+                className="campeonatos-create-select"
+              >
+                <option value="AMBOS">Ambos</option>
+                <option value="XBOX">Xbox</option>
+                <option value="PS">PlayStation</option>
+              </select>
+            </div>
+          )}
 
           <button
             type="submit"

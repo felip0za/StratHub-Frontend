@@ -44,7 +44,7 @@ const Campeonatos = () => {
 
   // --- Navegar para detalhes do campeonato ---
   const handleClick = (id) => {
-    navigate(`/info-campeonato/${id}`);
+    navigate(`/campeonatos/${id}`);
   };
 
   // --- Formata status para exibição ---
@@ -59,6 +59,14 @@ const Campeonatos = () => {
       default:
         return { texto: "-", classe: "" };
     }
+  };
+
+  // --- Converte Base64 em URL de imagem ---
+  const getImagemCampeonato = (imagemBase64) => {
+    if (!imagemBase64) {
+      return "https://via.placeholder.com/400x200?text=Sem+Imagem";
+    }
+    return `data:image/png;base64,${imagemBase64}`;
   };
 
   if (loading) return <LoadingScreen />;
@@ -93,22 +101,19 @@ const Campeonatos = () => {
           <div className="campeonatos-grid">
             {campeonatosFiltrados.length > 0 ? (
               campeonatosFiltrados.map((c) => {
-                const imagemCampeonato =
-                  c.imagemCampeonato || "https://via.placeholder.com/400x200?text=Sem+Imagem";
-
                 const status = formatarStatus(c.status);
 
                 return (
                   <div key={c.id} className="card">
                     <div className="card-img">
-                      <img src={imagemCampeonato} alt={c.nome} />
+                      <img src={getImagemCampeonato(c.imagemCampeonato)} alt={c.nome} />
                       <span className={`status ${status.classe}`}>{status.texto}</span>
                     </div>
 
                     <div className="card-body">
                       <h2>{c.nome}</h2>
                       <p className="detalhes">
-                        Tipo: {c.tipo === "GRATIS" ? "Gratuito" : "Pago"} • Máx. {c.maxEquipes} equipes
+                        Tipo: {c.tipo === "GRATUITO" ? "Gratuito" : "Pago"} • Máx. {c.maxEquipes} equipes
                       </p>
                       <p className="organizador">
                         Organizado por <strong>{c.criador?.nome || "Desconhecido"}</strong>
