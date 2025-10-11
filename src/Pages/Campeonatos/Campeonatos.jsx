@@ -8,7 +8,7 @@ import { useApi } from "../../Services/API";
 const Campeonatos = () => {
   const [campeonatos, setCampeonatos] = useState([]);
   const [filtro, setFiltro] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
@@ -19,22 +19,23 @@ const Campeonatos = () => {
   const handleMeusCampeonatos = () => navigate("/meus-campeonatos");
 
   // --- Buscar campeonatos ---
-  useEffect(() => {
-    const fetchCampeonatos = async () => {
-      try {
-        setLoading(true);
-        setError("");
-        const response = await api.get("/campeonatos");
-        setCampeonatos(response.data);
-      } catch (err) {
-        console.error("Erro ao carregar campeonatos:", err);
-        setError("❌ Não foi possível carregar os campeonatos. Tente novamente.");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchCampeonatos = async () => {
+    try {
+      const response = await api.get("/campeonatos");
+      setCampeonatos(response.data);
+      setError("");
+    } catch (err) {
+      console.error("Erro ao carregar campeonatos:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchCampeonatos();
+  // --- Atualização em tempo real (polling curto: 1s) ---
+  useEffect(() => {
+    fetchCampeonatos(); // primeira chamada
+    const interval = setInterval(fetchCampeonatos, 1000); // atualiza a cada 1s
+    return () => clearInterval(interval);
   }, [api]);
 
   // --- Filtragem ---
@@ -42,32 +43,22 @@ const Campeonatos = () => {
     c.nome.toLowerCase().includes(filtro.toLowerCase())
   );
 
-  // --- Navegar para detalhes do campeonato ---
-  const handleClick = (id) => {
-    navigate(`/campeonatos/${id}`);
-  };
+  // --- Navegar para detalhes ---
+  const handleClick = (id) => navigate(`/campeonatos/${id}`);
 
-  // --- Formata status para exibição ---
+  // --- Formata status ---
   const formatarStatus = (status) => {
     switch (status) {
-      case "ABERTO":
-        return { texto: "Aberto", classe: "aberto" };
-      case "EM_ANDAMENTO":
-        return { texto: "Em andamento", classe: "em_andamento" };
-      case "FECHADO":
-        return { texto: "Fechado", classe: "fechado" };
-      default:
-        return { texto: "-", classe: "" };
+      case "ABERTO": return { texto: "Aberto", classe: "aberto" };
+      case "EM_ANDAMENTO": return { texto: "Em andamento", classe: "em_andamento" };
+      case "FECHADO": return { texto: "Fechado", classe: "fechado" };
+      default: return { texto: "-", classe: "" };
     }
   };
 
-  // --- Converte Base64 em URL de imagem ---
-  const getImagemCampeonato = (imagemBase64) => {
-    if (!imagemBase64) {
-      return "https://via.placeholder.com/400x200?text=Sem+Imagem";
-    }
-    return `data:image/png;base64,${imagemBase64}`;
-  };
+  // --- Imagem Base64 ---
+  const getImagemCampeonato = (imagemBase64) =>
+    imagemBase64 ? `data:image/png;base64,${imagemBase64}` : "https://via.placeholder.com/400x200?text=Sem+Imagem";
 
   if (loading) return <LoadingScreen />;
 
@@ -102,14 +93,12 @@ const Campeonatos = () => {
             {campeonatosFiltrados.length > 0 ? (
               campeonatosFiltrados.map((c) => {
                 const status = formatarStatus(c.status);
-
                 return (
                   <div key={c.id} className="card">
                     <div className="card-img">
                       <img src={getImagemCampeonato(c.imagemCampeonato)} alt={c.nome} />
                       <span className={`status ${status.classe}`}>{status.texto}</span>
                     </div>
-
                     <div className="card-body">
                       <h2>{c.nome}</h2>
                       <p className="detalhes">
@@ -123,9 +112,7 @@ const Campeonatos = () => {
                           Participar
                         </button>
                       ) : (
-                        <button className="btn-fechado" disabled>
-                          Fechado
-                        </button>
+                        <button className="btn-fechado" disabled>Fechado</button>
                       )}
                     </div>
                   </div>

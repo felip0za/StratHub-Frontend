@@ -117,17 +117,18 @@ function CampeonatosDetalhes() {
 
             {/* ===== ORGANIZADOR ===== */}
             <div className="card-info">
-                <h3>Organizador</h3>
-                <span className="nome-criador">Organizado por</span>
-                <button className="btn-criador">
-                    <img
-                    src={imagemCriador}
-                    alt={campeonato.criador?.nome || "Desconhecido"}
-                    className="img-criador"
-                    />
-                    <span className="nome-criador">{campeonato.criador?.nome || "Desconhecido"}</span>
-                </button>
+              <h3>Organizador</h3>
+              <span className="nome-criador">Organizado por</span>
+              <button className="btn-criador">
+                <img
+                  src={imagemCriador}
+                  alt={campeonato.criador?.nome || "Desconhecido"}
+                  className="img-criador"
+                />
+                <span className="nome-criador">{campeonato.criador?.nome || "Desconhecido"}</span>
+              </button>
             </div>
+
             {/* ===== INFORMAÇÕES ADICIONAIS ===== */}
             <div className="card-info">
               <h3>Informações adicionais</h3>
@@ -166,16 +167,21 @@ function CampeonatosDetalhes() {
 
             <div className="card-info">
               <h3>Configurações do jogo</h3>
-              <img src="/default_game.jpg" alt="Jogo" className="imagem-config" />
               <p>
-                <b>Modo:</b> Competitivo
+                <b>Plataforma:</b> {campeonato.plataforma || "-"}
               </p>
-              <p>
-                <b>Plataforma:</b> PC
-              </p>
-              <p>
-                <b>Região:</b> Brasil
-              </p>
+              {campeonato.plataforma === "CONSOLE" && (
+                <p>
+                  <b>Tipo de console:</b>{" "}
+                  {campeonato.console === "XBOX"
+                    ? "Xbox"
+                    : campeonato.console === "PS"
+                    ? "PlayStation"
+                    : campeonato.console === "AMBOS"
+                    ? "Xbox / PlayStation"
+                    : "-"}
+                </p>
+              )}
             </div>
           </div>
         </div>

@@ -191,6 +191,7 @@ const CriarCampeonatos = () => {
                 ? `O valor total da premiação será dividido entre as equipes: cada equipe pagará R$ ${(Number(valorPremiacao) / maxEquipes).toFixed(2)}.`
                 : `Este campeonato é gratuito; o valor da premiação será de R$ ${Number(valorPremiacao).toFixed(2)}.`}
             </small>
+
           </div>
 
           {/* Máximo de equipes */}
