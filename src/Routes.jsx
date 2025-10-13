@@ -107,7 +107,7 @@ function MainRoutes() {
           <Partidas />
         </PrivateRoute>
       } />
-      <Route path='/profile' element={
+      <Route path='/profile/:id' element={
         <PrivateRoute>
           <Profile />
         </PrivateRoute>

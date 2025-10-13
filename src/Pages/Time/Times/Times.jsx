@@ -13,6 +13,7 @@ import ouro from '../../../assets/ouro.png';
 import platina from '../../../assets/platina.png';
 import challenger from '../../../assets/challenger.png';
 import master from '../../../assets/master.png';
+import { FaInstagram, FaDiscord, FaTwitter } from 'react-icons/fa';
 
 import './Times.css';
 
@@ -338,6 +339,13 @@ function Times() {
                       <span className="ubisoft-label">K/D:</span>
                       <span className="ubisoft-valor">{member.kd !== undefined ? member.kd.toFixed(2) : "N/A"}</span>
                     </div>
+                  </div>
+
+                  {/* LINKS SOCIAIS ADICIONADOS */}
+                  <div className="social-links" style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
+                    {member.instagram && <a href={member.instagram} target="_blank" rel="noopener noreferrer" title="Instagram"><FaInstagram size={20} color="#E1306C" /></a>}
+                    {member.discord && <a href={member.discord} target="_blank" rel="noopener noreferrer" title="Discord"><FaDiscord size={20} color="#7289DA" /></a>}
+                    {member.twitter && <a href={member.twitter} target="_blank" rel="noopener noreferrer" title="Twitter"><FaTwitter size={20} color="#1DA1F2" /></a>}
                   </div>
                 </div>
               </div>

@@ -134,20 +134,19 @@ function EditarTime() {
               required
             />
 
-            <label htmlFor="apelido">Apelido</label>
-            <input
-              type="text"
-              id="apelido"
-              name="apelido"
-              value={time.apelido}
-              onChange={(e) => {
-                const valor = e.target.value;
-                if (valor.length <= 5) {
-                  handleChange(e);
-                }
-              }}
-              maxLength={5}
-            />
+            <label htmlFor="apelido">Apelido do Time(TAG)</label>
+              <input
+                type="text"
+                id="apelido"
+                name="apelido"
+                value={time.apelido}
+                onChange={(e) => {
+                  const valor = e.target.value.slice(0, 5); // garante máximo de 5 caracteres
+                  setTime((prev) => ({ ...prev, apelido: valor }));
+                }}
+                maxLength={5}
+                placeholder="Máx. 5 letras"
+              />
 
             <label htmlFor="descricao">Descrição</label>
             <textarea

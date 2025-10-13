@@ -1,123 +1,211 @@
-/* Layout geral */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
 .profile-container {
-    background-color: #1e1e1e;
-    color: #fff;
-    min-height: 100vh;
-    padding: 40px 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  /* Card do perfil */
-  .profile-card {
-    background-color: #2b2b2b;
-    border-radius: 20px;
-    box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
-    padding: 40px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    max-width: 550px;
-    gap: 30px;
-    height: 450px;
-  }
-  
-  /* Imagem do usuário */
-  .profile-image-section {
-    display: flex;
-    justify-content: center;
-  }
-  
-  .profile-photo {
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 4px solid #fff;
-  }
-  
-  /* Informações do usuário */
-  .profile-info-section {
-    text-align: center;
-  }
-  
-  .profile-name {
-    font-size: 28px;
-    margin-bottom: 10px;
-  }
-  
-  .profile-detail {
-    font-size: 18px;
-    margin: 5px 0;
-  }
-  
-  /* Botões */
-  .profile-buttons {
-    margin-top: -70px;
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-  
-  .btn {
-    padding: 12px 24px;
-    border: none;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-  }
-  
-  .btn:hover {
-    transform: scale(1.05);
-    transition: 0.3s;
-    background-color: rgb(180, 0, 0);
-  }
-  
-  .deactivate {
-    background-color: #ff0000;
-    color: white;
-  }
-  
-  .edit {
-    background-color: #ff0000;
-    color: white;
-  }
-  
-  .add-friend {
-    background-color: #007bff;
-    color: white;
-  }
-  
-  .add-friend:hover {
-    background-color: #0056b3;
-  }
-  
-  /* Status de pedido de amizade */
-  .friend-request-status {
-    margin-top: 20px;
-    font-size: 18px;
-    color: #ffcc00;
-    text-align: center;
-  }
-  
-  /* Responsivo */
-  @media (max-width: 500px) {
-    .profile-photo {
-      width: 150px;
-      height: 150px;
-    }
-  
-    .profile-name {
-      font-size: 22px;
-    }
-  
-    .profile-detail {
-      font-size: 16px;
-    }
-  }
-  
+  background-color: #121212;
+  min-height: 100vh;
+  padding: 30px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  font-family: 'Poppins', sans-serif;
+  align-items: center;
+}
+
+/* Header */
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  background: #1e1e1e;
+  box-shadow: 0px 4px 12px rgb(150, 0, 0);
+  padding: 25px;
+  border-radius: 25px;
+  max-width: 1050px;
+  width: 100%;
+}
+
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.15);
+}
+
+.profile-text {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profile-nome {
+  font-size: 1.8rem;
+  margin: 0;
+  font-weight: 700;
+  color: white;
+}
+
+.profile-email {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ccc;
+}
+
+.ubisoft-text {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ubisoft-icon {
+  margin-right: 4px;
+}
+
+.ubi-connect-valor {
+  color: #ddd;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.profile-kd {
+  font-size: 1rem;
+  color: #ddd;
+}
+
+.profile-kd strong {
+  margin-right: 6px;
+}
+
+/* Corpo */
+.profile-body {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  max-width: 1050px;
+}
+
+.rank-card,
+.rank-usuario-card {
+  width: 250px;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #1e1e1e;
+  box-shadow: 0px 4px 12px rgb(150, 0, 0);
+  border-radius: 25px;
+  text-align: center;
+}
+
+.rank-image,
+.rank-usuario-image {
+  width: 140px;
+  height: auto;
+  margin-bottom: 15px;
+  border-radius: 12px;
+}
+
+.rank-name,
+.rank-usuario-name {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: white;
+  background-color: #2a2a2a;
+  padding: 8px 16px;
+  border-radius: 12px;
+  text-transform: uppercase;
+}
+
+/* Títulos */
+.titles-card {
+  flex: 1;
+  background: #1e1e1e;
+  border-radius: 25px;
+  padding: 20px;
+  box-shadow: 0px 4px 12px rgba(150, 0, 0, 0.5);
+}
+
+.titles-header {
+  font-size: 1.6rem;
+  margin-bottom: 15px;
+  border-bottom: 4px solid #ff1e00;
+  padding-bottom: 8px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.titles-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.title-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #2a2a2a;
+  padding: 15px;
+  border-radius: 20px;
+  width: 150px;
+  box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.title-item:hover {
+  transform: scale(1.05);
+}
+
+.champ-image {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 8px;
+}
+
+.title-name {
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  color: white;
+}
+
+.no-titles {
+  font-size: 1rem;
+  color: #bbb;
+}
+
+/* Botão de amizade */
+.profile-actions {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.btn.add-friend {
+  background-color: rgb(180, 0, 0);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  transition: background-color 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.btn.add-friend:hover {
+  background-color: #5f0000;
+}
+
+.friend-request-status {
+  margin-top: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #00ff77;
+}

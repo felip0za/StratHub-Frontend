@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useApi } from "../../Services/API";
 import { useAuth } from "../../contexts/AuthContext";
 import Navbar from "../../Components/Navbar/Navbar";
-import Icon from '@mdi/react';
-import { mdiUbisoft } from '@mdi/js';
+import Icon from "@mdi/react";
+import { mdiUbisoft } from "@mdi/js";
 import LoadingScreen from "../../Components/LoadingScreen/LoadingScreen";
 import "./Invites.css";
 
@@ -26,7 +26,6 @@ function Invites() {
   useEffect(() => {
     if (!userId) return;
 
-    
     const fetchAll = async () => {
       try {
         setLoading(true);
@@ -37,7 +36,9 @@ function Invites() {
         ]);
         setFriends(friendsRes.data || []);
         setFriendRequests(friendReqRes.data || []);
-        setTeamInvites(teamInvitesRes.data?.filter(i => i.status === "PENDENTE") || []);
+        setTeamInvites(
+          teamInvitesRes.data?.filter((i) => i.status === "PENDENTE") || []
+        );
         await verificarTimeUsuario();
       } catch (error) {
         alert("Erro ao buscar dados. Tente novamente mais tarde.");
@@ -46,7 +47,6 @@ function Invites() {
       }
     };
 
-    
     const atualizarSilenciosamente = async () => {
       try {
         const [friendsRes, friendReqRes, teamInvitesRes] = await Promise.all([
@@ -56,26 +56,27 @@ function Invites() {
         ]);
         setFriends(friendsRes.data || []);
         setFriendRequests(friendReqRes.data || []);
-        setTeamInvites(teamInvitesRes.data?.filter(i => i.status === "PENDENTE") || []);
+        setTeamInvites(
+          teamInvitesRes.data?.filter((i) => i.status === "PENDENTE") || []
+        );
         await verificarTimeUsuario();
-      } catch {
-      }
+      } catch {}
     };
 
     fetchAll();
-
     const intervalo = setInterval(() => {
       atualizarSilenciosamente();
-    }, 1000); // a cada 10 segundos(1000 = 1 segundo)
+    }, 1000);
 
     return () => clearInterval(intervalo);
-
   }, [userId, api]);
 
   const verificarTimeUsuario = async () => {
     try {
       const res = await api.get("/usuario/time");
-      setUsuarioJaTemTime(res.data?.time !== null && res.data?.time !== undefined);
+      setUsuarioJaTemTime(
+        res.data?.time !== null && res.data?.time !== undefined
+      );
     } catch {
       setUsuarioJaTemTime(false);
     }
@@ -84,7 +85,9 @@ function Invites() {
   const handleSearch = async () => {
     if (!searchName.trim()) return;
     try {
-      const res = await api.get(`/convites/usuarios/busca?nome=${encodeURIComponent(searchName)}`);
+      const res = await api.get(
+        `/convites/usuarios/busca?nome=${encodeURIComponent(searchName)}`
+      );
       setSearchResults(res.data || []);
     } catch {
       alert("Erro ao buscar usuários.");
@@ -97,7 +100,6 @@ function Invites() {
       alert("Convite enviado com sucesso!");
       setSearchResults([]);
       setSearchName("");
-      // Atualiza lista de amigos e convites após enviar convite
       const [friendsRes, friendReqRes, teamInvitesRes] = await Promise.all([
         api.get("/amizade/amigos"),
         api.get("/amizade/pendentes"),
@@ -105,9 +107,12 @@ function Invites() {
       ]);
       setFriends(friendsRes.data || []);
       setFriendRequests(friendReqRes.data || []);
-      setTeamInvites(teamInvitesRes.data?.filter(i => i.status === "PENDENTE") || []);
+      setTeamInvites(
+        teamInvitesRes.data?.filter((i) => i.status === "PENDENTE") || []
+      );
     } catch (err) {
-      const msg = err?.response?.data?.message || "Não foi possível enviar o convite.";
+      const msg =
+        err?.response?.data?.message || "Não foi possível enviar o convite.";
       alert(`Erro: ${msg}`);
     }
   };
@@ -116,7 +121,7 @@ function Invites() {
     try {
       await api.post(`/amizade/aceitar/${idConvite}`);
       alert("Amizade aceita com sucesso!");
-      setFriendRequests(prev => prev.filter(req => req.id !== idConvite));
+      setFriendRequests((prev) => prev.filter((req) => req.id !== idConvite));
       const updatedFriends = await api.get("/amizade/amigos");
       setFriends(updatedFriends.data || []);
     } catch {
@@ -129,7 +134,6 @@ function Invites() {
     try {
       await api.delete(`/amizade/remover/${idUsuario}`);
       alert("Amizade removida.");
-      // Atualiza a lista após remover amigo
       const [friendsRes, friendReqRes, teamInvitesRes] = await Promise.all([
         api.get("/amizade/amigos"),
         api.get("/amizade/pendentes"),
@@ -137,7 +141,9 @@ function Invites() {
       ]);
       setFriends(friendsRes.data || []);
       setFriendRequests(friendReqRes.data || []);
-      setTeamInvites(teamInvitesRes.data?.filter(i => i.status === "PENDENTE") || []);
+      setTeamInvites(
+        teamInvitesRes.data?.filter((i) => i.status === "PENDENTE") || []
+      );
     } catch {
       alert("Erro ao remover amizade.");
     }
@@ -145,14 +151,16 @@ function Invites() {
 
   const handleAcceptTeamInvite = async (idConvite) => {
     if (usuarioJaTemTime) {
-      alert("Você já pertence a um time. Saia do time atual para aceitar novos convites.");
+      alert(
+        "Você já pertence a um time. Saia do time atual para aceitar novos convites."
+      );
       return;
     }
 
     try {
       await api.post(`/convites/${idConvite}/aceitar`);
       alert("Você entrou no time!");
-      setTeamInvites(prev => prev.filter(invite => invite.id !== idConvite));
+      setTeamInvites((prev) => prev.filter((invite) => invite.id !== idConvite));
       setUsuarioJaTemTime(true);
     } catch {
       alert("Erro ao aceitar convite de time.");
@@ -160,16 +168,22 @@ function Invites() {
   };
 
   const handleRejectTeamInvite = async (idConvite) => {
-  try {
-    await api.post(`/convites/${idConvite}/recusarTime`);
-    alert("Convite recusado.");
-    setTeamInvites(prev => prev.filter(invite => invite.id !== idConvite));
-  } catch {
-    alert("Erro ao recusar convite de time.");
-  }
-};
+    try {
+      await api.post(`/convites/${idConvite}/recusarTime`);
+      alert("Convite recusado.");
+      setTeamInvites((prev) => prev.filter((invite) => invite.id !== idConvite));
+    } catch {
+      alert("Erro ao recusar convite de time.");
+    }
+  };
 
-  if (loading) return (<><Navbar /><LoadingScreen /></>);
+  if (loading)
+    return (
+      <>
+        <Navbar />
+        <LoadingScreen />
+      </>
+    );
 
   return (
     <>
@@ -177,23 +191,50 @@ function Invites() {
       <div className="friends-screen">
         <h1>Amigos e Convites</h1>
 
+        {/* Lista de amigos */}
         <section className="friends-list">
           <ul>
             {friends.length > 0 ? (
-              friends.map(friend => (
-                <li key={friend.id} className="friend-card">
+              friends.map((friend) => (
+                <li
+                  key={friend.id}
+                  className="friend-card"
+                  onClick={() => navigate(`/profile/${friend.id}`)} // 👈 redireciona para o perfil
+                  style={{ cursor: "pointer" }}
+                >
                   <div className="avatar">
-                    <img src={friend.imagemUsuario || "/default-avatar.png"} alt={`Foto de ${friend.nome}`} />
+                    <img
+                      src={friend.imagemUsuario || "/default-avatar.png"}
+                      alt={`Foto de ${friend.nome}`}
+                    />
                   </div>
                   <div className="info">
                     <div className="username">{friend.nome}</div>
                     <p className="profile-email">
                       <strong className="ubisoft-label">
-                        <Icon path={mdiUbisoft} size={1} className="ubisoft-icon" /> UbiConnect:
-                      </strong> <span className="ubisoft-valor">{friend.username || friend.ubiConnect || 'Não informado'}</span>
+                        <Icon
+                          path={mdiUbisoft}
+                          size={1}
+                          className="ubisoft-icon"
+                        />{" "}
+                        UbiConnect:
+                      </strong>{" "}
+                      <span className="ubisoft-valor">
+                        {friend.username ||
+                          friend.ubiConnect ||
+                          "Não informado"}
+                      </span>
                     </p>
                   </div>
-                  <button className="remove-btn" onClick={() => handleRemoveFriend(friend.id)}>Remover</button>
+                  <button
+                    className="remove-btn"
+                    onClick={(e) => {
+                      e.stopPropagation(); // 👈 impede abrir o perfil
+                      handleRemoveFriend(friend.id);
+                    }}
+                  >
+                    Remover
+                  </button>
                 </li>
               ))
             ) : (
@@ -202,8 +243,12 @@ function Invites() {
           </ul>
         </section>
 
+        {/* Botões principais */}
         <section className="friend-requests">
-          <button className="open-popup-button" onClick={() => setShowRequestsPopup(true)}>
+          <button
+            className="open-popup-button"
+            onClick={() => setShowRequestsPopup(true)}
+          >
             Convites
             {(friendRequests.length + teamInvites.length) > 0 && (
               <span className="notification-badge">
@@ -211,62 +256,106 @@ function Invites() {
               </span>
             )}
           </button>
-          <button className="open-popup-button" onClick={() => setShowSearchPopup(true)}>Adicionar Amigos</button>
+          <button
+            className="open-popup-button"
+            onClick={() => setShowSearchPopup(true)}
+          >
+            Adicionar Amigos
+          </button>
         </section>
       </div>
 
+      {/* Popup de convites */}
       {showRequestsPopup && (
         <div className="popup-overlay">
           <div className="popup-box">
             <h3>Convites de Amizade</h3>
             {friendRequests.length > 0 ? (
               <ul>
-                {friendRequests.map(request => (
+                {friendRequests.map((request) => (
                   <li key={request.id} className="friend-card">
                     <div className="avatar">
-                      <img src={request.imagemUsuario || "/default-avatar.png"} alt={`Foto de ${request.nome}`} />
+                      <img
+                        src={request.imagemUsuario || "/default-avatar.png"}
+                        alt={`Foto de ${request.nome}`}
+                      />
                     </div>
                     <div className="info">
                       <div className="username">{request.nome}</div>
-                      <div className="userid">UbiConnect: {request.username || request.nome.toLowerCase()}</div>
+                      <div className="userid">
+                        UbiConnect:{" "}
+                        {request.username || request.nome.toLowerCase()}
+                      </div>
                     </div>
-                    <button className="team-btn accept" onClick={() => handleAcceptFriend(request.id)}>Aceitar</button>
+                    <button
+                      className="team-btn accept"
+                      onClick={() => handleAcceptFriend(request.id)}
+                    >
+                      Aceitar
+                    </button>
                   </li>
                 ))}
               </ul>
-            ) : <p>Nenhum convite de amizade.</p>}
+            ) : (
+              <p>Nenhum convite de amizade.</p>
+            )}
 
             <h3 style={{ marginTop: 24 }}>Convites de Time</h3>
             {teamInvites.length > 0 ? (
               <ul>
-                {teamInvites.map(convite => {
+                {teamInvites.map((convite) => {
                   const time = convite.time || {};
                   return (
                     <li key={convite.id} className="friend-card">
                       <div className="avatar">
                         <img
-                          src={time.imagemBase64 ? `data:image/png;base64,${time.imagemBase64}` : "/default-team.png"}
-                          alt={`Time ${time.nome || "Desconhecido"}`} />
+                          src={
+                            time.imagemBase64
+                              ? `data:image/png;base64,${time.imagemBase64}`
+                              : "/default-team.png"
+                          }
+                          alt={`Time ${time.nome || "Desconhecido"}`}
+                        />
                       </div>
                       <div className="info">
-                        <div className="username">{time.nome || "Time desconhecido"}</div>
+                        <div className="username">
+                          {time.nome || "Time desconhecido"}
+                        </div>
                         <div className="userid">Convite para entrar no time</div>
                       </div>
                       <div className="actions">
-                        <button className="team-btn accept" onClick={() => handleAcceptTeamInvite(convite.id)}>Aceitar</button>
-                        <button className="team-btn reject" onClick={() => handleRejectTeamInvite(convite.id)}>Recusar</button>
+                        <button
+                          className="team-btn accept"
+                          onClick={() => handleAcceptTeamInvite(convite.id)}
+                        >
+                          Aceitar
+                        </button>
+                        <button
+                          className="team-btn reject"
+                          onClick={() => handleRejectTeamInvite(convite.id)}
+                        >
+                          Recusar
+                        </button>
                       </div>
                     </li>
                   );
                 })}
               </ul>
-            ) : <p>Nenhum convite de time.</p>}
+            ) : (
+              <p>Nenhum convite de time.</p>
+            )}
 
-            <button className="open-popup-button" onClick={() => setShowRequestsPopup(false)}>Fechar</button>
+            <button
+              className="open-popup-button"
+              onClick={() => setShowRequestsPopup(false)}
+            >
+              Fechar
+            </button>
           </div>
         </div>
       )}
 
+      {/* Popup de busca de amigos */}
       {showSearchPopup && (
         <div className="popup-overlay">
           <div className="popup-box">
@@ -278,27 +367,42 @@ function Invites() {
               onChange={(e) => setSearchName(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             />
-            <button className="open-popup-button" onClick={handleSearch}>Buscar</button>
+            <button className="open-popup-button" onClick={handleSearch}>
+              Buscar
+            </button>
             {searchResults.length > 0 ? (
               <ul>
-                {searchResults.map(user => {
-                  const isAmigo = friends.some(f => f.id === user.id);
-                  const jaTemConvite = friendRequests.some(r => r.id === user.id);
+                {searchResults.map((user) => {
+                  const isAmigo = friends.some((f) => f.id === user.id);
+                  const jaTemConvite = friendRequests.some(
+                    (r) => r.id === user.id
+                  );
                   return (
                     <li key={user.id} className="friend-card">
                       <div className="avatar">
-                        <img src={user.imagemUsuario || "/default-avatar.png"} alt={`Foto de ${user.nome}`} />
+                        <img
+                          src={user.imagemUsuario || "/default-avatar.png"}
+                          alt={`Foto de ${user.nome}`}
+                        />
                       </div>
                       <div className="info">
                         <div className="username">{user.nome}</div>
-                        <div className="userid">UbiConnect: {user.ubiConnect || user.nome.toLowerCase()}</div>
+                        <div className="userid">
+                          UbiConnect:{" "}
+                          {user.ubiConnect || user.nome.toLowerCase()}
+                        </div>
                       </div>
                       {isAmigo ? (
                         <span className="status-badge">Amigo</span>
                       ) : jaTemConvite ? (
                         <span className="status-badge">Convite pendente</span>
                       ) : (
-                        <button className="remove-btn" onClick={() => handleSendFriendRequest(user.id)}>Adicionar</button>
+                        <button
+                          className="remove-btn"
+                          onClick={() => handleSendFriendRequest(user.id)}
+                        >
+                          Adicionar
+                        </button>
                       )}
                     </li>
                   );
@@ -307,7 +411,12 @@ function Invites() {
             ) : (
               searchName.trim() !== "" && <p>Nenhum usuário encontrado.</p>
             )}
-            <button className="open-popup-button" onClick={() => setShowSearchPopup(false)}>Fechar</button>
+            <button
+              className="open-popup-button"
+              onClick={() => setShowSearchPopup(false)}
+            >
+              Fechar
+            </button>
           </div>
         </div>
       )}

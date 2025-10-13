@@ -10,10 +10,13 @@ const CreateTime = () => {
   const [nmTime, setNmTime] = useState('');
   const [teDescricao, setTeDescricao] = useState('');
   const [teImagemBase64, setTeImagemBase64] = useState('');
+  const [instagram, setInstagram] = useState('');
+  const [discord, setDiscord] = useState('');
+  const [twitter, setTwitter] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const api = useApi();
-  const { userId } = useAuth(); // <-- pega ID do contexto, de forma segura
+  const { userId } = useAuth();
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -21,7 +24,7 @@ const CreateTime = () => {
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      const base64String = reader.result.split(',')[1]; // remove o prefixo
+      const base64String = reader.result.split(',')[1];
       setTeImagemBase64(base64String);
     };
     reader.readAsDataURL(file);
@@ -32,7 +35,7 @@ const CreateTime = () => {
     setError('');
 
     if (!nmTime.trim() || !teDescricao.trim() || !teImagemBase64) {
-      setError('Por favor, preencha todos os campos e selecione uma imagem.');
+      setError('Por favor, preencha todos os campos obrigatórios e selecione uma imagem.');
       return;
     }
 
@@ -47,7 +50,10 @@ const CreateTime = () => {
         descricao: teDescricao,
         imagemBase64: teImagemBase64,
         id_criador: parseInt(userId, 10),
-        apelido:apelidoTime,
+        apelido: apelidoTime,
+        instagram: instagram || null,
+        discord: discord || null,
+        twitter: twitter || null
       };
 
       const response = await api.post('/times', novoTime);
@@ -73,51 +79,41 @@ const CreateTime = () => {
         {error && <div className="error-message">{error}</div>}
         <form onSubmit={handleSubmit} className="create-team-form">
           <label>Nome do Time:</label>
-          <input
-            type="text"
-            value={nmTime}
-            onChange={e => setNmTime(e.target.value)}
-            required
-          />
+          <input type="text" value={nmTime} onChange={e => setNmTime(e.target.value)} required />
 
           <label>Descrição do Time:</label>
-          <textarea
-            value={teDescricao}
-            onChange={e => setTeDescricao(e.target.value)}
-            required
-            rows="4"
-          />
+          <textarea value={teDescricao} onChange={e => setTeDescricao(e.target.value)} required rows="4" />
 
-          <label>Apelido do Time:</label>
+          <label>Apelido do Time(TAG):</label>
           <input
             type="text"
             value={apelidoTime}
-            onChange={e => setApelidoTime(e.target.value)}
+            onChange={e => setApelidoTime(e.target.value.slice(0, 5))}
+            maxLength={5}
             required
           />
 
           <label>Imagem:</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            required
-          />  
+          <input type="file" accept="image/*" onChange={handleImageChange} required />
 
           {teImagemBase64 && (
             <div className="preview-container">
               <p>Pré-visualização da imagem:</p>
-              <img
-                src={`data:image/png;base64,${teImagemBase64}`}
-                alt="Pré-visualização"
-                className="preview-img"
-              />
+              <img src={`data:image/png;base64,${teImagemBase64}`} alt="Pré-visualização" className="preview-img" />
             </div>
           )}
 
-          <button type="submit" className="submit-button">
-            Salvar Time
-          </button>
+          {/* LINKS OPCIONAIS */}
+          <label>Instagram (opcional):</label>
+          <input type="url" value={instagram} onChange={e => setInstagram(e.target.value)} placeholder="https://instagram.com/seutime" />
+
+          <label>Discord (opcional):</label>
+          <input type="url" value={discord} onChange={e => setDiscord(e.target.value)} placeholder="https://discord.gg/seutime" />
+
+          <label>Twitter (opcional):</label>
+          <input type="url" value={twitter} onChange={e => setTwitter(e.target.value)} placeholder="https://twitter.com/seutime" />
+
+          <button type="submit" className="submit-button">Salvar Time</button>
         </form>
       </div>
     </>
