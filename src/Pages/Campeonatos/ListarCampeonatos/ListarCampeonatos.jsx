@@ -26,7 +26,7 @@ const ListarCampeonatos = () => {
     const fetchCampeonatos = async () => {
       try {
         setLoading(true);
-        const response = await api.get(`/campeonatos/meus/${userId}`);
+        const response = await api.get(`/campeonatos/criador/${userId}`);
         setCampeonatos(response.data);
       } catch (err) {
         console.error('Erro ao buscar campeonatos do usuário:', err);

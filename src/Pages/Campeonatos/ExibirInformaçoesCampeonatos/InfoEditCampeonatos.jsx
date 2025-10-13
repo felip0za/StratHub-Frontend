@@ -160,16 +160,19 @@ const InfoEditCampeonatos = () => {
 
               <div className="info-dados">
                 <div className="info-item">
-                  <strong>Data de Início:</strong> {campeonato.dataInicio}
+                  <strong>Data de Início📅:</strong> {campeonato.dataInicio}
                 </div>
                 <div className="info-item">
-                  <strong>Data de Fim:</strong> {campeonato.dataFim || 'A ser definido'}
+                  <strong>Data de Fim📅:</strong> {campeonato.dataFim || 'A ser definido'}
                 </div>
                 <div className="info-item">
-                  <strong>Entrada:</strong> {campeonato.tipo === 'GRATUITO' ? 'Gratuito' : `R$ ${Number(campeonato.valorPorEquipe || 0).toFixed(2)}`}
+                  <strong>Prêmio💵:</strong> {campeonato.premio !== null ? `R$ ${Number(campeonato.valor || 0).toFixed(2)}` : '-'}
                 </div>
                 <div className="info-item">
-                  <strong>Prêmio:</strong> {campeonato.premio !== null ? `R$ ${Number(campeonato.valor || 0).toFixed(2)}` : '-'}
+                  <strong>Entrada🎟️:</strong> {campeonato.tipo === 'GRATUITO' ? 'Gratuito' : `R$ ${Number(campeonato.valorPorEquipe || 0).toFixed(2)}`}
+                </div>
+                <div className="info-item">
+                  <strong>Numero de equipes👥:</strong> {campeonato.maxEquipes}
                 </div>
               </div>
             </div>

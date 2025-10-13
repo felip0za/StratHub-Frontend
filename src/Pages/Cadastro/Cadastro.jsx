@@ -26,7 +26,6 @@ const Cadastro = () => {
   const [ocrLoading, setOcrLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // ---- Navegação entre etapas ----
   const handleNext = () => {
     if (step === 1 && !formData.email.includes('@')) {
       setError('Digite um e-mail válido.');
@@ -45,13 +44,11 @@ const Cadastro = () => {
     setStep(step - 1);
   };
 
-  // ---- Input genérico ----
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  // ---- Upload da foto de perfil ----
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -62,14 +59,13 @@ const Cadastro = () => {
     setError('');
     const reader = new FileReader();
     reader.onloadend = () => {
-      // Mantém o prefixo data:image/... para preview e envio
       setFormData(prev => ({ ...prev, imagemUsuario: reader.result }));
     };
     reader.readAsDataURL(file);
   };
 
-  // ---- Upload OCR (KD e Rank) ----
-  const handleOcrImageChange = (e, type) => {
+  // --- OCR para Rank e KD ---
+  const handleOcrSingleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) {
@@ -83,41 +79,66 @@ const Cadastro = () => {
     const reader = new FileReader();
     reader.onloadend = () => {
       const imageBase64 = reader.result;
-      if (type === 'rank') setFormData(prev => ({ ...prev, rankPreview: imageBase64, rank: '' }));
-      else setFormData(prev => ({ ...prev, kdPreview: imageBase64, kd: '' }));
+      setFormData(prev => ({
+        ...prev,
+        kdPreview: imageBase64,
+        rankPreview: imageBase64,
+        kd: '',
+        rank: ''
+      }));
 
       Tesseract.recognize(imageBase64, 'por', { logger: m => console.log(m) })
         .then(({ data: { text } }) => {
           setOcrLoading(false);
-          const cleanText = text.replace(/\s+/g, ' ').trim().toUpperCase();
-          console.log(`Texto extraído (${type}):`, cleanText);
+          let cleanText = text.replace(/\s+/g, ' ').trim().toUpperCase();
+          console.log('Texto extraído pelo OCR:', cleanText);
 
-          if (type === 'kd') {
-            const kdMatch = cleanText.match(/K[\/\s]*D\s*[:=]?\s*([\d.,]+)/i);
-            const kd = kdMatch ? kdMatch[1].replace(',', '.').trim() : '';
-            setFormData(prev => ({ ...prev, kd }));
-            if (!kd) setError('⚠️ Não foi possível extrair o KD da imagem.');
+          // --- KD (valor após MRT ou ELIM) ---
+          const kdMatch =
+            cleanText.match(/MRT[\/\s]*ELIM[^\d]*([\d.,]+)/i) ||
+            cleanText.match(/MRT[^\d]*([\d.,]+)/i) ||
+            cleanText.match(/ELIM[^\d]*([\d.,]+)/i) ||
+            cleanText.match(/COLOCA[ÇC][AÃ]O[^\d]*([\d.,]+)/i);
+
+          let kd = kdMatch ? kdMatch[1].replace(',', '.').trim() : '';
+
+          // Corrige KD mal lido (ex: 12 -> 1.2)
+          if (/^\d{2,}$/.test(kd)) {
+            const val = parseInt(kd, 10);
+            if (val > 10) kd = (val / 10).toFixed(1);
           }
 
-          if (type === 'rank') {
-            const rankMatch = cleanText.match(
-              /(COBRE|BRONZE|PRATA|OURO|PLATINA|DIAMANTE|CHAMPION)\s*[IVX0-9]*/i
-            );
-            let rank = rankMatch ? rankMatch[0].trim().toUpperCase() : '';
+          // --- Rank (Cobre, Bronze, etc.) ---
+          let rankMatch = cleanText.match(/(COBRE|BRONZE|PRATA|OURO|PLATINA|DIAMANTE|CAMPEA?O)\s*[IVX0-9]*/i);
+          let rank = rankMatch ? rankMatch[0].trim().toUpperCase() : '';
 
-            if (rank.includes('COBRE') || rank.includes('BRONZE') || rank.includes('PRATA') ||
-                rank.includes('OURO') || rank.includes('PLATINA') || rank.includes('DIAMANTE') ||
-                rank.includes('CHAMPION')) {
-              rank = rank.replace(/\bCOBRE I\b/, 'COBRE II');
-              rank = rank.replace(/[^A-Z0-9\sIVX]/g, '').trim();
-              if (!/\d|I|V|X/.test(rank)) {
-                rank += ' I';
+          rank = rank.replace(/[^A-Z0-9\sIVX]/g, '').trim();
+
+          // --- Detecção refinada do nível ---
+          const levelMatch = cleanText.match(/\bII\b|\bIII\b|\bIV\b|\bV\b|\bI\b/g);
+
+          if (rank && (rank.includes('COBRE') || rank.includes('BRONZE') || rank.includes('PRATA') ||
+              rank.includes('OURO') || rank.includes('PLATINA') || rank.includes('DIAMANTE') || rank.includes('CAMPEA'))) {
+
+            if (levelMatch) {
+              const level = levelMatch[levelMatch.length - 1];
+              if (!rank.includes(level)) {
+                rank = rank.replace(/\s*[IVX0-9]*$/, '') + ' ' + level;
               }
+            } else {
+              if (!/\bI{1,3}\b|IV|V/.test(rank)) rank += ' II';
             }
-
-            setFormData(prev => ({ ...prev, rank }));
-            if (!rank) setError('⚠️ Não foi possível extrair o Rank da imagem.');
           }
+
+          // --- Correção de erro comum: COBRE I detectado, mas imagem mostra II ---
+          if (/COBRE I\b/.test(rank) && /\bII\b/.test(cleanText)) {
+            rank = rank.replace('COBRE I', 'COBRE II');
+          }
+
+          setFormData(prev => ({ ...prev, kd, rank }));
+
+          if (!kd) setError('⚠️ Não foi possível extrair o KD da imagem.');
+          if (!rank) setError('⚠️ Não foi possível extrair o Rank da imagem.');
         })
         .catch(err => {
           setOcrLoading(false);
@@ -125,15 +146,15 @@ const Cadastro = () => {
           console.error(err);
         });
     };
+
     reader.readAsDataURL(file);
   };
 
-  // ---- Envio final ----
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formData.kd || !formData.rank) {
-      setError('Certifique-se de enviar imagens válidas com KD e Rank.');
+      setError('Certifique-se de enviar uma imagem válida com KD e Rank.');
       return;
     }
     if (formData.senha.length < 6) {
@@ -145,18 +166,15 @@ const Cadastro = () => {
       setIsLoading(true);
       setError('');
 
-      // Se o backend NÃO aceita o prefixo data:image..., enviar só o base64 puro:
       const payload = {
         ...formData,
         imagemUsuario: formData.imagemUsuario
-          ? formData.imagemUsuario.split(',')[1] // só base64 puro
+          ? formData.imagemUsuario.split(',')[1]
           : ''
       };
 
       const response = await api.post('/usuario/cadastrar', payload);
       const dados = response.data;
-
-      console.log('Resposta do cadastro:', dados);
 
       if (dados.id) {
         alert('Cadastro realizado com sucesso!');
@@ -183,7 +201,6 @@ const Cadastro = () => {
         {error && <div className="error-text">{error}</div>}
 
         <form onSubmit={handleSubmit}>
-          {/* Etapas 1 a 4 */}
           {step === 1 && (
             <div className="form-step fade-in">
               <label>Email</label>
@@ -193,6 +210,7 @@ const Cadastro = () => {
               </div>
             </div>
           )}
+
           {step === 2 && (
             <div className="form-step fade-in">
               <label>Confirme seu Email</label>
@@ -203,6 +221,7 @@ const Cadastro = () => {
               </div>
             </div>
           )}
+
           {step === 3 && (
             <div className="form-step fade-in">
               <label>Apelido</label>
@@ -216,7 +235,6 @@ const Cadastro = () => {
 
               <label>Imagem do Perfil</label>
               <input type="file" accept="image/*" onChange={handleImageChange} />
-
               {formData.imagemUsuario && (
                 <div className="preview-container">
                   <p>Pré-visualização:</p>
@@ -230,23 +248,16 @@ const Cadastro = () => {
               </div>
             </div>
           )}
+
           {step === 4 && (
             <div className="form-step fade-in">
-              <label>Imagem do Rank</label>
-              <input type="file" accept="image/*" onChange={(e) => handleOcrImageChange(e, 'rank')} />
-              {formData.rankPreview && (
-                <div className="preview-container">
-                  <p>Pré-visualização Rank:</p>
-                  <img src={formData.rankPreview} alt="Rank Preview" className="preview-img" />
-                </div>
-              )}
+              <label>Imagem com Rank e KD</label>
+              <input type="file" accept="image/*" onChange={handleOcrSingleImageChange} />
 
-              <label>Imagem do K/D</label>
-              <input type="file" accept="image/*" onChange={(e) => handleOcrImageChange(e, 'kd')} />
               {formData.kdPreview && (
                 <div className="preview-container">
-                  <p>Pré-visualização KD:</p>
-                  <img src={formData.kdPreview} alt="KD Preview" className="preview-img" />
+                  <p>Pré-visualização:</p>
+                  <img src={formData.kdPreview} alt="Preview OCR" className="preview-img" />
                 </div>
               )}
 

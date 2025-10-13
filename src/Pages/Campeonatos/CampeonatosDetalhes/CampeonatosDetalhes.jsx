@@ -10,13 +10,16 @@ function CampeonatosDetalhes() {
   const { id } = useParams();
   const navigate = useNavigate();
   const api = useApi();
-  const { token } = useAuth();
+  const { usuario } = useAuth();
 
   const [campeonato, setCampeonato] = useState(null);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState("");
+  const [mostrarModal, setMostrarModal] = useState(false);
 
   useEffect(() => {
+    console.log("Usuário logado:", usuario);
+
     const fetchCampeonato = async () => {
       try {
         const response = await api.get(`/campeonatos/${id}`);
@@ -28,8 +31,24 @@ function CampeonatosDetalhes() {
         setLoading(false);
       }
     };
+
     fetchCampeonato();
-  }, [api, id]);
+  }, [api, id, usuario]);
+
+  // ✅ Verifica se o usuário tem time
+  const handleParticipar = () => {
+    // ✅ Modal aparece apenas se idTime for null
+    if (usuario?.idTime === null) {
+      setMostrarModal(true);
+      return;
+    }
+
+    console.log("✅ Usuário possui time — seguir para inscrição...");
+    // Exemplo de redirecionamento para inscrição:
+    // navigate(`/inscricao/${id}`);
+  };
+
+  const fecharModal = () => setMostrarModal(false);
 
   if (loading) return <LoadingScreen />;
 
@@ -41,12 +60,11 @@ function CampeonatosDetalhes() {
       </>
     );
 
-  if (!campeonato) return <div className="sem-dados">Campeonato não encontrado.</div>;
+  if (!campeonato)
+    return <div className="sem-dados">Campeonato não encontrado.</div>;
 
-  const formatarImagem = (img) => {
-    if (!img) return "/placeholder_banner.png";
-    return img.startsWith("data:image") ? img : `data:image/png;base64,${img}`;
-  };
+  const formatarImagem = (img) =>
+    !img ? "/placeholder_banner.png" : img.startsWith("data:image") ? img : `data:image/png;base64,${img}`;
 
   const imagemCriador = campeonato.criador?.imagemUsuario
     ? campeonato.criador.imagemUsuario.startsWith("data:image")
@@ -78,7 +96,9 @@ function CampeonatosDetalhes() {
                     : "Pago"}
                 </p>
               </div>
-              <button className="btn-participar">Participar do Torneio</button>
+              <button className="btn-participar" onClick={handleParticipar}>
+                Participar do Torneio
+              </button>
             </div>
           </div>
         </div>
@@ -94,18 +114,14 @@ function CampeonatosDetalhes() {
                   <p>💰 Prêmio total</p>
                   <span>
                     R${" "}
-                    {parseFloat(
-                      campeonato.valor || campeonato.nm_valor || campeonato.valorPremio || 0
-                    ).toFixed(2)}
+                    {parseFloat(campeonato.valor || campeonato.nm_valor || campeonato.valorPremio || 0).toFixed(2)}
                   </span>
                 </div>
                 <div>
                   <p>💵 Valor por equipe</p>
                   <span>
                     R${" "}
-                    {parseFloat(
-                      campeonato.valorPorEquipe || campeonato.nm_valor_por_equipe || 0
-                    ).toFixed(2)}
+                    {parseFloat(campeonato.valorPorEquipe || campeonato.nm_valor_por_equipe || 0).toFixed(2)}
                   </span>
                 </div>
                 <div>
@@ -115,30 +131,19 @@ function CampeonatosDetalhes() {
               </div>
             </div>
 
-            {/* ===== ORGANIZADOR ===== */}
             <div className="card-info">
               <h3>Organizador</h3>
               <span className="nome-criador">Organizado por</span>
               <button className="btn-criador">
-                <img
-                  src={imagemCriador}
-                  alt={campeonato.criador?.nome || "Desconhecido"}
-                  className="img-criador"
-                />
+                <img src={imagemCriador} alt={campeonato.criador?.nome || "Desconhecido"} className="img-criador" />
                 <span className="nome-criador">{campeonato.criador?.nome || "Desconhecido"}</span>
               </button>
             </div>
 
-            {/* ===== INFORMAÇÕES ADICIONAIS ===== */}
             <div className="card-info">
               <h3>Informações adicionais</h3>
               <p>
-                Criado em:{" "}
-                <b>
-                  {new Date(campeonato.dataInicio || campeonato.dt_inicio).toLocaleDateString(
-                    "pt-BR"
-                  )}
-                </b>
+                Criado em: <b>{new Date(campeonato.dataInicio || campeonato.dt_inicio).toLocaleDateString("pt-BR")}</b>
               </p>
               <p>Status: <b>{campeonato.status || "Em andamento"}</b></p>
             </div>
@@ -186,6 +191,19 @@ function CampeonatosDetalhes() {
           </div>
         </div>
       </div>
+
+      {/* ===== MODAL DE AVISO ===== */}
+      {mostrarModal && (
+        <div className="modal-overlay" onClick={fecharModal}>
+          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+            <h2>⚠️ Atenção</h2>
+            <p>Você não pertence nem possui um time.</p>
+            <button className="btn-fechar" onClick={fecharModal}>
+              Fechar
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }
