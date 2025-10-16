@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
-
 .container {
   display: flex;
   flex-direction: row;
@@ -14,14 +13,12 @@
   flex-wrap: wrap;
 }
 
-
 .left-section {
   flex: 1;
   max-width: 400px;
   margin-right: 40px;
   box-shadow: 0px 4px 12px rgb(150, 0, 0);
 }
-
 
 .logo-section {
   text-align: center;
@@ -116,7 +113,7 @@
   max-width: 800px;
 }
 
-
+/* === MEMBROS (hover efeito vermelho lateral) === */
 .member-card {
   display: flex;
   align-items: center;
@@ -125,14 +122,15 @@
   border-radius: 12px;
   margin-bottom: 20px;
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.2s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  border-left: 4px solid transparent; /* efeito vermelho lateral */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  border-left: 5px solid transparent;
 }
 
 .member-card:hover {
   background-color: #333;
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  border-left: 4px solid #ff1e1e; /* cor vermelha ao passar o mouse */
 }
 
 .member-logo {
@@ -179,7 +177,6 @@
   letter-spacing: 0.05em;
 }
 
-
 .add-member {
   margin-top: 20px;
   background-color: #007bff;
@@ -199,6 +196,7 @@
   background-color: #0056b3;
 }
 
+/* POPUP */
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -258,7 +256,6 @@
   background-color: #218838;
 }
 
-
 .contextual-popup {
   position: absolute;
   background-color: #2a2a2a;
@@ -307,7 +304,6 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
 }
 
-
 .rank-ferro {
   background-color: #6e6e6e;
   color: white;
@@ -336,7 +332,6 @@
   background-color: #ff4500;
   color: white;
 }
-
 
 .rank-image {
   width: 130px;
@@ -382,4 +377,38 @@
   background: linear-gradient(90deg, #ff0000, #ff1e00);
   transition: width 0.5s ease;
   border-radius: 10px;
+}
+
+/* === REDES SOCIAIS === */
+.team-social-box {
+  background: #181818;
+  border-radius: 12px;
+  padding: 12px;
+  margin-top: 18px;
+  text-align: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.team-social-box h3 {
+  color: #fff;
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.social-icons a {
+  color: #fff;
+  font-size: 18px;
+  transition: color 0.3s ease;
+}
+
+.social-icons a:hover {
+  color: #C1001D;
 }

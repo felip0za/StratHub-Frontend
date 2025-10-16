@@ -14,11 +14,9 @@ const Campeonatos = () => {
   const navigate = useNavigate();
   const api = useApi();
 
-  // --- Navegação ---
   const handleCriarCampeonato = () => navigate("/criar-campeonatos");
   const handleMeusCampeonatos = () => navigate("/meus-campeonatos");
 
-  // --- Buscar campeonatos ---
   const fetchCampeonatos = async () => {
     try {
       const response = await api.get("/campeonatos");
@@ -31,22 +29,18 @@ const Campeonatos = () => {
     }
   };
 
-  // --- Atualização em tempo real (polling curto: 1s) ---
   useEffect(() => {
-    fetchCampeonatos(); // primeira chamada
-    const interval = setInterval(fetchCampeonatos, 1000); // atualiza a cada 1s
+    fetchCampeonatos();
+    const interval = setInterval(fetchCampeonatos, 1000);
     return () => clearInterval(interval);
   }, [api]);
 
-  // --- Filtragem ---
   const campeonatosFiltrados = campeonatos.filter((c) =>
     c.nome.toLowerCase().includes(filtro.toLowerCase())
   );
 
-  // --- Navegar para detalhes ---
   const handleClick = (id) => navigate(`/campeonatos/${id}`);
 
-  // --- Formata status ---
   const formatarStatus = (status) => {
     switch (status) {
       case "ABERTO": return { texto: "Aberto", classe: "aberto" };
@@ -56,7 +50,6 @@ const Campeonatos = () => {
     }
   };
 
-  // --- Imagem Base64 ---
   const getImagemCampeonato = (imagemBase64) =>
     imagemBase64 ? `data:image/png;base64,${imagemBase64}` : "https://via.placeholder.com/400x200?text=Sem+Imagem";
 
@@ -89,9 +82,9 @@ const Campeonatos = () => {
             className="campo-pesquisa"
           />
 
-          <div className="campeonatos-grid">
-            {campeonatosFiltrados.length > 0 ? (
-              campeonatosFiltrados.map((c) => {
+          {campeonatosFiltrados.length > 0 ? (
+            <div className="campeonatos-grid">
+              {campeonatosFiltrados.map((c) => {
                 const status = formatarStatus(c.status);
                 return (
                   <div key={c.id} className="card">
@@ -117,11 +110,13 @@ const Campeonatos = () => {
                     </div>
                   </div>
                 );
-              })
-            ) : (
-              <p className="nenhum-campeonato">Nenhum campeonato encontrado.</p>
-            )}
-          </div>
+              })}
+            </div>
+          ) : (
+            <div className="nenhum-campeonato">
+              <p>⚠️Nenhum campeonato encontrado.</p>
+            </div>
+          )}
         </div>
       </div>
     </>

@@ -1,259 +1,235 @@
-/* Container principal do cadastro */
+/* === CONTAINER PRINCIPAL === */
 .register-container {
+  min-height: 100vh;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
-  padding: 20px;
-  background: linear-gradient(135deg, #121212, #2a2a2a);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 28px;
+  background: linear-gradient(135deg, #080808 0%, #1a0000 60%, #0c0000 100%);
+  font-family: 'Poppins', 'Inter', sans-serif;
+  color: #f0f0f0;
 }
 
-/* Caixa principal do formulário */
-.register-box {
-  background-color: #1e1e1e;
-  padding: 30px 35px;
-  border-radius: 14px;
-  max-width: 420px;
+/* === CARD PRINCIPAL === */
+.register-card {
   width: 100%;
-  color: #eee;
-  text-align: center;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-  transition: box-shadow 0.3s ease;
+  max-width: 650px;
+  background: #121212;
+  border-radius: 10px;
+  padding: 28px;
+  border: 1px solid #2a0a0a;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
 }
 
-.register-box:hover {
-  box-shadow: 0 15px 40px rgba(212, 0, 0, 0.7);
-}
-
-/* Título */
-.register-box h2 {
-  margin-bottom: 10px;
-  font-size: 30px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  color: #f44336;
-}
-
-/* Subtítulo ou indicador de etapa */
-.step-indicator {
-  margin-bottom: 25px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #bbb;
-}
-
-/* Formulário */
-.register-container form {
+/* === HEADER === */
+.card-header {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  gap: 6px;
+  margin-bottom: 18px;
+  text-align: center;
 }
-
-/* Labels */
-.register-container label {
-  margin-bottom: 8px;
-  font-size: 15px;
-  font-weight: 600;
-  color: #ccc;
-  text-align: left;
-}
-
-/* Inputs */
-.register-container input {
-  width: 100%;
-  padding: 14px 16px;
-  margin-bottom: 20px;
-  font-size: 15px;
-  color: #f1f1f1;
-  background-color: #2b2b2b;
-  border: 1.5px solid #444;
-  border-radius: 10px;
-  box-sizing: border-box;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.register-container input::placeholder {
-  color: #777;
-  opacity: 1;
-}
-
-.register-container input:focus {
-  outline: none;
-  border-color: #f44336;
-  box-shadow: 0 0 8px #f44336aa;
-}
-
-/* Input desabilitado */
-.register-container input:disabled {
-  background-color: #3a3a3a;
-  color: #999;
-  border-color: #555;
-  cursor: not-allowed;
-}
-
-/* Botões */
-.register-container button {
-  padding: 14px 0;
-  font-size: 17px;
-  font-weight: 600;
+.card-header h1 {
+  font-size: 24px;
   color: #fff;
-  background-color: #f44336;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  user-select: none;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  font-weight: 700;
+  letter-spacing: 0.6px;
 }
-
-.register-container button:hover:not(:disabled) {
-  background-color: #d32f2f;
-  transform: translateY(-3px);
-}
-
-.register-container button:disabled {
-  background-color: #b94a4a;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* Botões de navegação do wizard */
-.wizard-buttons {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 15px;
-  gap: 12px; /* Espaçamento mais consistente */
-}
-
-.wizard-buttons button {
-  flex: 1;
-  margin: 0;
-}
-
-/* Preview da imagem */
-.preview-container {
-  margin: 10px 0 25px;
-  text-align: center;
-}
-
-.preview-container p {
-  margin-bottom: 8px;
+.card-header .subtitle {
+  color: #b5b5b5;
   font-size: 13px;
-  color: #bbb;
 }
 
-.preview-img {
-  max-width: 100%;
-  max-height: 160px;
-  border-radius: 12px;
+/* === INDICADOR DE ETAPAS === */
+.steps-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 18px 0;
+  flex-wrap: wrap;
+}
+.steps-indicator .step {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  background: #2b2b2b;
+  color: #999;
+  font-weight: 700;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+.steps-indicator .step.active {
+  background: #d00000;
+  color: #fff;
+}
+.steps-indicator .connector {
+  height: 3px;
+  width: 40px;
+  border-radius: 4px;
+  background: #2b2b2b;
+}
+.steps-indicator .connector.active {
+  background: #d00000;
+}
+
+/* === MENSAGEM DE ERRO === */
+.error-box {
+  margin: 14px 0;
+  padding: 12px 14px;
+  background: #2a0000;
+  color: #ffb3b3;
+  border-radius: 8px;
+  font-weight: 600;
+  border: 1px solid #550000;
+  text-align: center;
+}
+
+/* === FORM === */
+.register-form {
+  margin-top: 6px;
+}
+.form-step {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.form-step label {
+  font-size: 13px;
+  color: #e8e8e8;
+  font-weight: 600;
+}
+.form-step input[type="text"],
+.form-step input[type="email"],
+.form-step input[type="password"],
+.form-step input[type="file"] {
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #2e2e2e;
+  background: #0c0c0c;
+  color: #f0f0f0;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.form-step input:focus {
+  border-color: #d00000;
+  background: #111;
+}
+
+/* === TEXTO AUXILIAR === */
+.helper {
+  color: #b5b5b5;
+  font-size: 12px;
+}
+
+/* === GRID 2 COLUNAS === */
+.two-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 720px) {
+  .two-cols { grid-template-columns: 1fr; }
+}
+
+/* === PREVIEW DE IMAGEM === */
+.img-preview,
+.ocr-preview {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.img-preview img,
+.ocr-preview img {
+  width: 120px;
+  height: 80px;
   object-fit: cover;
-  border: 2px solid #444;
-  box-shadow: 0 0 10px #f44336aa;
+  border-radius: 6px;
+  border: 1px solid #2e2e2e;
+  transition: transform 0.2s ease;
+}
+.img-preview img:hover,
+.ocr-preview img:hover {
+  transform: scale(1.05);
 }
 
-/* Mensagens de erro */
-.error-text {
-  margin-bottom: 15px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #ff6b6b;
-  text-align: center;
-  user-select: none;
-}
-
-/* Animações básicas (fade-in suave) */
-.fade-in {
-  animation: fadeInUp 0.45s ease forwards;
-}
-
-/* ... (seu CSS anterior continua igual acima) ... */
-
-/* Container de OCR (Imagem de Rank e KD) */
-.ocr-section {
-  padding: 15px;
-  background-color: #2a2a2a;
-  border: 1px dashed #555;
-  border-radius: 10px;
-  margin-top: 20px;
-}
-
-/* Destacar campos extraídos automaticamente */
-.register-container input[readonly] {
-  background-color: #3a3a3a;
+/* === OCR STATUS === */
+.ocr-status {
+  margin-top: 6px;
   color: #ccc;
-  border-color: #666;
-  font-style: italic;
 }
-
-/* Mensagem de carregamento OCR */
-.fetching-loader {
-  margin-bottom: 15px;
-  font-size: 14px;
-  color: #ff8a65;
-  font-weight: 600;
-  animation: pulseText 1s infinite ease-in-out;
-  text-align: center;
+.ocr-loading {
+  font-weight: 700;
+  color: #ff9999;
+  animation: pulse 1.4s ease-in-out infinite;
 }
-
-/* Animação suave para loader */
-@keyframes pulseText {
-  0% { opacity: 0.5; }
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
   50% { opacity: 1; }
-  100% { opacity: 0.5; }
 }
 
-/* Responsividade da imagem extraída */
-.preview-img {
-  width: 100%;
-  height: auto;
-  max-height: 200px;
-  border-radius: 12px;
-  object-fit: contain;
-  border: 2px solid #444;
-  box-shadow: 0 0 10px #f44336aa;
+/* === CAMPOS OCR === */
+.ocr-fields {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 10px;
+}
+@media (min-width: 760px) {
+  .ocr-fields { grid-template-columns: 1fr 1fr; }
 }
 
-/* Ajuste para campos OCR lado a lado em telas largas */
-@media (min-width: 600px) {
-  .ocr-fields {
-    display: flex;
-    gap: 12px;
-  }
-
-  .ocr-fields input {
-    flex: 1;
-  }
+/* === BOTÕES === */
+.controls {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+.btn-primary,
+.btn-ghost {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+.btn-primary {
+  background: #d00000;
+  color: #fff;
+}
+.btn-primary:hover {
+  background: #ff1a1a;
+}
+.btn-ghost {
+  background: transparent;
+  color: #ddd;
+  border: 1px solid #2e2e2e;
+}
+.btn-ghost:hover {
+  border-color: #d00000;
+  color: #fff;
 }
 
-
-@keyframes fadeInUp {
-  0% {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* === FOOTER === */
+.card-footer {
+  margin-top: 20px;
+  text-align: center;
+  color: #a1a1a1;
+  font-size: 12px;
 }
 
-/* Responsivo */
-@media (max-width: 480px) {
-  .register-box {
-    padding: 25px 20px;
-    max-width: 100%;
-  }
-
-  .register-box h2 {
-    font-size: 24px;
-  }
-
-  .wizard-buttons {
-    flex-direction: column;
-  }
-
-  .wizard-buttons button {
-    margin: 8px 0;
-  }
+/* === RESPONSIVIDADE === */
+@media (max-width: 700px) {
+  .register-card { padding: 20px; }
+  .controls { justify-content: center; }
+  .steps-indicator { justify-content: center; }
 }

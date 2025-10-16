@@ -14,7 +14,6 @@ import platina from '../../../assets/platina.png';
 import challenger from '../../../assets/challenger.png';
 import master from '../../../assets/master.png';
 import { FaInstagram, FaDiscord, FaTwitter } from 'react-icons/fa';
-
 import './Times.css';
 
 function Times() {
@@ -73,11 +72,9 @@ function Times() {
 
   useEffect(() => {
     carregarDados();
-
     const intervalo = setInterval(() => {
       carregarDados();
     }, 1000);
-
     return () => clearInterval(intervalo);
   }, [id, api]);
 
@@ -89,6 +86,10 @@ function Times() {
     } catch {
       alert("Erro ao buscar amigos.");
     }
+  };
+
+  const handleClickUser = (memberId) => {
+    navigate(`/profile/${memberId}`);
   };
 
   const convidarParaTime = async (idAmigo) => {
@@ -111,7 +112,6 @@ function Times() {
     if (window.confirm("Tem certeza que deseja sair do time?")) {
       try {
         setLoading(true);
-
         const isDono = user.id === time.idCriador;
 
         if (membros.length === 1 && isDono) {
@@ -125,7 +125,6 @@ function Times() {
           alert("Você saiu do time.");
           navigate("/home");
         }
-
       } catch (err) {
         if (err.response?.status === 403) {
           alert(err.response.data || "Você não tem permissão para realizar esta ação.");
@@ -284,6 +283,28 @@ function Times() {
               )}
             </div>
 
+            {/* === NOVA BOX DE REDES SOCIAIS DO TIME === */}
+            <div className="team-social-box">
+              <h3>REDES SOCIAIS</h3>
+              <div className="social-icons">
+                {time.instagram && time.instagram.trim() !== '' && (
+                  <a href={time.instagram} target="_blank" rel="noopener noreferrer" title="Instagram">
+                    <FaInstagram size={24} />
+                  </a>
+                )}
+                {time.discord && time.discord.trim() !== '' && (
+                  <a href={time.discord} target="_blank" rel="noopener noreferrer" title="Discord">
+                    <FaDiscord size={24}  />
+                  </a>
+                )}
+                {time.twitter && time.twitter.trim() !== '' && (
+                  <a href={time.twitter} target="_blank" rel="noopener noreferrer" title="Twitter">
+                    <FaTwitter size={24}  />
+                  </a>
+                )}
+              </div>
+            </div>
+
             <div className="btn-group">
               {user.id === time.idCriador && (
                 <button className="edit-logo" onClick={handleEdit}>
@@ -299,6 +320,7 @@ function Times() {
           </div>
         </div>
 
+        {/* === SEÇÃO DE MEMBROS === */}
         <div className="team-section">
           <h2 className="team-title">MEMBROS</h2>
 
@@ -308,6 +330,8 @@ function Times() {
                 className="member-card"
                 key={index}
                 onContextMenu={(e) => openContextMenu(e, member)}
+                onClick={() => handleClickUser(member.id)}
+                style={{ cursor: 'pointer' }}
               >
                 <img
                   src={
@@ -341,11 +365,23 @@ function Times() {
                     </div>
                   </div>
 
-                  {/* LINKS SOCIAIS ADICIONADOS */}
+                  {/* === LINKS SOCIAIS DOS MEMBROS === */}
                   <div className="social-links" style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
-                    {member.instagram && <a href={member.instagram} target="_blank" rel="noopener noreferrer" title="Instagram"><FaInstagram size={20} color="#E1306C" /></a>}
-                    {member.discord && <a href={member.discord} target="_blank" rel="noopener noreferrer" title="Discord"><FaDiscord size={20} color="#7289DA" /></a>}
-                    {member.twitter && <a href={member.twitter} target="_blank" rel="noopener noreferrer" title="Twitter"><FaTwitter size={20} color="#1DA1F2" /></a>}
+                    {member.instagram && member.instagram.trim() !== '' && (
+                      <a href={member.instagram} target="_blank" rel="noopener noreferrer" title="Instagram">
+                        <FaInstagram size={20} color="#E1306C" />
+                      </a>
+                    )}
+                    {member.discord && member.discord.trim() !== '' && (
+                      <a href={member.discord} target="_blank" rel="noopener noreferrer" title="Discord">
+                        <FaDiscord size={20} color="#7289DA" />
+                      </a>
+                    )}
+                    {member.twitter && member.twitter.trim() !== '' && (
+                      <a href={member.twitter} target="_blank" rel="noopener noreferrer" title="Twitter">
+                        <FaTwitter size={20} color="#1DA1F2" />
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>
@@ -360,6 +396,7 @@ function Times() {
         </div>
       </div>
 
+      {/* === POPUP DE CONVITE === */}
       {showInvitePopup && (
         <div className="popup-overlay" onClick={() => setShowInvitePopup(false)}>
           <div className="popup-box" onClick={(e) => e.stopPropagation()}>
@@ -393,6 +430,7 @@ function Times() {
         </div>
       )}
 
+      {/* === MENU CONTEXTUAL === */}
       {contextMenu && (
         <div
           className="contextual-popup"

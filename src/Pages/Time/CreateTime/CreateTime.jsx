@@ -22,6 +22,11 @@ const CreateTime = () => {
     const file = e.target.files[0];
     if (!file) return;
 
+    if (!file.type.startsWith('image/')) {
+      setError('Selecione um arquivo de imagem válido.');
+      return;
+    }
+
     const reader = new FileReader();
     reader.onloadend = () => {
       const base64String = reader.result.split(',')[1];
@@ -35,7 +40,7 @@ const CreateTime = () => {
     setError('');
 
     if (!nmTime.trim() || !teDescricao.trim() || !teImagemBase64) {
-      setError('Por favor, preencha todos os campos obrigatórios e selecione uma imagem.');
+      setError('⚠️ Preencha todos os campos obrigatórios e envie uma imagem.');
       return;
     }
 
@@ -53,17 +58,17 @@ const CreateTime = () => {
         apelido: apelidoTime,
         instagram: instagram || null,
         discord: discord || null,
-        twitter: twitter || null
+        twitter: twitter || null,
       };
 
       const response = await api.post('/times', novoTime);
       const timeId = response.data.id_time || response.data.id;
 
       if (timeId) {
-        alert('Time criado com sucesso!');
+        alert('✅ Time criado com sucesso!');
         navigate(`/times/${timeId}`);
       } else {
-        alert('Time criado, mas não foi possível obter o ID para redirecionamento.');
+        alert('Time criado, mas sem ID retornado.');
       }
     } catch (err) {
       console.error('Erro ao criar time:', err);
@@ -74,47 +79,88 @@ const CreateTime = () => {
   return (
     <>
       <Navbar />
-      <div className="create-team-container">
-        <h1 className="title">Criar Novo Time</h1>
-        {error && <div className="error-message">{error}</div>}
-        <form onSubmit={handleSubmit} className="create-team-form">
-          <label>Nome do Time:</label>
-          <input type="text" value={nmTime} onChange={e => setNmTime(e.target.value)} required />
+      <div className="create-time-page">
+        <div className="create-card">
+          <h1 className="form-title">🏆 Criar Novo Time</h1>
+          {error && <div className="error-box">{error}</div>}
 
-          <label>Descrição do Time:</label>
-          <textarea value={teDescricao} onChange={e => setTeDescricao(e.target.value)} required rows="4" />
-
-          <label>Apelido do Time(TAG):</label>
-          <input
-            type="text"
-            value={apelidoTime}
-            onChange={e => setApelidoTime(e.target.value.slice(0, 5))}
-            maxLength={5}
-            required
-          />
-
-          <label>Imagem:</label>
-          <input type="file" accept="image/*" onChange={handleImageChange} required />
-
-          {teImagemBase64 && (
-            <div className="preview-container">
-              <p>Pré-visualização da imagem:</p>
-              <img src={`data:image/png;base64,${teImagemBase64}`} alt="Pré-visualização" className="preview-img" />
+          <form onSubmit={handleSubmit} className="team-form">
+            <div className="form-group">
+              <label>Nome do Time</label>
+              <input
+                type="text"
+                value={nmTime}
+                onChange={(e) => setNmTime(e.target.value)}
+                required
+                placeholder="Ex: The Dragons Fury"
+              />
             </div>
-          )}
 
-          {/* LINKS OPCIONAIS */}
-          <label>Instagram (opcional):</label>
-          <input type="url" value={instagram} onChange={e => setInstagram(e.target.value)} placeholder="https://instagram.com/seutime" />
+            <div className="form-group">
+              <label>Descrição</label>
+              <textarea
+                value={teDescricao}
+                onChange={(e) => setTeDescricao(e.target.value)}
+                required
+                placeholder="Fale um pouco sobre o time..."
+                rows="4"
+              />
+            </div>
 
-          <label>Discord (opcional):</label>
-          <input type="url" value={discord} onChange={e => setDiscord(e.target.value)} placeholder="https://discord.gg/seutime" />
+            <div className="form-group">
+              <label>Apelido / Tag</label>
+              <input
+                type="text"
+                value={apelidoTime}
+                onChange={(e) => setApelidoTime(e.target.value.slice(0, 5).toUpperCase())}
+                maxLength={5}
+                required
+                placeholder="Ex: TDF"
+              />
+              <small className="tag-hint">Máx. 5 caracteres</small>
+            </div>
 
-          <label>Twitter (opcional):</label>
-          <input type="url" value={twitter} onChange={e => setTwitter(e.target.value)} placeholder="https://twitter.com/seutime" />
+            <div className="form-group">
+              <label>Imagem do Time</label>
+              <input type="file" accept="image/*" onChange={handleImageChange} required />
+              {teImagemBase64 && (
+                <div className="preview-box">
+                  <img
+                    src={`data:image/png;base64,${teImagemBase64}`}
+                    alt="Preview"
+                    className="team-preview"
+                  />
+                </div>
+              )}
+            </div>
 
-          <button type="submit" className="submit-button">Salvar Time</button>
-        </form>
+            <div className="social-group">
+              <h3>🌐 Redes Sociais (opcional)</h3>
+              <input
+                type="url"
+                value={instagram}
+                onChange={(e) => setInstagram(e.target.value)}
+                placeholder="Instagram (https://instagram.com/seutime)"
+              />
+              <input
+                type="url"
+                value={discord}
+                onChange={(e) => setDiscord(e.target.value)}
+                placeholder="Discord (https://discord.gg/seutime)"
+              />
+              <input
+                type="url"
+                value={twitter}
+                onChange={(e) => setTwitter(e.target.value)}
+                placeholder="Twitter (https://twitter.com/seutime)"
+              />
+            </div>
+
+            <button type="submit" className="btn-create">
+              Criar Time
+            </button>
+          </form>
+        </div>
       </div>
     </>
   );

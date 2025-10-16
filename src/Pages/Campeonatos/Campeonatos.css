@@ -215,6 +215,17 @@
   cursor: not-allowed;
 }
 
+.nenhum-campeonato {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px; /* ou ajuste conforme o espaço desejado */
+  font-size: 1.4rem;
+  color: #ffffff;
+  text-align: center;
+}
+
+
 /* === Responsividade === */
 @media (max-width: 768px) {
   .campeonatos-header {
