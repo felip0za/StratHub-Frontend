@@ -32,6 +32,35 @@ const Chaveamento = ({ grupos }) => {
   );
 };
 
+// === COMPONENTE TABELA PARA ELIMINATÓRIAS ===
+const TabelaEliminatorias = ({ times }) => {
+  const placeholderTimes = Array(times?.length || 4).fill({ nome: '-', pontos: '-' });
+
+  return (
+    <div className="tabela-eliminatorias-box">
+      <h2>TABELA</h2>
+      <table className="tabela-eliminatorias">
+        <thead>
+          <tr>
+            <th>Posição</th>
+            <th>Time</th>
+            <th>Pontos</th>
+          </tr>
+        </thead>
+        <tbody>
+          {(times?.length ? times : placeholderTimes).map((time, i) => (
+            <tr key={i}>
+              <td>{i + 1}</td>
+              <td>{time.nome}</td>
+              <td>{time.pontos}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
 const InfoEditCampeonatos = () => {
   const [campeonato, setCampeonato] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -189,8 +218,12 @@ const InfoEditCampeonatos = () => {
             <p>{campeonato.descricao || '-'}</p>
           </div>
 
-          {/* CHAVEAMENTO */}
-          <Chaveamento grupos={campeonato.grupos} />
+          {/* RENDERIZAÇÃO CONDICIONAL */}
+          {campeonato.formatoCampeonato === 'TABELA_ELIMINATORIAS' ? (
+            <TabelaEliminatorias times={campeonato.times || []} />
+          ) : (
+            <Chaveamento grupos={campeonato.grupos} />
+          )}
 
         </div>
       </div>

@@ -12,10 +12,11 @@ const CriarCampeonatos = () => {
   const [status, setStatus] = useState('ABERTO');
   const [valorPremiacao, setValorPremiacao] = useState('0');
   const [maxEquipes, setMaxEquipes] = useState(4);
+  const [formatoCampeonato, setFormatoCampeonato] = useState('FASE_DE_GRUPOS_E_ELIMINATORIAS');
   const [imagemBase64, setImagemBase64] = useState('');
   const [previewImagem, setPreviewImagem] = useState('');
-  const [plataforma, setPlataforma] = useState('PC'); // PC ou CONSOLE
-  const [consoleTipo, setConsoleTipo] = useState(''); // AMBOS, XBOX, PS
+  const [plataforma, setPlataforma] = useState('PC');
+  const [consoleTipo, setConsoleTipo] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -67,6 +68,7 @@ const CriarCampeonatos = () => {
       status: 'ABERTO',
       valor: totalPremiacao,
       maxEquipes,
+      formatoCampeonato,
       imagemCampeonato: imagemBase64,
       dataInicio: new Date().toISOString(),
       dataFim: null,
@@ -102,6 +104,13 @@ const CriarCampeonatos = () => {
   };
 
   const handleVoltar = () => navigate(-1);
+
+  // Atualiza automaticamente o número máximo de equipes se formato for eliminatórias
+  React.useEffect(() => {
+    if (formatoCampeonato === 'TABELA_ELIMINATORIAS') {
+      setMaxEquipes(10);
+    }
+  }, [formatoCampeonato]);
 
   return (
     <>
@@ -175,7 +184,20 @@ const CriarCampeonatos = () => {
             </select>
           </div>
 
-          {/* Valor da premiação (sempre visível) */}
+          {/* Formato de Campeonato */}
+          <div className="campeonatos-create-field">
+            <label className="campeonatos-create-label">Formato de Campeonato:</label>
+            <select
+              value={formatoCampeonato}
+              onChange={(e) => setFormatoCampeonato(e.target.value)}
+              className="campeonatos-create-select"
+            >
+              <option value="FASE_DE_GRUPOS_E_ELIMINATORIAS">Fase de Grupos e Eliminatórias</option>
+              <option value="TABELA_ELIMINATORIAS">Tabela Eliminatórias</option>
+            </select>
+          </div>
+
+          {/* Valor da premiação */}
           <div className="campeonatos-create-field">
             <label className="campeonatos-create-label">Valor da Premiação (R$):</label>
             <input
@@ -188,26 +210,34 @@ const CriarCampeonatos = () => {
             />
             <small className="campeonatos-create-hint">
               {tipo === 'PAGO'
-                ? `O valor total da premiação será dividido entre as equipes: cada equipe pagará R$ ${(Number(valorPremiacao) / maxEquipes).toFixed(2)}.`
-                : `Este campeonato é gratuito; o valor da premiação será de R$ ${Number(valorPremiacao).toFixed(2)}.`}
+                ? `Cada equipe pagará R$ ${(Number(valorPremiacao) / maxEquipes).toFixed(2)}.`
+                : `Este campeonato é gratuito; a premiação será de R$ ${Number(valorPremiacao).toFixed(2)}.`}
             </small>
-
           </div>
 
           {/* Máximo de equipes */}
           <div className="campeonatos-create-field">
             <label className="campeonatos-create-label">Máximo de Equipes:</label>
-            <select
-              value={maxEquipes}
-              onChange={(e) => setMaxEquipes(Number(e.target.value))}
-              className="campeonatos-create-select"
-            >
-              {[4, 8, 12, 16].map((qtd) => (
-                <option key={qtd} value={qtd}>
-                  {qtd} equipes
-                </option>
-              ))}
-            </select>
+            {formatoCampeonato === 'TABELA_ELIMINATORIAS' ? (
+              <input
+                type="number"
+                value={10}
+                disabled
+                className="campeonatos-create-input"
+              />
+            ) : (
+              <select
+                value={maxEquipes}
+                onChange={(e) => setMaxEquipes(Number(e.target.value))}
+                className="campeonatos-create-select"
+              >
+                {[4, 8, 12, 16].map((qtd) => (
+                  <option key={qtd} value={qtd}>
+                    {qtd} equipes
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
 
           {/* Plataforma */}
@@ -223,7 +253,7 @@ const CriarCampeonatos = () => {
             </select>
           </div>
 
-          {/* Console (aparece somente se plataforma = CONSOLE) */}
+          {/* Console */}
           {plataforma === 'CONSOLE' && (
             <div className="campeonatos-create-field">
               <label className="campeonatos-create-label">Console:</label>
