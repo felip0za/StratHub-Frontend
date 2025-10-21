@@ -61,6 +61,67 @@ const TabelaEliminatorias = ({ times }) => {
   );
 };
 
+// === COMPONENTE PARTIDAS DE GRUPOS ===
+
+const PartidasGrupos = ({ grupos }) => {
+  const letras = ['A', 'B', 'C', 'D'];
+  const [grupoSelecionado, setGrupoSelecionado] = useState('A');
+
+  // Criar placeholder caso não haja grupos
+  const gruposComPlaceholder = grupos || letras.reduce((acc, l) => {
+    acc[l] = Array(4).fill({ nome: '-', pontos: 0, logo: null });
+    return acc;
+  }, {});
+
+  const times = gruposComPlaceholder[grupoSelecionado] || Array(4).fill({ nome: '-', pontos: 0, logo: null });
+
+  // Gerar pares de partidas (cada "semana")
+  const partidas = [];
+  for (let i = 0; i < times.length; i += 2) {
+    const time1 = times[i];
+    const time2 = times[i + 1] || { nome: '-', pontos: 0, logo: null };
+    partidas.push({ time1, time2 });
+  }
+
+  return (
+    <div className="partidas-grupos-box">
+      {/* SELECT PARA ESCOLHER GRUPO */}
+      <div className="grupo-select-box">
+        <label>GRUPO: </label>
+        <select value={grupoSelecionado} onChange={(e) => setGrupoSelecionado(e.target.value)}>
+          {letras.map((letra) => (
+            <option key={letra} value={letra}>{letra}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* EXIBIR PARTIDAS DO GRUPO SELECIONADO */}
+      {partidas.map((p, idx) => (
+        <div key={idx} className="semana-box">
+          <h4>SEMANA {idx + 1}:</h4>
+          <div className="partida-item">
+            {/* TIME 1 */}
+            <div className="time">
+              {p.time1.logo && <img src={p.time1.logo} alt={p.time1.nome} />}
+              <span className="nome-time">{p.time1.nome}</span>
+            </div>
+
+            <span className="pontos-time">{p.time1.pontos || 0}</span>
+            <span className="vs">VS</span>
+            <span className="pontos-time">{p.time2.pontos || 0}</span>
+
+            {/* TIME 2 */}
+            <div className="time">
+              {p.time2.logo && <img src={p.time2.logo} alt={p.time2.nome} />}
+              <span className="nome-time">{p.time2.nome}</span>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const InfoEditCampeonatos = () => {
   const [campeonato, setCampeonato] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -71,6 +132,9 @@ const InfoEditCampeonatos = () => {
   const [editImagem, setEditImagem] = useState('');
   const [previewImagem, setPreviewImagem] = useState('');
   const [saving, setSaving] = useState(false);
+
+  // === NOVO ESTADO PARA ALTERNAR ENTRE INFORMAÇÕES / PARTIDAS ===
+  const [abaSelecionada, setAbaSelecionada] = useState('informacoes');
 
   const { id } = useParams();
   const navigate = useNavigate();
@@ -169,60 +233,105 @@ const InfoEditCampeonatos = () => {
       <div className="detalhes-pagina">
         <div className="detalhes-box">
 
-          {/* HEADER */}
-          <div className="header-box">
-            <div className="logo-box">
-              <img src={formatarImagem(campeonato.imagemCampeonato)} alt={campeonato.nome} />
-            </div>
-
-            <div className="info-box">
-              <h1>{campeonato.nome}</h1>
-              
-              <div className="tags-box">
-                <span className={`tag-tipo ${campeonato.tipo.toLowerCase()}`}>
-                  {campeonato.tipo === 'GRATUITO' ? 'Gratuito' : 'Pago'}
-                </span>
-                <span className={`tag-status ${campeonato.status.toLowerCase()}`}>
-                  {formatarStatus(campeonato.status)}
-                </span>
-              </div>
-
-              <div className="info-dados">
-                <div className="info-item">
-                  <strong>Data de Início📅:</strong> {campeonato.dataInicio}
-                </div>
-                <div className="info-item">
-                  <strong>Data de Fim📅:</strong> {campeonato.dataFim || 'A ser definido'}
-                </div>
-                <div className="info-item">
-                  <strong>Prêmio💵:</strong> {campeonato.premio !== null ? `R$ ${Number(campeonato.valor || 0).toFixed(2)}` : '-'}
-                </div>
-                <div className="info-item">
-                  <strong>Entrada🎟️:</strong> {campeonato.tipo === 'GRATUITO' ? 'Gratuito' : `R$ ${Number(campeonato.valorPorEquipe || 0).toFixed(2)}`}
-                </div>
-                <div className="info-item">
-                  <strong>Numero de equipes👥:</strong> {campeonato.maxEquipes}
-                </div>
-              </div>
-            </div>
-
-            <div className="botoes-box">
-              <button className="btn-editar" onClick={abrirModal}>Editar</button>
-              <button className="btn-voltar2" onClick={handleVoltar}>Voltar</button>
-            </div>
+          {/* === NOVO SELECTOR DE ABA === */}
+          <div className="aba-selector">
+            <button
+              className={abaSelecionada === 'informacoes' ? 'aba-btn ativo' : 'aba-btn'}
+              onClick={() => setAbaSelecionada('informacoes')}
+            >
+              Informações
+            </button>
+            <button
+              className={abaSelecionada === 'partidas' ? 'aba-btn ativo' : 'aba-btn'}
+              onClick={() => setAbaSelecionada('partidas')}
+            >
+              Partidas
+            </button>
           </div>
 
-          {/* DESCRIÇÃO */}
-          <div className="card-desc">
-            <h2>Descrição</h2>
-            <p>{campeonato.descricao || '-'}</p>
-          </div>
+          {/* === CONTEÚDO PRINCIPAL === */}
+          {abaSelecionada === 'informacoes' && (
+            <>
+              {/* HEADER */}
+              <div className="header-box">
+                <div className="logo-box">
+                  <img src={formatarImagem(campeonato.imagemCampeonato)} alt={campeonato.nome} />
+                </div>
 
-          {/* RENDERIZAÇÃO CONDICIONAL */}
-          {campeonato.formatoCampeonato === 'TABELA_ELIMINATORIAS' ? (
-            <TabelaEliminatorias times={campeonato.times || []} />
-          ) : (
-            <Chaveamento grupos={campeonato.grupos} />
+                <div className="info-box">
+                  <h1>{campeonato.nome}</h1>
+                  
+                  <div className="tags-box">
+                    <span className={`tag-tipo ${campeonato.tipo.toLowerCase()}`}>
+                      {campeonato.tipo === 'GRATUITO' ? 'Gratuito' : 'Pago'}
+                    </span>
+                    <span className={`tag-status ${campeonato.status.toLowerCase()}`}>
+                      {formatarStatus(campeonato.status)}
+                    </span>
+                  </div>
+
+                  <div className="info-dados">
+                    <div className="info-item">
+                      <strong>Data de Início📅:</strong> {campeonato.dataInicio}
+                    </div>
+                    <div className="info-item">
+                      <strong>Data de Fim📅:</strong> {campeonato.dataFim || 'A ser definido'}
+                    </div>
+                    <div className="info-item">
+                      <strong>Prêmio💵:</strong> {campeonato.premio !== null ? `R$ ${Number(campeonato.valor || 0).toFixed(2)}` : '-'}
+                    </div>
+                    <div className="info-item">
+                      <strong>Entrada🎟️:</strong> {campeonato.tipo === 'GRATUITO' ? 'Gratuito' : `R$ ${Number(campeonato.valorPorEquipe || 0).toFixed(2)}`}
+                    </div>
+                    <div className="info-item">
+                      <strong>Numero de equipes👥:</strong> {campeonato.maxEquipes}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="botoes-box">
+                  <button className="btn-editar" onClick={abrirModal}>Editar</button>
+                  <button className="btn-voltar2" onClick={handleVoltar}>Voltar</button>
+                </div>
+              </div>
+
+              {/* DESCRIÇÃO */}
+              <div className="card-desc">
+                <h2>Descrição</h2>
+                <p>{campeonato.descricao || '-'}</p>
+              </div>
+
+              {/* TABELA OU CHAVEAMENTO DENTRO DE INFORMAÇÕES */}
+              {campeonato.formatoCampeonato === 'TABELA_ELIMINATORIAS' ? (
+                campeonato.times && campeonato.times.length > 0 && <TabelaEliminatorias times={campeonato.times} />
+              ) : (
+                campeonato.grupos && <Chaveamento grupos={campeonato.grupos} />
+              )}
+            </>
+          )}
+
+          {/* === ABA PARTIDAS === */}
+          {abaSelecionada === 'informacoes' && (
+            <>
+              {campeonato.formatoCampeonato === 'TABELA_ELIMINATORIAS' ? (
+                <TabelaEliminatorias times={campeonato.times || []} />
+              ) : (
+                <Chaveamento grupos={campeonato.grupos} />
+              )}
+            </>
+          )}
+
+          {/* === ABA PARTIDAS === */}
+          {abaSelecionada === 'partidas' && (
+            <>
+              {campeonato.formatoCampeonato === 'TABELA_ELIMINATORIAS' ? (
+                <TabelaEliminatorias times={campeonato.times || []} />
+              ) : campeonato.formatoCampeonato === 'FASE_DE_GRUPOS_E_ELIMINATORIAS' ? (
+                <PartidasGrupos grupos={campeonato.grupos} />
+              ) : (
+                <Chaveamento grupos={campeonato.grupos} />
+              )}
+            </>
           )}
 
         </div>

@@ -21,7 +21,7 @@
   transition: all 0.3s ease;
 }
 
-/* === HEADER === */
+/* === HEADER / INFORMAÇÕES === */
 .header-box {
   display: flex;
   align-items: center;
@@ -38,6 +38,7 @@
 
 .info-box {
   flex: 1;
+  min-width: 220px;
 }
 
 .info-box h1 {
@@ -65,7 +66,6 @@
 }
 
 .tag-tipo.pago { color: #c10001; }
-
 .tag-status.em_andamento { color: #f5a623; }
 .tag-status.fechado { color: #c10001; }
 
@@ -96,7 +96,7 @@
 
 .btn-editar,
 .btn-voltar2 {
-  background:#c10001;
+  background: #c10001;
   color: #fff;
   border: none;
   border-radius: 10px;
@@ -104,15 +104,15 @@
   font-weight: 600;
   cursor: pointer;
   letter-spacing: 0.5px;
-  box-shadow: 0 0 10px rgba(255, 1, 1, 0.3);
+  transition: all 0.2s ease;
 }
 
 .btn-editar:hover,
 .btn-voltar2:hover {
-  background:#c10001;
+  background: #a00000;
 }
 
-/* === CARDS === */
+/* === CARDS / DESCRIÇÃO === */
 .card-desc {
   background: #1b1b1b;
   border-radius: 15px;
@@ -194,28 +194,30 @@
   color: #ff0101;
 }
 
-/* === TABELA ELIMINATORIAS === */
+/* === TABELA ELIMINATÓRIAS === */
 .tabela-eliminatorias-box {
   background: #1b1b1b;
   border-radius: 15px;
-  padding: 20px;
-  box-shadow: inset 0 0 8px rgba(255,1,1,0.15), 0 0 10px rgba(255,1,1,0.2);
+  padding: 25px;
+  box-shadow: inset 0 0 10px rgba(255,1,1,0.15), 0 0 12px rgba(255,1,1,0.25);
   color: #f0f0f0;
+  overflow-x: auto;
 }
 
 .tabela-eliminatorias-box h2 {
-  margin-bottom: 12px;
-  font-size: 1.3rem;
+  margin-bottom: 16px;
+  font-size: 1.4rem;
 }
 
 .tabela-eliminatorias {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0 6px;
 }
 
 .tabela-eliminatorias th,
 .tabela-eliminatorias td {
-  padding: 10px;
+  padding: 12px 15px;
   text-align: left;
   border-bottom: 1px solid #333;
 }
@@ -227,8 +229,147 @@
   border-radius: 8px 8px 0 0;
 }
 
-.tabela-eliminatorias tr:hover td {
+.tabela-eliminatorias tr {
+  background: #101010;
+  transition: all 0.2s ease;
+}
+
+.tabela-eliminatorias tr:hover {
   background: #181818;
+}
+
+.tabela-eliminatorias td {
+  color: #dcdcdc;
+}
+
+.tabela-eliminatorias td:first-child {
+  font-weight: 600;
+  width: 70px;
+}
+
+.tabela-eliminatorias td:nth-child(2) {
+  flex: 1;
+}
+
+.tabela-eliminatorias td:nth-child(3) {
+  font-weight: bold;
+  color: #ff0101;
+  width: 80px;
+}
+
+/* === PARTIDAS DE GRUPOS (ESTILO CHAVEAMENTO) === */
+.partidas-box,
+.partidas-grupos-box {
+  background: #1b1b1b;
+  border-radius: 15px;
+  padding: 20px;
+  color: #f0f0f0;
+  box-shadow: inset 0 0 8px rgba(255,1,1,0.15), 0 0 10px rgba(255,1,1,0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.grupo-select-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.grupo-select-box label {
+  font-weight: 600;
+  color: #ccc;
+}
+
+.grupo-select-box select {
+  padding: 6px 12px;
+  border-radius: 10px;
+  border: 1px solid #333;
+  background: #0e0e0e;
+  color: #fff;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.grupo-select-box select:focus {
+  border: 1px solid #ff0101;
+}
+
+.grupos-partidas-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.grupo-partidas {
+  flex: 1;
+  min-width: 150px;
+  margin-top: 10px;
+}
+
+.grupo-partidas h3 {
+  margin-bottom: 8px;
+  font-size: 1.1rem;
+}
+
+.semana-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.semana-box h4 {
+  font-weight: 600;
+  color: #ccc;
+  margin: 0;
+}
+
+.partida-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #101010;
+  padding: 6px 8px;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  transition: all 0.2s ease;
+}
+
+.partida-item:hover {
+  background: #181818;
+}
+
+.partida-item span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.partida-item img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.partida-item .nome-time {
+  flex: 1;
+  font-weight: 500;
+  color: #fff;
+}
+
+.partida-item .pontos-time {
+  font-weight: bold;
+  color: #ff0101;
+}
+
+.partida-item .vs {
+  width: 30px;
+  text-align: center;
+  font-weight: bold;
+  color: #ccc;
 }
 
 /* === MODAL DE EDIÇÃO === */
@@ -337,6 +478,45 @@
   transform: translateY(-2px);
 }
 
+/* === ABA SELECTOR === */
+.aba-selector {
+  display: flex;
+  gap: 25px;
+  border-bottom: 2px solid #333;
+  margin-bottom: 25px;
+}
+
+.aba-btn {
+  background: none;
+  border: none;
+  color: #ccc;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 10px 0;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.aba-btn:hover {
+  color: #fff;
+}
+
+.aba-btn.ativo {
+  color: #fff;
+}
+
+.aba-btn.ativo::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #ff0101, #a00000);
+  border-radius: 2px;
+}
+
 /* === RESPONSIVIDADE === */
 @media (max-width: 768px) {
   .header-box {
@@ -359,17 +539,34 @@
     padding: 20px;
   }
 
-  .grupos-container {
+  .grupos-container,
+  .grupos-partidas-container {
     flex-direction: column;
     gap: 20px;
   }
 
-  .grupo {
+  .grupo,
+  .grupo-partidas {
     min-width: 100%;
   }
 
   .tabela-eliminatorias th,
   .tabela-eliminatorias td {
-    padding: 8px;
+    padding: 10px;
+  }
+
+  .partida-item {
+    flex-direction: column;
+    gap: 6px;
+    text-align: center;
+  }
+
+  .partida-item .time {
+    justify-content: center;
+  }
+
+  .partida-item .placar,
+  .partida-item .vs {
+    width: auto;
   }
 }
