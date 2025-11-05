@@ -226,7 +226,7 @@ function Profile() {
         {!isAmigo && (
           <div className="profile-actions">
             <button className="btn add-friend" onClick={handleAddFriend}>
-              🤝 Adicionar Amizade
+              📨 Adicionar Amizade
             </button>
             {friendRequestStatus && (
               <p className="friend-request-status">{friendRequestStatus}</p>

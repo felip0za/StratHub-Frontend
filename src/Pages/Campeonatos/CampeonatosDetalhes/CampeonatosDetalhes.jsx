@@ -10,15 +10,16 @@ function CampeonatosDetalhes() {
   const { id } = useParams();
   const navigate = useNavigate();
   const api = useApi();
-  const { usuario } = useAuth();
+  const { user, token } = useAuth();
 
   const [campeonato, setCampeonato] = useState(null);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState("");
   const [mostrarModal, setMostrarModal] = useState(false);
+  const [mensagemModal, setMensagemModal] = useState("");
 
   useEffect(() => {
-    console.log("Usuário logado:", usuario);
+    console.log("Usuário logado:", user);
 
     const fetchCampeonato = async () => {
       try {
@@ -33,20 +34,55 @@ function CampeonatosDetalhes() {
     };
 
     fetchCampeonato();
-  }, [api, id, usuario]);
+  }, [api, id]);
 
-  // ✅ Verifica se o usuário tem time
-  const handleParticipar = () => {
-    // ✅ Modal aparece apenas se idTime for null
-    if (usuario?.idTime === null) {
+  // ✅ Método para inscrição no campeonato
+  const handleParticipar = async () => {
+    try {
+      if (!user?.idTime) {
+        setMensagemModal("⚠️ Você não pertence nem possui um time.");
+        setMostrarModal(true);
+        return;
+      }
+
+      // Verifica se o usuário é o dono do time
+      const responseTime = await api.get(`/times/${user.idTime}`);
+      const time = responseTime.data;
+
+      // Corrigido: suporta diferentes formatos de retorno do backend
+      const idCriadorTime = time.criador?.id || time.criador?.idUsuario || time.idCriador;
+
+      if (idCriadorTime !== user.id) {
+        setMensagemModal("❌ Apenas o dono do time pode inscrever o time no campeonato.");
+        setMostrarModal(true);
+        return;
+      }
+
+      // Faz a inscrição
+      const response = await api.post(
+        "/inscricoes/inscrever",
+        {
+          idTime: user.idTime,
+          idCampeonato: parseInt(id),
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      setMensagemModal("✅ Time inscrito com sucesso!");
       setMostrarModal(true);
-      return;
+    } catch (err) {
+      console.error("Erro ao inscrever time:", err);
+      if (err.response?.status === 400) {
+        setMensagemModal("⚠️ Este time já está inscrito neste campeonato.");
+      } else {
+        setMensagemModal("❌ Ocorreu um erro ao tentar inscrever o time.");
+      }
+      setMostrarModal(true);
     }
-
-    console.log("✅ Usuário possui time — seguir para inscrição...");
-    // Exemplo de redirecionamento para inscrição:
-    // navigate(`/inscricao/${id}`);
   };
+
 
   const fecharModal = () => setMostrarModal(false);
 
@@ -196,8 +232,8 @@ function CampeonatosDetalhes() {
       {mostrarModal && (
         <div className="modal-overlay" onClick={fecharModal}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-            <h2>⚠️ Atenção</h2>
-            <p>Você não pertence nem possui um time.</p>
+            <h2>⚠️ Aviso</h2>
+            <p>{mensagemModal}</p>
             <button className="btn-fechar" onClick={fecharModal}>
               Fechar
             </button>

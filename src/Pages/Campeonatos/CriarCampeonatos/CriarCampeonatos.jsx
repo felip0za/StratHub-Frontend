@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './CriarCampeonatos.css';
 import Navbar from '../../../Components/Navbar/Navbar';
 import { useNavigate } from 'react-router-dom';
@@ -16,7 +16,7 @@ const CriarCampeonatos = () => {
   const [imagemBase64, setImagemBase64] = useState('');
   const [previewImagem, setPreviewImagem] = useState('');
   const [plataforma, setPlataforma] = useState('PC');
-  const [consoleTipo, setConsoleTipo] = useState('');
+  const [consoleTipo, setConsoleTipo] = useState('AMBOS'); // Valor padrão
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -59,6 +59,13 @@ const CriarCampeonatos = () => {
       return;
     }
 
+    // Validação para console
+    if (plataforma === 'CONSOLE' && !consoleTipo) {
+      setError('❌ Selecione o tipo de console.');
+      setLoading(false);
+      return;
+    }
+
     const totalPremiacao = Number(valorPremiacao) || 0;
 
     const novoCampeonato = {
@@ -74,7 +81,7 @@ const CriarCampeonatos = () => {
       dataFim: null,
       idCriador: userId,
       plataforma,
-      console: plataforma === 'CONSOLE' ? consoleTipo : null
+      console: plataforma === 'CONSOLE' ? consoleTipo : null // null quando PC
     };
 
     if (tipo === 'PAGO') {
@@ -105,8 +112,7 @@ const CriarCampeonatos = () => {
 
   const handleVoltar = () => navigate(-1);
 
-  // Atualiza automaticamente o número máximo de equipes se formato for eliminatórias
-  React.useEffect(() => {
+  useEffect(() => {
     if (formatoCampeonato === 'TABELA_ELIMINATORIAS') {
       setMaxEquipes(10);
     }
@@ -193,7 +199,7 @@ const CriarCampeonatos = () => {
               className="campeonatos-create-select"
             >
               <option value="FASE_DE_GRUPOS_E_ELIMINATORIAS">Fase de Grupos e Eliminatórias</option>
-              <option value="TABELA_ELIMINATORIAS">Tabela Eliminatórias</option>
+              <option value="TABELA_ELIMINATORIAS">Tabela e Eliminatórias</option>
             </select>
           </div>
 
