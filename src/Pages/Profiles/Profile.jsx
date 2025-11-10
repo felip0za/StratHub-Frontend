@@ -6,6 +6,7 @@ import { mdiUbisoft } from '@mdi/js';
 import { useParams } from 'react-router-dom';
 import { useApi } from '../../Services/API';
 import LoadingScreen from '../../Components/LoadingScreen/LoadingScreen';
+import { FaWindows, FaXbox, FaPlaystation } from "react-icons/fa"; // ✅ Import dos ícones
 
 // Imagens dos ranks
 import ferro from '../../assets/ferro.png';
@@ -16,10 +17,6 @@ import platina from '../../assets/platina.png';
 import master from '../../assets/master.png';
 import challenger from '../../assets/challenger.png';
 import noRank from '../../assets/noRank.png';
-
-// Ranks de usuário (R6)
-import COBREII from '../../assets/ranks/cobre/COBREII.png';
-import COBREIII from '../../assets/ranks/cobre/COBREIII.png';
 
 function Profile() {
   const { id } = useParams();
@@ -115,22 +112,9 @@ function Profile() {
     CHALLENGER: challenger,
   };
 
-  const rankUsuarioToImage = {
-    COBREII: COBREII,
-    COBREIII: COBREIII,
-  };
-
   const imagemRankTime = time?.rank
     ? rankToImage[time.rank.toUpperCase()] || noRank
     : noRank;
-
-  const rankUsuarioKey = usuario.rank
-    ? usuario.rank.replace(/\s+/g, '').toUpperCase()
-    : '';
-  const imagemRankUsuario =
-    rankUsuarioKey && rankUsuarioToImage[rankUsuarioKey]
-      ? rankUsuarioToImage[rankUsuarioKey]
-      : noRank;
 
   return (
     <>
@@ -159,6 +143,31 @@ function Profile() {
               </span>
             </p>
 
+            {/* Plataforma com ícone */}
+            <p className="profile-email">
+              <strong className="ubisoft-text">Plataforma:</strong>{" "}
+              {usuario.plataforma ? (
+                <span className="ubi-connect-valor">
+                  {usuario.plataforma.toUpperCase() === "PC" && (
+                    <>
+                      <FaWindows className="platform-icon pc" /> PC
+                    </>
+                  )}
+                  {usuario.plataforma.toUpperCase() === "XBOX" && (
+                    <>
+                      <FaXbox className="platform-icon xbox" /> Xbox
+                    </>
+                  )}
+                  {usuario.plataforma.toUpperCase() === "PLAYSTATION" && (
+                    <>
+                      <FaPlaystation className="platform-icon ps" /> PlayStation
+                    </>
+                  )}
+                </span>
+              ) : (
+                <span className="ubi-connect-valor">Não informado</span>
+              )}
+            </p>
           </div>
         </div>
 
@@ -201,6 +210,31 @@ function Profile() {
                 ))
               ) : (
                 <p className="no-titles">Nenhum título conquistado.</p>
+              )}
+            </div>
+          </div>
+
+          {/* Campeonatos Participados */}
+          <div className="titles-card">
+            <h3 className="titles-header">Campeonatos Participados:</h3>
+            <div className="titles-list">
+              {usuario.campeonatos && usuario.campeonatos.length > 0 ? (
+                usuario.campeonatos.map((campeonato, index) => (
+                  <div key={index} className="title-item">
+                    <img
+                      className="champ-image"
+                      src={
+                        campeonato.imagem
+                          ? `data:image/png;base64,${campeonato.imagem}`
+                          : '/default-campeonato.png'
+                      }
+                      alt={campeonato.nome || 'Campeonato'}
+                    />
+                    <p className="title-name">{campeonato.nome}</p>
+                  </div>
+                ))
+              ) : (
+                <p className="no-titles">Nenhum campeonato participado.</p>
               )}
             </div>
           </div>

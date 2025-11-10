@@ -26,7 +26,7 @@ const Login = () => {
 
       if (dados.token && dados.id) {
         login(dados);
-        navigate("/home");
+        navigate("/usuario/" + dados.id);
       } else {
         setError("Erro inesperado. Tente novamente.");
       }

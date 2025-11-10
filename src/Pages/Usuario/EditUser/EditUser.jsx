@@ -93,14 +93,6 @@ function EditUser() {
     }
   };
 
-  const handleSair = () => {
-    logout();
-    navigate("/login");
-  };
-
-  if (loading) return <p>Carregando...</p>;
-  if (error) return <p>{error}</p>;
-
   return (
     <>
       <Navbar />
@@ -141,13 +133,6 @@ function EditUser() {
             <div className="buttons">
               <button type="submit" className="update-button">
                 Salvar
-              </button>
-              <button
-                type="button"
-                onClick={handleSair}
-                className="cancel-button"
-              >
-                Sair
               </button>
             </div>
           </div>

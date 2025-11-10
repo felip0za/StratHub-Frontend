@@ -6,6 +6,7 @@ import { useApi } from '../../../Services/API';
 import Icon from '@mdi/react';
 import { mdiUbisoft } from '@mdi/js';
 import LoadingScreen from '../../../Components/LoadingScreen/LoadingScreen';
+import { FaWindows, FaXbox, FaPlaystation } from "react-icons/fa";
 
 // Imagens dos ranks do time
 import ferro from '../../../assets/ferro.png';
@@ -17,11 +18,8 @@ import challenger from '../../../assets/challenger.png';
 import master from '../../../assets/master.png';
 import noRank from '../../../assets/noRank.png';
 
-// Imagens dos ranks do usuário (R6)
-import COBREII from '../../../assets/ranks/cobre/COBREII.png';
-import COBREIII from '../../../assets/ranks/cobre/COBREIII.png';
-// Adicione outros ranks conforme necessidade
-// import bronze1 from '...'; import bronze2 from '...'; etc.
+//imagem default
+import avatardefault from '/src/assets/avatar-default.png';
 
 function User() {
   const { id } = useParams();
@@ -77,6 +75,11 @@ function User() {
     fetchUsuario();
   }, [id, api]);
 
+  const handleSair = () => {
+    logout();
+    navigate("/login");
+  };
+
   const handleEdit = () => {
     navigate(`/editar-usuario/${id}`);
   };
@@ -96,7 +99,7 @@ function User() {
         ? usuario.imagemUsuario 
         : `data:image/png;base64,${usuario.imagemUsuario}`
       )
-    : '/default-user.png';
+    : avatardefault;
 
   // Mapeamento de ranks do time
   const rankToImage = { 
@@ -114,20 +117,6 @@ function User() {
     : noRank;
   const nomeRankTime = time?.rank || 'Sem rank';
 
-  // Mapeamento de ranks do usuário (R6)
-  const rankUsuarioToImage = {
-    'COBREII': COBREII,
-    'COBREIII': COBREIII,
-    // Adicione outros ranks aqui
-  };
-
-  // Remove espaços e deixa maiúsculas para casar com o mapa
-  const rankUsuarioKey = usuario.rank ? usuario.rank.replace(/\s+/g, '').toUpperCase() : '';
-  const imagemRankUsuario = rankUsuarioKey && rankUsuarioToImage[rankUsuarioKey]
-    ? rankUsuarioToImage[rankUsuarioKey]
-    : noRank;
-  const nomeRankUsuario = usuario.rank || 'Sem rank';
-
   return (
     <>
       <Navbar />
@@ -143,7 +132,30 @@ function User() {
             <p className="profile-email">
               <strong className="ubisoft-text"><Icon path={mdiUbisoft} size={1} className="ubisoft-icon" /> UbiConnect:</strong><span className="ubi-connect-valor">{usuario.ubiConnect || 'Não informado'}</span>
             </p>
-
+            <p className="profile-email">
+              <strong className="ubisoft-text">Plataforma:</strong>{" "}
+              {usuario.plataforma ? (
+                <span className="ubi-connect-valor">
+                  {usuario.plataforma.toUpperCase() === "PC" && (
+                    <>
+                      <FaWindows className="platform-icon pc" /> PC
+                    </>
+                  )}
+                  {usuario.plataforma.toUpperCase() === "XBOX" && (
+                    <>
+                      <FaXbox className="platform-icon xbox" /> Xbox
+                    </>
+                  )}
+                  {usuario.plataforma.toUpperCase() === "PLAYSTATION" && (
+                    <>
+                      <FaPlaystation className="platform-icon ps" /> PlayStation
+                    </>
+                  )}
+                </span>
+              ) : (
+                <span className="ubi-connect-valor">Não informado</span>
+              )}
+            </p>
           </div>
         </div>
 
@@ -177,11 +189,41 @@ function User() {
               )}
             </div>
           </div>
+
+          {/* Campeonatos Participados */}
+          <div className="titles-card">
+            <h3 className="titles-header">Campeonatos Participados:</h3>
+            <div className="titles-list">
+              {usuario.campeonatos && usuario.campeonatos.length > 0 ? (
+                usuario.campeonatos.map((campeonato, index) => (
+                  <div key={index} className="title-item">
+                    <img
+                      className="champ-image"
+                      src={titulo.imagem 
+                        ? `data:image/png;base64,${titulo.imagem}` 
+                        : '/default-campeonato.png'}
+                      alt={titulo.nome || 'Campeonato'}
+                    />
+                    <p className="title-name">{titulo.nome}</p>
+                  </div>
+                ))
+              ) : (
+                <p className="no-titles">Nenhum título conquistado.</p>
+              )}
+            </div>
+          </div>
         </div>
 
         <div className="profile-actions">
           <button className="btn edit" onClick={handleEdit}>✏️ Editar Perfil</button>
         </div>
+        <button
+                type="button"
+                onClick={handleSair}
+                className="btn edit"
+              >
+                Sair
+              </button>
       </div>
     </>
   );

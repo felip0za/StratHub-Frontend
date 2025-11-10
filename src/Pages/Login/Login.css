@@ -1,21 +1,6 @@
 @import url('https://fonts.cdnfonts.com/css/akira-expanded');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
 
-:root {
-  --red: #ff0000;
-  --dark: #0a0a0a;
-  --gray: #c7c7c7;
-  --transition: 0.3s ease;
-}
-
-body, html {
-  margin: 0;
-  padding: 0;
-  background-color: var(--dark);
-  font-family: 'Inter', sans-serif;
-  height: 100%;
-}
-
 /* ===== CONTAINER PRINCIPAL ===== */
 .login-page {
   height: 100vh;

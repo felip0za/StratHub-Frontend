@@ -30,14 +30,12 @@ function Navbar() {
         const { data } = await api.get(`/usuario/${userId}`);
         setUsuario(data);
 
-        // Busca o time, se houver
         const idTime = data.idTime || data.id_time;
         if (idTime) {
           const res = await api.get(`/times/${idTime}`);
           setTimeInfo(res.data);
         }
 
-        // Redirecionar para time ou criação se estiver na raiz "/"
         if (location.pathname === "/") {
           navigate(idTime ? `/times/${idTime}` : "/criartime");
         }
@@ -52,7 +50,6 @@ function Navbar() {
     carregarUsuario();
   }, [userId, api, location.pathname, navigate]);
 
-  // Enquanto carrega, mostra header mínimo
   if (loading) {
     return (
       <header>
@@ -69,7 +66,6 @@ function Navbar() {
     );
   }
 
-  // Usuário não autenticado
   if (!usuario) {
     return (
       <header>
@@ -91,7 +87,6 @@ function Navbar() {
     );
   }
 
-  // Usuário autenticado
   const imagemPerfil = usuario.imagemUsuario || "/default-avatar.png";
   const nomeUsuario = usuario.nome || "Usuário";
   const idTime = usuario.idTime || usuario.id_time;
@@ -106,18 +101,19 @@ function Navbar() {
           onClick={() => navigate("/")}
         />
 
-        <span className="nav-link" onClick={() => navigate("/home")}>Salas</span>
-        <span className="nav-link" onClick={() => navigate("/campeonatos")}>Campeonatos</span>
-        <span className="nav-link" onClick={() => navigate("/eliteCup")}>ELITE CUP</span>
-        <span className="nav-link" onClick={() => navigate("/home")}>Comunidades</span>
-
+        {/* Apenas os itens desejados */}
+        <span className="nav-link" onClick={() => navigate("/campeonatos")}>
+          Campeonatos
+        </span>
+        <span className="nav-link" onClick={() => navigate("/eliteCup")}>
+          ELITE CUP
+        </span>
         <span
           className="nav-link"
           onClick={() => navigate(idTime ? `/times/${idTime}` : "/criartime")}
         >
           Time
         </span>
-
         <span className="nav-link-friends" onClick={() => navigate("/amigos")}>
           <FontAwesomeIcon icon={faUserGroup} className="friends-icon" />
         </span>

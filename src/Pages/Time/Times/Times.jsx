@@ -359,10 +359,6 @@ function Times() {
                       <span className="ubisoft-valor">{member.ubiConnect || 'Não informado'}</span>
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0px' }}>
-                      <span className="ubisoft-label">K/D:</span>
-                      <span className="ubisoft-valor">{member.kd !== undefined ? member.kd.toFixed(2) : "N/A"}</span>
-                    </div>
                   </div>
 
                   {/* === LINKS SOCIAIS DOS MEMBROS === */}
