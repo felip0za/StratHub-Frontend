@@ -144,10 +144,6 @@ function User() {
               <strong className="ubisoft-text"><Icon path={mdiUbisoft} size={1} className="ubisoft-icon" /> UbiConnect:</strong><span className="ubi-connect-valor">{usuario.ubiConnect || 'Não informado'}</span>
             </p>
 
-            <p className="profile-kd">
-              <strong>K/D:</strong>{' '}
-              <span>{usuario.kd !== undefined && usuario.kd !== null ? usuario.kd.toFixed(2) : 'Não disponível'}</span>
-            </p>
           </div>
         </div>
 
@@ -157,13 +153,6 @@ function User() {
             <h3 className="rank-title">Rank do time:</h3>
             <img className="rank-image" src={imagemRankTime} alt="Rank do time" />
             <p className="rank-name">{nomeRankTime}</p>
-          </div>
-
-          {/* Rank do usuário */}
-          <div className="rank-usuario-card">
-            <h3 className="rank-title">Rank do usuário:</h3>
-            <img className="rank-usuario-image" src={imagemRankUsuario} alt={nomeRankUsuario} />
-            <p className="rank-usuario-name">{nomeRankUsuario}</p>
           </div>
 
           {/* Títulos */}

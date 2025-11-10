@@ -1,100 +1,178 @@
 @import url('https://fonts.cdnfonts.com/css/akira-expanded');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
 
+:root {
+  --red: #ff0000;
+  --dark: #0a0a0a;
+  --gray: #c7c7c7;
+  --transition: 0.3s ease;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  background-color: var(--dark);
+  font-family: 'Inter', sans-serif;
+  height: 100%;
+}
+
+/* ===== CONTAINER PRINCIPAL ===== */
 .login-page {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  background: linear-gradient(120deg, #0a0a0a, #1a0000, #0a0a0a);
+  background-size: 300% 300%;
+  animation: moveBg 10s ease infinite;
+}
+
+@keyframes moveBg {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.background-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(255,0,0,0.15), transparent 70%);
+  animation: pulse 6s ease-in-out infinite alternate;
+}
+
+@keyframes pulse {
+  from { opacity: 0.3; }
+  to { opacity: 0.7; }
+}
+
+/* ===== CARD DE LOGIN ===== */
+.login-card {
+  position: relative;
+  z-index: 2;
+  background: rgba(20, 20, 20, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  padding: 50px;
+  width: 380px;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(255, 0, 0, 0.1);
+  transition: transform var(--transition);
+}
+
+.login-card:hover {
+  transform: translateY(-5px);
+}
+
+/* ===== LOGO ===== */
+.login-logo {
+  width: 120px;
+  margin-bottom: 20px;
+}
+
+/* ===== TEXTOS ===== */
+h2 {
+  color: white;
+  font-family: 'Akira Expanded', sans-serif;
+  letter-spacing: 1px;
+}
+
+.subtitle {
+  color: var(--gray);
+  margin-bottom: 30px;
+  font-size: 0.95rem;
+}
+
+.error {
+  color: #ff4c4c;
+  background: rgba(255,0,0,0.1);
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+/* ===== FORM ===== */
+.input-group {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  padding: 20px;
-}
-
-.login-logo {
-  width: 180px;
-  margin-bottom: 30px;
-}
-
-/* Form container */
-.login-container {
-  background-color: #ffffff;
-  color: #000;
-  padding: 35px 30px;
-  border-radius: 12px;
-  width: 100%;
-  max-width: 400px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-}
-
-.login-container h2 {
+  text-align: left;
   margin-bottom: 20px;
-  text-align: center;
-  font-size: 1.5rem;
 }
 
-/* Input styles */
-.login-container label {
+.input-group label {
+  color: var(--gray);
+  font-size: 0.9rem;
   margin-bottom: 5px;
-  display: block;
-  font-weight: bold;
 }
 
-.login-container input {
+.input-group input {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white;
+  padding: 12px 15px;
+  border-radius: 10px;
+  transition: var(--transition);
+}
+
+.input-group input:focus {
+  border-color: var(--red);
+  box-shadow: 0 0 10px rgba(255,0,0,0.4);
+  outline: none;
+}
+
+/* ===== BOTÕES ===== */
+.login-btn, .signup-btn {
   width: 100%;
   padding: 12px;
-  margin-bottom: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 14px;
-}
-
-/* Login button */
-.login-container button[type="submit"] {
-  width: 100%;
-  padding: 14px;
-  background-color: #e50914;
-  color: #fff;
   border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: bold;
+  border-radius: 10px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: var(--transition);
+  font-size: 1rem;
 }
 
-.login-container button[type="submit"]:hover {
-  background-color: #b00610;
+.login-btn {
+  background: var(--red);
+  color: white;
+  margin-top: 10px;
 }
 
-/* Divider */
-.login-container .divider {
+.login-btn:hover {
+  background: #b80000;
+}
+
+.signup-btn {
+  background: transparent;
+  border: 1px solid var(--red);
+  color: var(--red);
+}
+
+.signup-btn:hover {
+  background: var(--red);
+  color: white;
+}
+
+.divider {
   margin: 20px 0;
-  text-align: center;
-  font-size: 14px;
-  color: #555;
+  color: var(--gray);
+  font-size: 0.85rem;
 }
 
-/* Cadastre-se button */
-.button-sign-in {
-  width: 100%;
-  padding: 12px;
-  background-color: #222;
-  color: #fff;
-  border: 2px solid #e50914;
-  border-radius: 8px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 480px) {
+  .login-card {
+    width: 90%;
+    padding: 35px;
+  }
 
-.button-sign-in:hover {
-  background-color: #e50914;
-  color: #fff;
-}
+  .login-logo {
+    width: 100px;
+  }
 
-/* Exemplo simples para melhorar feedback de erro */
-.error-message {
-  color: red;
-  margin-bottom: 10px;
-  font-weight: bold;
+  h2 {
+    font-size: 1.4rem;
+  }
 }
-

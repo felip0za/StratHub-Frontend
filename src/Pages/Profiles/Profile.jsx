@@ -159,12 +159,6 @@ function Profile() {
               </span>
             </p>
 
-            <p className="profile-kd">
-              <strong>K/D:</strong>{' '}
-              {usuario.kd !== undefined && usuario.kd !== null
-                ? usuario.kd.toFixed(2)
-                : 'N/A'}
-            </p>
           </div>
         </div>
 
@@ -184,16 +178,6 @@ function Profile() {
                 <strong>Tag do time:</strong> {time.tag}
               </p>
             )}
-          </div>
-          {/* Rank do usuário */}
-          <div className="rank-usuario-card">
-            <h3 className="rank-title">Rank do usuário:</h3>
-            <img
-              className="rank-usuario-image"
-              src={imagemRankUsuario}
-              alt="Rank do usuário"
-            />
-            <p className="rank-usuario-name">{usuario.rank || 'Sem rank'}</p>
           </div>
 
           {/* Títulos */}

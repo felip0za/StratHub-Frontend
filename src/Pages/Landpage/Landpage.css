@@ -1,75 +1,199 @@
 @import url('https://fonts.cdnfonts.com/css/akira-expanded');
-/* Contêiner principal da apresentação */
-.presentation-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center; /* Centraliza verticalmente */
-    align-items: center; /* Alinha ao centro horizontalmente */
-    height: 100vh; /* Altura total da tela */
-    background-color: #141414; /* Cor de fundo escura */
-    padding: 20px; /* Adiciona um espaçamento interno */
-    color: white; /* Cor do texto */
-    font-family: 'Arial', sans-serif; /* Fonte padrão */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+:root {
+  --red: #ff0000;
+  --dark: #0a0a0a;
+  --gray: #c7c7c7;
+  --transition: 0.3s ease;
 }
 
-/* Estilo do título */
-.presentation-container h2 {
-    font-family: 'Akira Expanded', sans-serif;
-    font-size: 2.5rem; /* Tamanho maior para o título */
-    font-weight: 600; /* Peso da fonte */
-    text-align: center; /* Centraliza o texto */
-    margin-bottom: 20px; /* Espaçamento abaixo do título */
-    letter-spacing: 1px; /* Aumenta o espaçamento entre as letras */
-    color: #ffffff; /* Cor branca */
+/* Reset e base */
+body, html {
+  margin: 0;
+  padding: 0;
+  background-color: var(--dark);
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
 }
 
-.presentation-container p{
-    font-family: 'Akira Expanded', sans-serif;
-    font-size: 1 rem;
-    margin-bottom: 20px;
-
+/* ===== CONTAINER PRINCIPAL ===== */
+.landing {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: white;
+  background: linear-gradient(120deg, #080808, #1a0000, #141414);
+  background-size: 300% 300%;
+  animation: gradientMove 10s ease infinite;
+  overflow: hidden;
 }
 
-/* Estilo do botão */
-.presentation-container button {
-    font-family: 'Akira Expanded', sans-serif;
-    padding: 15px 30px; /* Aumenta o tamanho do botão */
-    font-size: 18px; /* Tamanho da fonte do botão */
-    cursor: pointer; /* Cursor de ponteiro ao passar sobre o botão */
-    background-color: #e60000; /* Cor de fundo vermelha */
-    color: white; /* Cor do texto do botão */
-    border: none; /* Sem borda */
-    border-radius: 50px; /* Bordas arredondadas mais acentuadas */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Sombra sutil para profundidade */
-    transition: all 0.3s ease; /* Transição suave */
-    outline: none; /* Remove o contorno padrão do botão */
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
-/* Efeito hover do botão */
-.presentation-container button:hover {
-    background-color: #700202; /* Cor de fundo mais escura */
-    transform: translateY(-2px); /* Leve movimento de elevação */
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Sombra mais forte */
+/* ===== EFEITO SUAVE DE LUZ ===== */
+.landing-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, rgba(255, 0, 0, 0.1), transparent 70%);
+  animation: pulse 6s ease-in-out infinite alternate;
+  z-index: 0;
 }
 
-/* Efeito ao focar o botão */
-.presentation-container button:focus {
-    outline: none; /* Remove o contorno */
-    box-shadow: 0 0 5px 2px rgba(255, 0, 0, 0.5); /* Adiciona uma borda sutil */
+@keyframes pulse {
+  from { opacity: 0.3; }
+  to { opacity: 0.7; }
 }
 
-/* Responsividade para telas pequenas (mobile) */
-@media (max-width: 600px) {
-    .presentation-container {
-        padding: 15px; /* Menos espaço nas laterais */
-    }
+/* ===== NAVBAR ===== */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px 60px;
+  position: relative;
+  z-index: 2;
+}
 
-    .presentation-container h2 {
-        font-size: 2rem; /* Reduz o tamanho da fonte do título */
-    }
+.logo {
+  width: 120px;
+  height: auto;
+  object-fit: contain;
+  cursor: pointer;
+  transition: transform var(--transition);
+}
 
-    .presentation-container button {
-        font-size: 16px; /* Reduz o tamanho da fonte do botão */
-        padding: 12px 25px; /* Ajusta o tamanho do botão */
-    }
+.logo:hover {
+  transform: scale(1.05);
+}
+
+.nav-btn {
+  background: transparent;
+  border: 2px solid var(--red);
+  color: var(--red);
+  font-weight: bold;
+  padding: 10px 25px;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.nav-btn:hover {
+  background: var(--red);
+  color: white;
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+}
+
+/* ===== HERO SECTION ===== */
+.hero {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Centraliza verticalmente */
+  align-items: center;
+  text-align: center;
+  z-index: 2;
+  padding: 0 20px;
+  margin-top: -60px; /* Corrige o espaçamento vertical */
+}
+
+.hero-title {
+  font-family: 'Akira Expanded', sans-serif;
+  font-size: 3.5rem;
+  color: white;
+  text-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
+  animation: fadeInDown 1s ease;
+}
+
+.hero-title span {
+  color: var(--red);
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  color: var(--gray);
+  margin-top: 15px;
+  animation: fadeInUp 1.3s ease;
+  max-width: 600px;
+}
+
+/* ===== BOTÃO PRINCIPAL ===== */
+.cta-btn {
+  margin-top: 40px;
+  padding: 15px 40px;
+  font-size: 18px;
+  border: none;
+  border-radius: 50px;
+  background: var(--red);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all var(--transition);
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
+  animation: fadeIn 1.6s ease;
+}
+
+.cta-btn:hover {
+  background: #b80000;
+  transform: translateY(-3px);
+  box-shadow: 0 0 30px rgba(255, 0, 0, 0.6);
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 0.9rem;
+  color: #777;
+  background: rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 2;
+}
+
+/* ===== ANIMAÇÕES ===== */
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 20px 30px;
+  }
+
+  .logo {
+    width: 100px;
+  }
+
+  .hero-title {
+    font-size: 2.5rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .cta-btn {
+    font-size: 16px;
+    padding: 12px 25px;
+  }
 }
