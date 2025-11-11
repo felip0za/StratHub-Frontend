@@ -132,6 +132,7 @@ const InfoEditCampeonatos = () => {
   const [editImagem, setEditImagem] = useState('');
   const [previewImagem, setPreviewImagem] = useState('');
   const [saving, setSaving] = useState(false);
+  const [timesInscritos, setTimesInscritos] = useState([]);
 
   // === NOVO ESTADO PARA ALTERNAR ENTRE INFORMAÇÕES / PARTIDAS ===
   const [abaSelecionada, setAbaSelecionada] = useState('informacoes');
@@ -297,7 +298,7 @@ const InfoEditCampeonatos = () => {
 
               {/* DESCRIÇÃO */}
               <div className="card-desc">
-                <h2>Descrição</h2>
+                <h2>DESCRIÇÃO</h2>
                 <p>{campeonato.descricao || '-'}</p>
               </div>
 
