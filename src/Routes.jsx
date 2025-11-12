@@ -10,7 +10,8 @@ import Times from './Pages/Time/Times/Times';
 import CreateTime from './Pages/Time/CreateTime/CreateTime';
 import Invites from './Pages/Invites/Invites';
 import Partidas from './Pages/Partidas/Partidas';
-import Profile from './Pages/Profiles/Profile';
+import UserProfile from "./Pages/Profiles/UserProfile/UserProfile";
+import TimesProfile from "./Pages/Profiles/TimesProfile/TimesProfile";
 import FPL from './Pages/Lobbys/FPL/FPL';
 import EditUser from './Pages/Usuario/EditUser/EditUser';
 import EliteCup from './Pages/EliteCup/EliteCup';
@@ -107,9 +108,14 @@ function MainRoutes() {
           <Partidas />
         </PrivateRoute>
       } />
-      <Route path='/profile/:id' element={
+      <Route path='/userprofile/:id' element={
         <PrivateRoute>
-          <Profile />
+          <UserProfile />
+        </PrivateRoute>
+      } />
+      <Route path='/timesprofile/:id' element={
+        <PrivateRoute>
+          <TimesProfile />
         </PrivateRoute>
       } />
       <Route path='/fpl' element={

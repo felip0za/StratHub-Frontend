@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import './Profile.css';
-import Navbar from '../../Components/Navbar/Navbar';
+import './UserProfile.css';
+import Navbar from "../../../Components/Navbar/Navbar";
 import Icon from '@mdi/react';
 import { mdiUbisoft } from '@mdi/js';
 import { useParams } from 'react-router-dom';
-import { useApi } from '../../Services/API';
-import LoadingScreen from '../../Components/LoadingScreen/LoadingScreen';
+import { useApi } from '../../../Services/API';
+import LoadingScreen from '../../../Components/LoadingScreen/LoadingScreen';
 import { FaWindows, FaXbox, FaPlaystation } from "react-icons/fa"; // ✅ Import dos ícones
 
 // Imagens dos ranks
-import ferro from '../../assets/ferro.png';
-import bronze from '../../assets/bronze.png';
-import prata from '../../assets/prata.png';
-import ouro from '../../assets/ouro.png';
-import platina from '../../assets/platina.png';
-import master from '../../assets/master.png';
-import challenger from '../../assets/challenger.png';
-import noRank from '../../assets/noRank.png';
+import ferro from '../../../assets/ferro.png';
+import bronze from '../../../assets/bronze.png';
+import prata from '../../../assets/prata.png';
+import ouro from '../../../assets/ouro.png';
+import platina from '../../../assets/platina.png';
+import master from '../../../assets/master.png';
+import challenger from '../../../assets/challenger.png';
+import noRank from '../../../assets/noRank.png';
 
-function Profile() {
+function Usuarios() {
   const { id } = useParams();
   const api = useApi();
 
@@ -256,4 +256,4 @@ function Profile() {
   );
 }
 
-export default Profile;
+export default Usuarios;

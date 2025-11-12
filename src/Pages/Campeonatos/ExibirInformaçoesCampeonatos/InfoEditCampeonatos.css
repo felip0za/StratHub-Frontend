@@ -199,21 +199,117 @@
   color: #fff;
 }
 
+/* ==== ESTILOS UNIFICADOS PARA TIMES E CHAVEAMENTO ==== */
+
+/* Container de cada grupo (A, B, C, D) */
+.grupo-times {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Cada linha (posição + caixa do time) */
+.time-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Número da posição (1°, 2°, 3°, etc.) */
+.posicao-label {
+  font-weight: bold;
+  font-size: 1rem;
+  min-width: 30px;
+  text-align: center;
+}
+
+/* Caixa do time (com hover e bordas arredondadas) */
+.time-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #1a1a1d;
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 10px 15px;
+  transition: 0.3s;
+  flex: 1;
+}
+
+.time-box:hover {
+  background: #2a2a2a;
+  transform: translateY(-2px);
+}
+
+/* Logo do time */
+.time-logo {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Área de informações do time (nome + pontos) */
+.time-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+  margin-left: 10px;
+}
+
+/* Nome do time */
+.time-nome {
+  font-weight: 600;
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Pontuação do time */
+.time-pontos {
+  color: #ccc;
+  font-weight: bold;
+  font-family: 'Poppins', sans-serif;
+  min-width: 40px;
+  text-align: right;
+}
+
+/* ==== COMPATIBILIDADE: ELEMENTOS ANTIGOS (AINDA USADOS EM OUTROS COMPONENTES) ==== */
+
 .time-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
   background: #1a1a1d;
-  padding: 8px 10px;
-  border-radius: 8px;
-  margin-bottom: 8px;
+  padding: 8px 12px;
+  gap: 10px;
 }
 
-.time-item img {
-  width: 35px;
-  height: 35px;
+.logo-time {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.logo-time .logo {
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
-  margin-right: 10px;
+  object-fit: cover;
+}
+
+.nome-time {
+  font-weight: 500;
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+}
+
+.pontos-time {
+  font-weight: bold;
+  font-family: 'Poppins', sans-serif;
+  min-width: 40px;
+  text-align: right;
 }
 
 /* ======== TABELA ELIMINATÓRIAS ======== */

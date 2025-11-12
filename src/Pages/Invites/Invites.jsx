@@ -199,7 +199,7 @@ function Invites() {
                 <li
                   key={friend.id}
                   className="friend-card"
-                  onClick={() => navigate(`/profile/${friend.id}`)} // 👈 redireciona para o perfil
+                  onClick={() => navigate(`/userprofile/${friend.id}`)} // 👈 redireciona para o perfil
                   style={{ cursor: "pointer" }}
                 >
                   <div className="avatar">
