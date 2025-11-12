@@ -17,12 +17,20 @@ const CampeonatosInscritos = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    if (!user) return;
+    console.log("Usuário logado:", user);
+    const idTimeUsuario = user.idTime; 
+    console.log("ID do time do usuário:", idTimeUsuario);
+
+    if (!user || !idTimeUsuario) {  
+      setError('⚠️ Você ainda não possui um time.');
+      return;
+    }
 
     const fetchCampeonatosDoTime = async () => {
       try {
         setLoading(true);
-        const response = await api.get('/inscricoes/meus-campeonatos');
+        const response = await api.get(`/inscricoes/time/${idTimeUsuario}`);
+        console.log("Resposta da API:", response.data);
         setInscricoes(Array.isArray(response.data) ? response.data : []);
       } catch (err) {
         console.error('Erro ao buscar campeonatos do time:', err);
@@ -37,8 +45,8 @@ const CampeonatosInscritos = () => {
 
   const filtrarInscricoes = (lista) => {
     const termo = filtro.toLowerCase();
-    return lista.filter(
-      (inscricao) => inscricao?.nome?.toLowerCase().includes(termo)
+    return lista.filter((inscricao) =>
+      inscricao?.nomeCampeonato?.toLowerCase().includes(termo)
     );
   };
 
@@ -57,9 +65,6 @@ const CampeonatosInscritos = () => {
         return { texto: '-', classe: '' };
     }
   };
-
-  const formatarData = (data) =>
-    data ? new Date(data).toLocaleDateString('pt-BR') : '-';
 
   if (loading) return <LoadingScreen />;
 
@@ -103,6 +108,7 @@ const CampeonatosInscritos = () => {
               <tbody>
                 {inscricoesFiltradas.length > 0 ? (
                   inscricoesFiltradas.map((inscricao) => {
+                    // Aqui você pode colocar uma imagem padrão ou adicionar imagem no backend
                     const imagemCampeonato =
                       inscricao.imagemCampeonato?.length > 100
                         ? `data:image/png;base64,${inscricao.imagemCampeonato}`
@@ -115,11 +121,11 @@ const CampeonatosInscritos = () => {
                         <td>
                           <img
                             src={imagemCampeonato}
-                            alt={inscricao.nome}
+                            alt={inscricao.nomeCampeonato}
                             className="campeonato-img"
                           />
                         </td>
-                        <td>{inscricao.nome}</td>
+                        <td>{inscricao.nomeCampeonato}</td>
                         <td>{inscricao.grupo ?? '-'}</td>
                         <td>{inscricao.posicao ?? '-'}</td>
                         <td>{inscricao.pontuacao ?? 0}</td>
