@@ -55,6 +55,16 @@
   background-color: #3a3a3a;
 }
 
+.btn-inscritos {
+  background-color: #292929;
+  color: #fff;
+}
+
+.btn-inscritos:hover {
+  background-color: #3a3a3a;
+}
+
+
 /* === Container e pesquisa === */
 .campeonatos-container {
   max-width: 1200px;

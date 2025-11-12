@@ -39,22 +39,8 @@ function TimesProfile() {
         api.get(`/times/${id}/pontuacao`)
       ]);
 
-      const usuarioNoTime = membrosRes.data.some((m) => m.id === user.id);
-
-      if (!usuarioNoTime) {
-        try {
-          const { data: meuTime } = await api.get(`/usuarios/${user.id}/time`);
-          if (meuTime?.id) {
-            navigate(`/times/${meuTime.id}`);
-          } else {
-            navigate('/home');
-          }
-        } catch (err) {
-          console.error('Erro ao buscar time do usuário:', err);
-          navigate(`/times/${meuTime.id}`);
-        }
-        return;
-      }
+      // Não redireciona mais se o usuário não estiver no time
+      // Apenas carrega os dados normalmente
 
       setTime({
         ...timeRes.data,
@@ -69,6 +55,7 @@ function TimesProfile() {
       setLoading(false);
     }
   };
+
 
   useEffect(() => {
     carregarDados();
@@ -89,7 +76,7 @@ function TimesProfile() {
   };
 
   const handleClickUser = (memberId) => {
-    navigate(`/profile/${memberId}`);
+    navigate(`/userprofile/${memberId}`);
   };
 
   const convidarParaTime = async (idAmigo) => {
@@ -386,9 +373,11 @@ function TimesProfile() {
             <p>Nenhum membro encontrado.</p>
           )}
 
-          <button className="add-member" onClick={handleAddMember}>
-            ADICIONAR MEMBRO +
-          </button>
+          {user.id === time.idCriador && (
+            <button className="add-member" onClick={handleAddMember}>
+              ADICIONAR MEMBRO +
+            </button>
+          )}
         </div>
       </div>
 

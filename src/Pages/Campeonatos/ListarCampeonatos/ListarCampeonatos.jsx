@@ -11,6 +11,7 @@ const ListarCampeonatos = () => {
   const [filtro, setFiltro] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [equipesPorCampeonato, setEquipesPorCampeonato] = useState({}); // ✅ estado por campeonato
 
   const navigate = useNavigate();
   const api = useApi();
@@ -28,6 +29,21 @@ const ListarCampeonatos = () => {
         setLoading(true);
         const response = await api.get(`/campeonatos/criador/${userId}`);
         setCampeonatos(response.data);
+
+        // ✅ buscar número de equipes inscritas para cada campeonato
+        const inscritosObj = {};
+        await Promise.all(
+          response.data.map(async (c) => {
+            try {
+              const countResp = await api.get(`/inscricoes/campeonato/${c.id}/count`);
+              inscritosObj[c.id] = countResp.data;
+            } catch (err) {
+              console.error(`Erro ao contar equipes do campeonato ${c.id}:`, err);
+              inscritosObj[c.id] = 0;
+            }
+          })
+        );
+        setEquipesPorCampeonato(inscritosObj);
       } catch (err) {
         console.error('Erro ao buscar campeonatos do usuário:', err);
         setError('❌ Erro ao carregar campeonatos. Tente novamente.');
@@ -116,6 +132,7 @@ const ListarCampeonatos = () => {
                   <th>Descrição</th>
                   <th>Formato</th>
                   <th>Máx. Equipes</th>
+                  <th>Equipes Inscritas</th>
                   <th>Tipo</th>
                   <th>Valor por Equipe</th>
                   <th>Prêmio</th>
@@ -148,6 +165,7 @@ const ListarCampeonatos = () => {
                         <td>{c.descricao || '-'}</td>
                         <td>{formatarFormato(c.formatoCampeonato)}</td>
                         <td>{c.maxEquipes}</td>
+                        <td>{equipesPorCampeonato[c.id] ?? 0}</td> {/* ✅ aqui */}
                         <td>{c.tipo === 'GRATUITO' ? 'Gratuito' : 'Pago'}</td>
                         <td>
                           {c.tipo === 'GRATUITO'
@@ -175,7 +193,7 @@ const ListarCampeonatos = () => {
                   })
                 ) : (
                   <tr>
-                    <td colSpan="12" className="nenhum">
+                    <td colSpan="13" className="nenhum">
                       Nenhum campeonato encontrado.
                     </td>
                   </tr>

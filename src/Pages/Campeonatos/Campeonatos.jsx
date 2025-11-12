@@ -16,6 +16,7 @@ const Campeonatos = () => {
 
   const handleCriarCampeonato = () => navigate("/criar-campeonatos");
   const handleMeusCampeonatos = () => navigate("/meus-campeonatos");
+  const handleMeusCampeonatosInscritos = () => navigate("/campeonatos-inscritos");
 
   const fetchCampeonatos = async () => {
     try {
@@ -67,6 +68,9 @@ const Campeonatos = () => {
             </button>
             <button className="btn-meus" onClick={handleMeusCampeonatos}>
               Meus Campeonatos
+            </button>
+            <button className="btn-inscritos" onClick={handleMeusCampeonatosInscritos}>
+              Campeonatos Inscritos
             </button>
           </div>
         </div>

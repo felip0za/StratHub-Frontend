@@ -17,6 +17,7 @@ function CampeonatosDetalhes() {
   const [erro, setErro] = useState("");
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mensagemModal, setMensagemModal] = useState("");
+  const [totalEquipes, setTotalEquipes] = useState(0); // ✅ novo estado
 
   useEffect(() => {
     console.log("Usuário logado:", user);
@@ -32,8 +33,22 @@ function CampeonatosDetalhes() {
         setLoading(false);
       }
     };
-
+    
     fetchCampeonato();
+  }, [api, id]);
+
+  // ✅ Novo useEffect para contar equipes inscritas
+  useEffect(() => {
+    const fetchContagem = async () => {
+      try {
+        const response = await api.get(`/inscricoes/campeonato/${id}/count`);
+        setTotalEquipes(response.data);
+      } catch (err) {
+        console.error("Erro ao contar equipes inscritas:", err);
+        setTotalEquipes(0);
+      }
+    };
+    if (id) fetchContagem();
   }, [api, id]);
 
   // ✅ Método para inscrição no campeonato
@@ -150,27 +165,41 @@ function CampeonatosDetalhes() {
                   <p>💰 Prêmio total</p>
                   <span>
                     R${" "}
-                    {parseFloat(campeonato.valor || campeonato.nm_valor || campeonato.valorPremio || 0).toFixed(2)}
+                    {parseFloat(
+                      campeonato.valor ||
+                        campeonato.nm_valor ||
+                        campeonato.valorPremio ||
+                        0
+                    ).toFixed(2)}
                   </span>
                 </div>
                 <div>
                   <p>💵 Valor por equipe</p>
                   <span>
                     R${" "}
-                    {parseFloat(campeonato.valorPorEquipe || campeonato.nm_valor_por_equipe || 0).toFixed(2)}
+                    {parseFloat(
+                      campeonato.valorPorEquipe ||
+                        campeonato.nm_valor_por_equipe ||
+                        0
+                    ).toFixed(2)}
                   </span>
                 </div>
                 <div>
                   <p>👥 Máx. Equipes</p>
                   <span>{campeonato.maxEquipes || campeonato.nm_max_equipes}</span>
                 </div>
+
+                {/* ✅ NOVO BLOCO: Número de equipes inscritas */}
+                <div>
+                  <p>🏆 Equipes inscritas</p>
+                  <span>{totalEquipes}</span>
+                </div>
               </div>
             </div>
-
             <div className="card-info">
               <h3>Organizador</h3>
               <span className="nome-criador">Organizado por</span>
-              <button className="btn-criador">
+              <button className="btn-criador" onClick={() => navigate(`/userprofile/${campeonato.criador?.id || campeonato.criador?.idUsuario || campeonato.idCriador}`)}>
                 <img src={imagemCriador} alt={campeonato.criador?.nome || "Desconhecido"} className="img-criador" />
                 <span className="nome-criador">{campeonato.criador?.nome || "Desconhecido"}</span>
               </button>

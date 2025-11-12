@@ -10,87 +10,101 @@
     navigate(`/timesprofile/${timeId}`);
   };
 
- const Chaveamento = ({ grupos }) => {
-  const navigate = useNavigate();
+ const Chaveamento = ({ grupos, maxEquipes }) => {
+    const navigate = useNavigate();
 
-  return (
-    <div className="chaveamento-box">
-      <h2>CHAVEAMENTO</h2>
-      <div className="grupos-container">
-        {['A', 'B', 'C', 'D'].map((letra) => {
-          const grupo = Array(4)
-            .fill(null)
-            .map((_, index) => {
-              const time = grupos?.[letra]?.find(t => t.posicao === index + 1);
-              return (
-                <div key={index} className="time-card">
-                  <div className="posicao-label">{index + 1}°</div>
-                  <div
-                    className="time-box"
-                    onClick={() => time?.id && navigate(`/timesprofile/${time.id}`)}
-                    style={{ cursor: time?.id ? 'pointer' : 'default' }}
-                  >
-                    <img
-                      className="time-logo"
-                      src={time?.logo || avatarDefault}
-                      alt={time?.nome || '-'}
-                    />
-                    <div className="time-info">
-                      <span className="time-nome">{time?.nome || '-'}</span>
-                      <span className="time-pontos">{time?.pontos ?? '-'}</span>
-                    </div>
-                  </div>
-                </div>
-              );
-            });
+    const letrasGrupos = ['A', 'B', 'C', 'D'].slice(0, Math.ceil(maxEquipes / 4));
 
-          return (
+    // Criar grupos respeitando posição
+    const gruposDinamicos = {};
+    letrasGrupos.forEach((letra) => {
+      const grupo = grupos[letra] || [];
+      // Criar array de 4 posições
+      const grupoOrdenado = Array(4).fill(null);
+      grupo.forEach(time => {
+        const pos = Number(time.posicao);
+        if (pos && pos > 0 && pos <= 4) {
+          grupoOrdenado[pos - 1] = time;
+        } else {
+          // Caso posicao inválida, joga na primeira vaga livre
+          const firstEmpty = grupoOrdenado.findIndex(t => !t);
+          if (firstEmpty !== -1) grupoOrdenado[firstEmpty] = time;
+        }
+      });
+      gruposDinamicos[letra] = grupoOrdenado;
+    });
+
+    return (
+      <div className="chaveamento-box">
+        <h2>CHAVEAMENTO</h2>
+        <div className="grupos-container">
+          {letrasGrupos.map((letra) => (
             <div key={letra} className="grupo">
               <h3>Grupo {letra}</h3>
-              <div className="grupo-times">{grupo}</div>
+              <div className="grupo-times">
+                {gruposDinamicos[letra].map((time, index) => (
+                  <div key={index} className="time-card">
+                    <div className="posicao-label">{index + 1}°</div>
+                    <div
+                      className="time-box"
+                      onClick={() => time?.id && navigate(`/timesprofile/${time.id}`)}
+                      style={{ cursor: time?.id ? 'pointer' : 'default' }}
+                    >
+                      <img
+                        className="time-logo"
+                        src={time?.logo || avatarDefault}
+                        alt={time?.nome || '-'}
+                      />
+                      <div className="time-info">
+                        <span className="time-nome">{time?.nome || '-'}</span>
+                        <span className="time-pontos">{time?.pontos ?? 0}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-          );
-        })}
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+ const TabelaEliminatorias = ({ times, maxEquipes }) => {
+  const placeholderTimes = Array(maxEquipes || 4).fill({ nome: '-', pontos: '-', posicao: '-' });
+
+  const timesOrdenados = (times?.length ? [...times].sort((a, b) => {
+    if (a.posicao && b.posicao) return a.posicao - b.posicao;
+    return 0;
+  }) : placeholderTimes);
+
+  return (
+    <div className="tabela-eliminatorias-box">
+      <h2>TABELA</h2>
+      <div className="grupo-times">
+        {timesOrdenados.map((time, i) => (
+          <div key={i} className="time-card">
+            <div className="posicao-label">
+              {Number.isFinite(Number(time.posicao)) && Number(time.posicao) > 0 ? time.posicao : i + 1}°
+            </div>
+            <div className="time-box">
+              <img
+                className="time-logo"
+                src={time.logo || avatarDefault}
+                alt={time.nome || '-'}
+              />
+              <div className="time-info">
+                <span className="time-nome">{time.nome || '-'}</span>
+                <span className="time-pontos">{time.pontos ?? '-'}</span>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
 };
 
-
-
- const TabelaEliminatorias = ({ times }) => {
-    const placeholderTimes = Array(times?.length || 4).fill({ nome: '-', pontos: '-', posicao: '-' });
-
-    // 🔹 Ordena pelos campos de posição, se existirem
-    const timesOrdenados = (times?.length ? [...times].sort((a, b) => {
-      if (a.posicao && b.posicao) return a.posicao - b.posicao;
-      return 0;
-    }) : placeholderTimes);
-
-    return (
-      <div className="tabela-eliminatorias-box">
-        <h2>TABELA</h2>
-        <table className="tabela-eliminatorias">
-          <thead>
-            <tr>
-              <th>Posição</th>
-              <th>Time</th>
-              <th>Pontos</th>
-            </tr>
-          </thead>
-          <tbody>
-            {timesOrdenados.map((time, i) => (
-              <tr key={i}>
-                <td>{time.posicao || i + 1}</td>
-                <td>{time.nome}</td>
-                <td>{time.pontos}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
-  };
 
   // === COMPONENTE PARTIDAS DE GRUPOS ===
   const PartidasGrupos = ({ grupos }) => {
@@ -211,9 +225,9 @@
                 : avatarDefault;
 
               grupos[grupo].push({
-                id: timeData.id, // <-- Adicione isto!
+                id: timeData.id,
                 nome: timeData.nome,
-                logo: imagemTime, // ✅ envia imagem já decodificada
+                logo: imagemTime,
                 pontos: inscricao.pontos || 0,
                 posicao: inscricao.posicao || '-',
               });
@@ -222,8 +236,6 @@
             }
           }
 
-
-          // === 5️⃣ Atualizar estado
           setTimesInscritos(grupos);
         } catch (err) {
           console.error('Erro ao buscar dados:', err);
@@ -385,9 +397,9 @@
 
                 {/* TABELA OU CHAVEAMENTO DENTRO DE INFORMAÇÕES */}
                 {campeonato.formatoCampeonato === 'TABELA_ELIMINATORIAS' ? (
-                  campeonato.times && campeonato.times.length > 0 && <TabelaEliminatorias times={campeonato.times} />
+                  <TabelaEliminatorias times={campeonato.times || []} />
                 ) : (
-                  <Chaveamento grupos={timesInscritos} />
+                  <Chaveamento grupos={timesInscritos} maxEquipes={campeonato.maxEquipes} />
                 )}
               </>
             )}
@@ -395,9 +407,7 @@
             {/* === ABA PARTIDAS === */}
             {abaSelecionada === 'partidas' && (
               <>
-                {campeonato.formatoCampeonato === 'TABELA_ELIMINATORIAS' ? (
-                  <TabelaEliminatorias times={campeonato.times || []} />
-                ) : campeonato.formatoCampeonato === 'FASE_DE_GRUPOS_E_ELIMINATORIAS' ? (
+                {campeonato.formatoCampeonato === 'FASE_DE_GRUPOS_E_ELIMINATORIAS' ? (
                   <PartidasGrupos grupos={timesInscritos} />
                 ) : (
                   <Chaveamento grupos={timesInscritos} />
@@ -477,4 +487,4 @@
     );
   };
 
-  export default InfoEditCampeonatos;
+export default InfoEditCampeonatos;

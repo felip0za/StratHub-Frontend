@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // ✅ import adicionado
 import { useApi } from '../../Services/API';
 import Navbar from '../../Components/Navbar/Navbar';
 import LoadingScreen from '../../Components/LoadingScreen/LoadingScreen';
@@ -21,7 +22,12 @@ function EliteCup() {
   const [meuTime, setMeuTime] = useState(null);
 
   const api = useApi();
+  const navigate = useNavigate(); // ✅ hook adicionado
 
+  const handleClickTeam = (timeId) => {
+    navigate(`/timesprofile/${timeId}`); // ✅ redireciona para o perfil do time
+  };
+  
   const rankToImage = {
     FERRO: ferro,
     BRONZE: bronze,
@@ -173,7 +179,12 @@ function EliteCup() {
                 : "/default-team.png";
 
               return (
-                <div key={time.id} className={`ranking-card ${time.ehMeuTime ? 'meu-time' : ''}`}>
+                <div
+                  key={time.id}
+                  className={`ranking-card ${time.ehMeuTime ? 'meu-time' : ''}`}
+                  onClick={() => handleClickTeam(time.id)} // ✅ clique redireciona para perfil do time
+                  style={{ cursor: 'pointer' }} // ✅ visual de clique
+                >
                   <span className="rank-position">#{index + 1}</span>
                   <span className="rank-logo">
                     <img src={imagemTime} alt={time.nome} className="team-logo" />
