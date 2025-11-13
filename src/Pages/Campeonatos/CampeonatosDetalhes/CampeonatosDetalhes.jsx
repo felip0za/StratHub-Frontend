@@ -99,7 +99,15 @@ function CampeonatosDetalhes() {
   };
 
 
-  const fecharModal = () => setMostrarModal(false);
+  const fecharModal = () => {
+  setMostrarModal(false);
+
+  // 🔁 Se a mensagem for de sucesso, redireciona ao fechar o modal
+  if (mensagemModal.includes("✅ Time inscrito com sucesso")) {
+    navigate(`/info-campeonato/${id}`);
+  }
+};
+
 
   if (loading) return <LoadingScreen />;
 

@@ -73,7 +73,7 @@ const CampeonatosInscritos = () => {
       <Navbar />
       <div className="campeonatos-page">
         <div className="campeonatos-header">
-          <h1>🏆 Campeonatos do Meu Time</h1>
+          <h1>🏆 Campeonatos inscritos</h1>
           <div className="header-buttons">
             <button className="btn-voltar" onClick={() => navigate('/campeonatos')}>
               Voltar

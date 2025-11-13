@@ -7,6 +7,7 @@ import Icon from '@mdi/react';
 import { mdiUbisoft } from '@mdi/js';
 import LoadingScreen from '../../../Components/LoadingScreen/LoadingScreen';
 import { FaWindows, FaXbox, FaPlaystation } from "react-icons/fa";
+import { useAuth } from "../../../contexts/AuthContext";
 
 // Imagens dos ranks do time
 import ferro from '../../../assets/ferro.png';
@@ -25,6 +26,7 @@ function User() {
   const { id } = useParams();
   const navigate = useNavigate();
   const api = useApi();
+  const { token, logout } = useAuth();
 
   const [usuario, setUsuario] = useState(null);
   const [time, setTime] = useState(null);
