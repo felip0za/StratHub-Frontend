@@ -74,9 +74,7 @@ function Invites() {
   const verificarTimeUsuario = async () => {
     try {
       const res = await api.get("/usuario/time");
-      setUsuarioJaTemTime(
-        res.data?.time !== null && res.data?.time !== undefined
-      );
+      setUsuarioJaTemTime(res.data?.hasTime === true);
     } catch {
       setUsuarioJaTemTime(false);
     }
@@ -151,9 +149,7 @@ function Invites() {
 
   const handleAcceptTeamInvite = async (idConvite) => {
     if (usuarioJaTemTime) {
-      alert(
-        "Você já pertence a um time. Saia do time atual para aceitar novos convites."
-      );
+      alert("Você já pertence a um time. Saia do seu time atual antes de aceitar outro convite.");
       return;
     }
 
@@ -162,10 +158,12 @@ function Invites() {
       alert("Você entrou no time!");
       setTeamInvites((prev) => prev.filter((invite) => invite.id !== idConvite));
       setUsuarioJaTemTime(true);
-    } catch {
-      alert("Erro ao aceitar convite de time.");
+    } catch (err) {
+      const msg = err?.response?.data?.erro || "Erro ao aceitar convite.";
+      alert(msg);
     }
   };
+
 
   const handleRejectTeamInvite = async (idConvite) => {
     try {

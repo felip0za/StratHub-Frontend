@@ -7,8 +7,6 @@ import { useApi } from '../../../Services/API';
 import avatarDefault from '../../../assets/avatar-default.png';
 import { useAuth } from '../../../contexts/AuthContext';
 
-
-
 const handleClickTeam = (timeId, navigate) => {
   if (timeId) navigate(`/timesprofile/${timeId}`);
 };
@@ -74,6 +72,8 @@ const Chaveamento = ({ grupos, maxEquipes }) => {
 };
 
 const TabelaEliminatorias = ({ times, maxEquipes }) => {
+  const navigate = useNavigate();
+  
   // Garante que sempre haverá maxEquipes posições
   const timesOrdenados = Array.from({ length: maxEquipes }, (_, i) => {
     const time = times?.find(t => t.posicao === i + 1);
@@ -87,7 +87,11 @@ const TabelaEliminatorias = ({ times, maxEquipes }) => {
         {timesOrdenados.map((time, i) => (
           <div key={i} className="time-card">
             <div className="posicao-label">{time.posicao}°</div>
-            <div className="time-box">
+            <div
+              className="time-box"
+              onClick={() => handleClickTeam(time?.id, navigate)}
+              style={{ cursor: time?.id ? 'pointer' : 'default' }}
+            >
               <img
                 className="time-logo"
                 src={time.logo || avatarDefault}
