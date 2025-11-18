@@ -36,7 +36,7 @@
 .profile-text {
   display: flex;
   flex-direction: column;
-  gap: 8px; /* espaçamento entre linhas */
+  gap: 8px;
 }
 
 .profile-nome {
@@ -52,10 +52,10 @@
 }
 
 /* UbiConnect */
-.profile-email {
+.profile-ubi {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   font-size: 1rem;
   font-weight: 600;
   color: #ccc;
@@ -65,6 +65,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  font-weight: 700;
 }
 
 .ubisoft-icon {
@@ -72,9 +73,64 @@
 }
 
 .ubi-connect-valor {
-  color: #ddd;
+  color: #eee;
   font-weight: 600;
   font-size: 1rem;
+}
+
+/* Plataforma */
+.profile-plataforma {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ccc;
+}
+
+.profile-plataforma-label {
+  font-weight: 700;
+  color: white;
+}
+
+.platform-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  margin-left: 4px;
+}
+
+.profile-plataforma-valor {
+  font-weight: 700;
+  color: #f2f2f2;
+}
+
+.platform-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.platform-info {
+  display: flex;
+  align-items: center;
+}
+
+.platform-inline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.platform-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.platform-icon {
+  font-size: 22px;
+  margin-top: -2px;
 }
 
 /* KD */
@@ -95,10 +151,10 @@
   max-width: 1050px;
 }
 
-/* Ambos os rank cards com o mesmo tamanho */
+/* Cards de Rank */
 .rank-card,
 .rank-usuario-card {
-  width: 250px; 
+  width: 250px;
   padding: 25px;
   display: flex;
   flex-direction: column;
@@ -109,7 +165,7 @@
   text-align: center;
 }
 
-/* Imagens uniformes */
+/* Imagens */
 .rank-image,
 .rank-usuario-image {
   width: 140px;
@@ -118,7 +174,7 @@
   border-radius: 12px;
 }
 
-/* Nomes uniformes */
+/* Rank Names */
 .rank-name,
 .rank-usuario-name {
   font-size: 1.4rem;

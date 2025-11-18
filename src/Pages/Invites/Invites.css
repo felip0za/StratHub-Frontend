@@ -1,292 +1,353 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
-/* --------- Estrutura principal --------- */
+/* --- CONTAINER PRINCIPAL --- */
 .friends-screen {
-  max-width: 640px;
+  max-width: 850px;
   margin: 40px auto;
-  padding: 30px;
-  border-radius: 16px;
-  box-shadow: 0 6px 16px rgba(255, 0, 0, 0.6);
-  background-color: #1a1a1a;
-  font-family: 'Poppins', sans-serif;
+  padding: 40px;
+  border-radius: 22px;
+
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(14px);
+
+  border: 1px solid rgba(255, 0, 0, 0.25);
+  box-shadow: 0 8px 25px rgba(255, 0, 0, 0.35);
+
+  font-family: "Poppins", sans-serif;
+  animation: fadeSlide .6s ease;
+}
+
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .friends-screen h1 {
   text-align: center;
-  color: #ffffff;
-  font-size: 2rem;
-  margin-bottom: 20px;
-  font-weight: 700;
+  color: #fff;
+  font-size: 2.2rem;
+  margin-bottom: 25px;
 }
 
-/* --------- Lista de amigos --------- */
-.friends-list {
-  padding: 20px;
-  border-radius: 12px;
-  margin-bottom: 20px;
-  background-color: transparent;
+/* --- LISTA DE AMIGOS --- */
+.friends-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-/* --------- Cartão do amigo --------- */
+/* --- CARD DO AMIGO (MODERNIZADO) --- */
 .friend-card {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 12px;
-  background-color: #d9d9d9;
+  gap: 16px;
+
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+
   border-radius: 20px;
-  padding: 12px 16px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 6px rgba(255, 0, 0, 0.25);
-  font-family: 'Poppins', sans-serif;
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  padding: 16px 22px;
+  margin-bottom: 20px;
+
+  box-shadow: 0 3px 14px rgba(255, 0, 0, 0.25);
+  border: 1px solid rgba(255, 0, 0, 0.28);
+
+  transition: transform .25s ease, box-shadow .25s ease;
+  cursor: pointer;
 }
 
 .friend-card:hover {
-  box-shadow: 0 4px 12px rgba(255, 0, 0, 0.35);
-  transform: translateY(-4px);
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4);
 }
 
+/* --- FOTO DO AMIGO --- */
+/* --- FOTO DO AMIGO (AVATAR) --- */
 .friend-card .avatar {
-  width: 60px;
-  height: 60px;
-  border-radius: 16px;
-  background-color: white;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;       /* deixa redonda, opcional */
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  border: none;             /* remove qualquer borda */
+  background: transparent;  /* fundo transparente */
+  box-shadow: none;         /* remove sombra da div */
 }
 
 .friend-card .avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border: 2px solid black;
-  border-radius: 16px;
-  display: block;
+  border: none;             /* remove borda da imagem, se houver */
+  box-shadow: none;         /* remove sombra da imagem */
 }
 
-.friend-card .info {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
+/* --- INFO DO AMIGO --- */
 .friend-card .info .username {
-  font-weight: bold;
-  color: #000;
-  font-size: 1.1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #fff;
 }
 
-.friend-card .info .userid {
+.friend-card .info .profile-ubi2 {
   font-size: 0.95rem;
-  color: #333;
+  color: #ddd;
 }
 
-/* --------- Botões dentro do cartão --------- */
-.friend-card .remove-btn {
-  margin-left: auto;
-  background-color: #e63946;
-  color: white;
-  padding: 8px 14px;
-  border: none;
-  border-radius: 10px;
-  font-weight: bold;
-  font-family: 'Poppins', sans-serif;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.friend-card .remove-btn:hover {
-  background-color: #b32a33;
-}
-
-.friend-card .actions {
-  margin-left: auto;
+/* --- ÍCONE DA PLATAFORMA (MODERNIZADO) --- */
+.ubisoft-label,
+.platform-icon {
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 6px;
+
+  color: #ff4d4d;
+  font-weight: 600;
+  font-size: 0.95rem;
 }
 
-.friend-card .team-btn {
-  padding: 8px 12px;
-  border: none;
-  border-radius: 10px;
-  font-weight: bold;
-  font-family: 'Poppins', sans-serif;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  color: white;
+.platform-icon svg {
+  filter: drop-shadow(0 0 6px rgba(255, 80, 80, 0.7));
 }
 
-.friend-card .team-btn.accept {
-  background-color: #28a745;
-}
-
-.friend-card .team-btn.accept:hover {
-  background-color: #218838;
-}
-
-.friend-card .team-btn.reject {
-  background-color: #dc3545;
-}
-
-.friend-card .team-btn.reject:hover {
-  background-color: #c82333;
-}
-
-/* --------- Botão de convites --------- */
-.friend-requests {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 20px;
-  flex-wrap: wrap;
-  position: relative;
-}
-
+/* --- BOTÕES --- */
+.remove-btn,
+.team-btn,
 .open-popup-button {
-  padding: 12px 24px;
-  background-color: #ff0000;
-  color: white;
-  font-weight: bold;
   border: none;
-  border-radius: 12px;
+  font-weight: 600;
+  font-family: "Poppins";
   cursor: pointer;
-  transition: background-color 0.2s ease;
-  font-family: 'Poppins', sans-serif;
+  transition: .2s ease;
+}
+
+/* Modern neon button */
+.open-popup-button {
+  padding: 12px 26px;
+  background: linear-gradient(45deg, #ff1f1f, #b30000);
+  color: #fff;
   font-size: 1.1rem;
-  user-select: none;
-  box-shadow: 0 4px 12px rgba(255, 0, 0, 0.4);
-  position: relative;
+
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
 }
 
 .open-popup-button:hover {
-  background-color: #cc0000;
+  filter: brightness(1.15);
 }
 
+/* Badge */
 .notification-badge {
   position: absolute;
-  top: -8px;
+  top: -7px;
   right: -10px;
-  background-color: #ff0000;
-  color: white;
+
+  background: #ff0000;
+  color: #fff;
+  border-radius: 50%;
   width: 22px;
   height: 22px;
-  border-radius: 50%;
-  font-size: 0.8rem;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Poppins', sans-serif;
-  box-shadow: 0 0 0 2px #1a1a1a;
-  pointer-events: none;
+  font-size: .8rem;
+
+  box-shadow: 0 0 8px rgba(255,0,0,0.9);
 }
 
-/* --------- Popup --------- */
-.popup-overlay {
+/* --- MODAL DE CONFIRMAÇÃO --- */
+.modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.75);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
-  padding: 16px;
+  z-index: 10000;
+}
+
+.modal-box {
+  width: 90%;
+  max-width: 420px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(14px);
+  padding: 28px;
+  border-radius: 22px;
+  box-shadow: 0 0 25px rgba(255, 0, 0, 0.5);
+  text-align: center;
+  animation: popupDrop .45s ease;
+}
+
+@keyframes popupDrop {
+  from { transform: translateY(-70px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-box p {
+  font-family: "Poppins", sans-serif;
+  font-size: 1.1rem;
+  color: #fff;
+  margin-bottom: 24px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.modal-btn {
+  padding: 10px 22px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 0 12px rgba(255, 0, 0, 0.5);
+}
+
+/* Botão de confirmação (Sim) */
+.modal-btn.confirm {
+  background: #ff2f2f;
+  color: #fff;
+}
+
+.modal-btn.confirm:hover {
+  background: #cc2626;
+  transform: scale(1.05);
+  box-shadow: 0 0 18px rgba(255, 50, 50, 0.8);
+}
+
+/* Botão de cancelamento (Cancelar) */
+.modal-btn.cancel {
+  background: #3cd45b;
+  color: #fff;
+}
+
+.modal-btn.cancel:hover {
+  background: #31b44d;
+  transform: scale(1.05);
+  box-shadow: 0 0 18px rgba(60, 212, 91, 0.8);
+}
+
+/* --- CLOSE BUTTON (SE FOR NECESSÁRIO) --- */
+.modal-close-btn {
+  margin-top: 18px;
+  padding: 10px 24px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  border: none;
+  background: #ff4d4d;
+  color: #fff;
+  box-shadow: 0 0 12px rgba(255, 0, 0, 0.5);
+  transition: all 0.2s ease;
+}
+
+.modal-close-btn:hover {
+  background: #cc2626;
+  transform: scale(1.05);
+  box-shadow: 0 0 18px rgba(255, 50, 50, 0.8);
+}
+
+/* --- BOTÃO REMOVER NO CANTO DIREITO --- */
+.remove-btn {
+  position: absolute;
+  right: 22px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  background: #ff2f2f;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 10px;
+  box-shadow: 0 0 8px rgba(255, 50, 50, 0.7);
+}
+
+.remove-btn:hover {
+  background: #cc2626;
+}
+
+/* Botões convite */
+.team-btn.accept {
+  background: #ff3c3c;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 10px;
+}
+
+.team-btn.accept:hover {
+  background: #ff3c3c;
+}
+
+.team-btn.reject {
+  background: #ff3c3c;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 10px;
+}
+
+.team-btn.reject:hover {
+  background: #cc2f2f;
+}
+
+/* --- POPUP (GLASSMORPHISM) --- */
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9000;
 }
 
 .popup-box {
-  background-color: white;
-  color: #000;
-  padding: 24px;
-  border-radius: 16px;
-  box-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
-  max-width: 440px;
-  width: 100%;
-  max-height: 80vh;
-  overflow-y: auto;
-  font-family: 'Trebuchet MS', sans-serif;
+  width: 90%;
+  max-width: 480px;
+
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(12px);
+
+  padding: 28px;
+  border-radius: 20px;
+
+  box-shadow: 0 0 20px rgba(255,0,0,0.55);
   text-align: center;
+  animation: popupDrop .45s ease;
 }
 
-.popup-box h3 {
-  color: #000;
+@keyframes popupDrop {
+  from { transform: translateY(-70px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
 }
 
-.popup-box input[type="text"] {
-  width: 70%;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  margin-bottom: 12px;
-  font-size: 0.95rem;
-}
+.popup-box input {
+  width: 80%;
+  padding: 12px;
+  margin-top: 10px;
 
-.popup-box button {
-  background-color: #e63946;
+  border-radius: 10px;
+  border: 1px solid #888;
+
+  background: rgba(255,255,255,0.18);
   color: white;
-  padding: 10px 16px;
-  border: none;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-  font-family: 'Poppins', sans-serif;
-  margin-top: 12px;
-  transition: background-color 0.2s ease;
+
+  font-size: 1rem;
 }
 
-.popup-box button:hover {
-  background-color: #b32a33;
-}
-
-.popup-box ul {
-  list-style: none;
-  padding: 0;
-  margin-top: 12px;
-}
-
-.popup-box ul li {
-  padding: 8px;
-  border-bottom: 1px solid #ccc;
-  font-family: 'Trebuchet MS', sans-serif;
-}
-
-.popup-box ul li:last-child {
-  border-bottom: none;
-}
-
-/* --------- Ícone Ubisoft --------- */
-.ubisoft-icon {
-  color: black;
-}
-
-.ubisoft-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  color: gray;
-  font-family: 'Poppins', sans-serif;
-  font-size: 1.4rem;
-  margin-bottom: 20px;
-}
-
-.ubisoft-header .ubisoft-icon {
-  font-size: 1.6rem;
+.status-badge {
+  background: #ff5e5e;
   color: white;
-}
-
-.ubisoft-header .ubisoft-name {
-  font-size: 1.2rem;
-  color: #ffffff;
-}
-
-.ubisoft-valor {
-  color: #000000; /* cor mais legível do que gray puro */
-  font-weight: 500;
-  font-size: 0.95rem;
-  margin-left: 6px;
+  padding: 6px 14px;
+  border-radius: 12px;
+  font-size: .85rem;
 }

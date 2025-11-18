@@ -23,6 +23,16 @@ function Invites() {
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Modal de aviso
+  const [modalAviso, setModalAviso] = useState({ ativo: false, mensagem: "" });
+
+  // Modal de confirmação para remover amigo
+  const [confirmRemove, setConfirmRemove] = useState({ ativo: false, amigo: null });
+
+  const mostrarAviso = (mensagem) => {
+    setModalAviso({ ativo: true, mensagem });
+  };
+
   useEffect(() => {
     if (!userId) return;
 
@@ -34,14 +44,16 @@ function Invites() {
           api.get("/amizade/pendentes"),
           api.get(`/convites/usuario/${userId}`),
         ]);
+
         setFriends(friendsRes.data || []);
         setFriendRequests(friendReqRes.data || []);
         setTeamInvites(
           teamInvitesRes.data?.filter((i) => i.status === "PENDENTE") || []
         );
+
         await verificarTimeUsuario();
-      } catch (error) {
-        alert("Erro ao buscar dados. Tente novamente mais tarde.");
+      } catch {
+        mostrarAviso("Erro ao buscar dados. Tente novamente mais tarde.");
       } finally {
         setLoading(false);
       }
@@ -54,20 +66,19 @@ function Invites() {
           api.get("/amizade/pendentes"),
           api.get(`/convites/usuario/${userId}`),
         ]);
+
         setFriends(friendsRes.data || []);
         setFriendRequests(friendReqRes.data || []);
         setTeamInvites(
           teamInvitesRes.data?.filter((i) => i.status === "PENDENTE") || []
         );
+
         await verificarTimeUsuario();
       } catch {}
     };
 
     fetchAll();
-    const intervalo = setInterval(() => {
-      atualizarSilenciosamente();
-    }, 1000);
-
+    const intervalo = setInterval(() => atualizarSilenciosamente(), 1000);
     return () => clearInterval(intervalo);
   }, [userId, api]);
 
@@ -82,27 +93,31 @@ function Invites() {
 
   const handleSearch = async () => {
     if (!searchName.trim()) return;
+
     try {
       const res = await api.get(
         `/convites/usuarios/busca?nome=${encodeURIComponent(searchName)}`
       );
       setSearchResults(res.data || []);
     } catch {
-      alert("Erro ao buscar usuários.");
+      mostrarAviso("Erro ao buscar usuários.");
     }
   };
 
   const handleSendFriendRequest = async (idUsuario) => {
     try {
       await api.post(`/amizade/convidar/${idUsuario}`);
-      alert("Convite enviado com sucesso!");
+      mostrarAviso("Convite enviado com sucesso!");
+
       setSearchResults([]);
       setSearchName("");
+
       const [friendsRes, friendReqRes, teamInvitesRes] = await Promise.all([
         api.get("/amizade/amigos"),
         api.get("/amizade/pendentes"),
         api.get(`/convites/usuario/${userId}`),
       ]);
+
       setFriends(friendsRes.data || []);
       setFriendRequests(friendReqRes.data || []);
       setTeamInvites(
@@ -111,67 +126,58 @@ function Invites() {
     } catch (err) {
       const msg =
         err?.response?.data?.message || "Não foi possível enviar o convite.";
-      alert(`Erro: ${msg}`);
+      mostrarAviso(`Erro: ${msg}`);
     }
   };
 
   const handleAcceptFriend = async (idConvite) => {
     try {
       await api.post(`/amizade/aceitar/${idConvite}`);
-      alert("Amizade aceita com sucesso!");
+      mostrarAviso("Amizade aceita com sucesso!");
+
       setFriendRequests((prev) => prev.filter((req) => req.id !== idConvite));
+
       const updatedFriends = await api.get("/amizade/amigos");
       setFriends(updatedFriends.data || []);
     } catch {
-      alert("Erro ao aceitar convite.");
+      mostrarAviso("Erro ao aceitar convite.");
     }
   };
 
-  const handleRemoveFriend = async (idUsuario) => {
-    if (!window.confirm("Tem certeza que deseja remover este amigo?")) return;
-    try {
-      await api.delete(`/amizade/remover/${idUsuario}`);
-      alert("Amizade removida.");
-      const [friendsRes, friendReqRes, teamInvitesRes] = await Promise.all([
-        api.get("/amizade/amigos"),
-        api.get("/amizade/pendentes"),
-        api.get(`/convites/usuario/${userId}`),
-      ]);
-      setFriends(friendsRes.data || []);
-      setFriendRequests(friendReqRes.data || []);
-      setTeamInvites(
-        teamInvitesRes.data?.filter((i) => i.status === "PENDENTE") || []
-      );
-    } catch {
-      alert("Erro ao remover amizade.");
-    }
+  const handleRemoveFriend = (idUsuario) => {
+    const amigo = friends.find((f) => f.id === idUsuario);
+    if (!amigo) return;
+    setConfirmRemove({ ativo: true, amigo });
   };
 
   const handleAcceptTeamInvite = async (idConvite) => {
     if (usuarioJaTemTime) {
-      alert("Você já pertence a um time. Saia do seu time atual antes de aceitar outro convite.");
+      mostrarAviso(
+        "Você já pertence a um time. Saia do seu time atual antes de aceitar outro convite."
+      );
       return;
     }
 
     try {
       await api.post(`/convites/${idConvite}/aceitar`);
-      alert("Você entrou no time!");
+      mostrarAviso("Você entrou no time!");
+
       setTeamInvites((prev) => prev.filter((invite) => invite.id !== idConvite));
       setUsuarioJaTemTime(true);
     } catch (err) {
       const msg = err?.response?.data?.erro || "Erro ao aceitar convite.";
-      alert(msg);
+      mostrarAviso(msg);
     }
   };
-
 
   const handleRejectTeamInvite = async (idConvite) => {
     try {
       await api.post(`/convites/${idConvite}/recusarTime`);
-      alert("Convite recusado.");
+      mostrarAviso("Convite recusado.");
+
       setTeamInvites((prev) => prev.filter((invite) => invite.id !== idConvite));
     } catch {
-      alert("Erro ao recusar convite de time.");
+      mostrarAviso("Erro ao recusar convite de time.");
     }
   };
 
@@ -186,8 +192,9 @@ function Invites() {
   return (
     <>
       <Navbar />
+
       <div className="friends-screen">
-        <h1>Amigos e Convites</h1>
+        <h1 className="title-neon">Amigos e Convites</h1>
 
         {/* Lista de amigos */}
         <section className="friends-list">
@@ -197,8 +204,7 @@ function Invites() {
                 <li
                   key={friend.id}
                   className="friend-card"
-                  onClick={() => navigate(`/userprofile/${friend.id}`)} // 👈 redireciona para o perfil
-                  style={{ cursor: "pointer" }}
+                  onClick={() => navigate(`/usuario/${friend.id}`)}
                 >
                   <div className="avatar">
                     <img
@@ -206,28 +212,25 @@ function Invites() {
                       alt={`Foto de ${friend.nome}`}
                     />
                   </div>
+
                   <div className="info">
                     <div className="username">{friend.nome}</div>
-                    <p className="profile-email">
+
+                    <p className="profile-ubi2">
                       <strong className="ubisoft-label">
-                        <Icon
-                          path={mdiUbisoft}
-                          size={1}
-                          className="ubisoft-icon"
-                        />{" "}
+                        <Icon path={mdiUbisoft} size={1} />
                         UbiConnect:
-                      </strong>{" "}
+                      </strong>
                       <span className="ubisoft-valor">
-                        {friend.username ||
-                          friend.ubiConnect ||
-                          "Não informado"}
+                        {friend.username || friend.ubiConnect || "Não informado"}
                       </span>
                     </p>
                   </div>
+
                   <button
                     className="remove-btn"
                     onClick={(e) => {
-                      e.stopPropagation(); // 👈 impede abrir o perfil
+                      e.stopPropagation();
                       handleRemoveFriend(friend.id);
                     }}
                   >
@@ -241,7 +244,7 @@ function Invites() {
           </ul>
         </section>
 
-        {/* Botões principais */}
+        {/* Botões */}
         <section className="friend-requests">
           <button
             className="open-popup-button"
@@ -254,6 +257,7 @@ function Invites() {
               </span>
             )}
           </button>
+
           <button
             className="open-popup-button"
             onClick={() => setShowSearchPopup(true)}
@@ -263,11 +267,11 @@ function Invites() {
         </section>
       </div>
 
-      {/* Popup de convites */}
+      {/* Popups existentes (Convites e busca) */}
       {showRequestsPopup && (
         <div className="popup-overlay">
           <div className="popup-box">
-            <h3>Convites de Amizade</h3>
+            <h3 className="title-neon">Convites de Amizade</h3>
             {friendRequests.length > 0 ? (
               <ul>
                 {friendRequests.map((request) => (
@@ -281,8 +285,7 @@ function Invites() {
                     <div className="info">
                       <div className="username">{request.nome}</div>
                       <div className="userid">
-                        UbiConnect:{" "}
-                        {request.username || request.nome.toLowerCase()}
+                        UbiConnect: {request.username || request.nome.toLowerCase()}
                       </div>
                     </div>
                     <button
@@ -298,7 +301,9 @@ function Invites() {
               <p>Nenhum convite de amizade.</p>
             )}
 
-            <h3 style={{ marginTop: 24 }}>Convites de Time</h3>
+            <h3 className="title-neon" style={{ marginTop: 24 }}>
+              Convites de Time
+            </h3>
             {teamInvites.length > 0 ? (
               <ul>
                 {teamInvites.map((convite) => {
@@ -316,9 +321,7 @@ function Invites() {
                         />
                       </div>
                       <div className="info">
-                        <div className="username">
-                          {time.nome || "Time desconhecido"}
-                        </div>
+                        <div className="username">{time.nome || "Time desconhecido"}</div>
                         <div className="userid">Convite para entrar no time</div>
                       </div>
                       <div className="actions">
@@ -344,7 +347,7 @@ function Invites() {
             )}
 
             <button
-              className="open-popup-button"
+              className="open-popup-button close-btn"
               onClick={() => setShowRequestsPopup(false)}
             >
               Fechar
@@ -353,11 +356,10 @@ function Invites() {
         </div>
       )}
 
-      {/* Popup de busca de amigos */}
       {showSearchPopup && (
         <div className="popup-overlay">
           <div className="popup-box">
-            <h3>Buscar Usuários</h3>
+            <h3 className="title-neon">Buscar Usuários</h3>
             <input
               type="text"
               placeholder="Digite o nome"
@@ -368,15 +370,14 @@ function Invites() {
             <button className="open-popup-button" onClick={handleSearch}>
               Buscar
             </button>
+
             {searchResults.length > 0 ? (
               <ul>
                 {searchResults.map((user) => {
                   const isAmigo = friends.some((f) => f.id === user.id);
-                  const jaTemConvite = friendRequests.some(
-                    (r) => r.id === user.id
-                  );
+                  const jaTemConvite = friendRequests.some((r) => r.id === user.id);
                   return (
-                    <li key={user.id} className="friend-card">
+                    <li key={user.id} className="friend-card search-card">
                       <div className="avatar">
                         <img
                           src={user.imagemUsuario || "/default-avatar.png"}
@@ -386,10 +387,10 @@ function Invites() {
                       <div className="info">
                         <div className="username">{user.nome}</div>
                         <div className="userid">
-                          UbiConnect:{" "}
-                          {user.ubiConnect || user.nome.toLowerCase()}
+                          UbiConnect: {user.ubiConnect || user.nome.toLowerCase()}
                         </div>
                       </div>
+
                       {isAmigo ? (
                         <span className="status-badge">Amigo</span>
                       ) : jaTemConvite ? (
@@ -409,9 +410,67 @@ function Invites() {
             ) : (
               searchName.trim() !== "" && <p>Nenhum usuário encontrado.</p>
             )}
+
             <button
-              className="open-popup-button"
+              className="open-popup-button close-btn"
               onClick={() => setShowSearchPopup(false)}
+            >
+              Fechar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de confirmação para remover amigo */}
+      {confirmRemove.ativo && (
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <p>Tem certeza que deseja remover {confirmRemove.amigo.nome} da sua lista de amigos?</p>
+            <div className="modal-actions">
+              <button
+                className="modal-btn confirm"
+                onClick={async () => {
+                  try {
+                    await api.delete(`/amizade/remover/${confirmRemove.amigo.id}`);
+                    mostrarAviso("Amizade removida.");
+                    const [friendsRes, friendReqRes, teamInvitesRes] = await Promise.all([
+                      api.get("/amizade/amigos"),
+                      api.get("/amizade/pendentes"),
+                      api.get(`/convites/usuario/${userId}`),
+                    ]);
+                    setFriends(friendsRes.data || []);
+                    setFriendRequests(friendReqRes.data || []);
+                    setTeamInvites(
+                      teamInvitesRes.data?.filter((i) => i.status === "PENDENTE") || []
+                    );
+                  } catch {
+                    mostrarAviso("Erro ao remover amizade.");
+                  } finally {
+                    setConfirmRemove({ ativo: false, amigo: null });
+                  }
+                }}
+              >
+                Sim
+              </button>
+              <button
+                className="modal-btn cancel"
+                onClick={() => setConfirmRemove({ ativo: false, amigo: null })}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Avisos */}
+      {modalAviso.ativo && (
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <p>{modalAviso.mensagem}</p>
+            <button
+              className="modal-close-btn"
+              onClick={() => setModalAviso({ ativo: false, mensagem: "" })}
             >
               Fechar
             </button>
