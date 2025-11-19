@@ -14,6 +14,7 @@ import platina from '../../../assets/platina.png';
 import challenger from '../../../assets/challenger.png';
 import master from '../../../assets/master.png';
 import { FaInstagram, FaDiscord, FaTwitter } from 'react-icons/fa';
+import avatardefault from '../../../assets/avatar-default.png';
 import './Times.css';
 
 function Times() {
@@ -31,68 +32,80 @@ function Times() {
   const api = useApi();
   const { user } = useAuth();
 
-  const carregarDados = async () => {
+  /*
+    Agora a função é segura.
+    - mostrarLoading = true → mostra loading (primeira carga)
+    - mostrarLoading = false → atualiza em segundo plano (interval)
+  */
+  const carregarDados = async (mostrarLoading = true) => {
     try {
+      if (mostrarLoading) setLoading(true);
+
       const [timeRes, membrosRes, pontuacaoRes] = await Promise.all([
         api.get(`/times/${id}`),
         api.get(`/times/${id}/membros`),
         api.get(`/times/${id}/pontuacao`)
       ]);
 
-      const usuarioNoTime = membrosRes.data.some((m) => m.id === user.id);
-
-      if (!usuarioNoTime) {
-        try {
-          const { data: meuTime } = await api.get(`/usuarios/${user.id}/time`);
-          if (meuTime?.id) {
-            navigate(`/times/${meuTime.id}`);
-          } else {
-            navigate('/home');
-          }
-        } catch (err) {
-          console.error('Erro ao buscar time do usuário:', err);
-          navigate(`/times/${meuTime.id}`);
-        }
-        return;
-      }
-
-      setTime({
-        ...timeRes.data,
-        pontuacao: pontuacaoRes.data.pontuacao
-      });
-      setMembros(membrosRes.data);
+      setTime({ ...timeRes.data, pontuacao: pontuacaoRes?.data?.pontuacao ?? 0 });
+      setMembros(membrosRes.data || []);
       setError('');
     } catch (err) {
-      console.error('Erro ao carregar dados:', err);
       setError('Erro ao carregar dados do time.');
+      setTime(null);
+      setMembros([]);
     } finally {
-      setLoading(false);
+      if (mostrarLoading) setLoading(false);
     }
   };
 
+
   useEffect(() => {
-    carregarDados();
+    let ativo = true;
+
+    // Primeira carga → com loading
+    carregarDados(true);
+
+    // Atualizações → sem loading
     const intervalo = setInterval(() => {
-      carregarDados();
-    }, 1000);
-    return () => clearInterval(intervalo);
-  }, [id, api]);
+      if (ativo) carregarDados(false);
+    }, 5000); // 5s é mais seguro (1s era exagerado)
+
+    const handleGlobalClick = () => {
+      if (contextMenu) {
+        setContextMenu(null);
+        setSelectedMember(null);
+      }
+    };
+
+    window.addEventListener('click', handleGlobalClick);
+
+    return () => {
+      ativo = false;
+      clearInterval(intervalo);
+      window.removeEventListener('click', handleGlobalClick);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
 
   const buscarAmigos = async () => {
     try {
       const res = await api.get("/amizade/amigos");
       setAmigos(res.data || []);
       setShowInvitePopup(true);
-    } catch {
+    } catch (err) {
       alert("Erro ao buscar amigos.");
     }
   };
 
   const handleClickUser = (memberId) => {
-    navigate(`/profile/${memberId}`);
+    navigate(`/usuario/${memberId}`);
   };
 
   const convidarParaTime = async (idAmigo) => {
+    if (!time?.id) return alert('Time inválido.');
+
     try {
       await api.post(`/convites/enviar`, {
         idTime: time.id,
@@ -100,19 +113,24 @@ function Times() {
         idSolicitante: user.id,
       });
       alert("Convite enviado com sucesso!");
-    } catch {
+    } catch (err) {
       alert("Erro ao enviar convite para o time.");
     }
   };
 
-  const handleEdit = () => navigate(`/editar-time/${id}`);
+  const handleEdit = () => {
+    if (id) navigate(`/editar-time/${id}`);
+  };
+
   const handleAddMember = () => buscarAmigos();
 
   const handleLeaveTeam = async () => {
+    if (!time) return;
+
     if (window.confirm("Tem certeza que deseja sair do time?")) {
       try {
         setLoading(true);
-        const isDono = user.id === time.idCriador;
+        const isDono = user?.id === time?.idCriador;
 
         if (membros.length === 1 && isDono) {
           await api.delete(`/times/${id}`);
@@ -127,26 +145,32 @@ function Times() {
         }
       } catch (err) {
         if (err.response?.status === 403) {
-          alert(err.response.data || "Você não tem permissão para realizar esta ação.");
+          alert(err.response.data || "Você não tem permissão.");
         } else {
-          alert("Erro ao sair do time ou excluir o time.");
+          alert("Erro ao sair do time.");
         }
-        console.error(err);
       } finally {
         setLoading(false);
       }
     }
   };
 
+
   const openContextMenu = (event, member) => {
     event.preventDefault();
-    if (user.id === time.idCriador && member.id !== user.id) {
+    event.stopPropagation();
+
+    if (!time) return;
+
+    if (user?.id === time.idCriador && member.id !== user.id) {
       const menuWidth = 160;
       const menuHeight = 100;
       let x = event.pageX;
       let y = event.pageY;
+
       if (x + menuWidth > window.innerWidth) x -= menuWidth;
       if (y + menuHeight > window.innerHeight) y -= menuHeight;
+
       setSelectedMember(member);
       setContextMenu({ x, y });
     }
@@ -158,12 +182,19 @@ function Times() {
   };
 
   const expulsarMembro = async () => {
+    if (!selectedMember) return;
+
+    if (!window.confirm(`Expulsar ${selectedMember.nome}?`)) {
+      closeContextMenu();
+      return;
+    }
+
     try {
       await api.post(`/times/${id}/expulsar`, {
         idUsuario: selectedMember.id
       });
-      alert("Membro expulso com sucesso.");
-      await carregarDados();
+      alert("Membro expulso!");
+      await carregarDados(false);
     } catch {
       alert("Erro ao expulsar membro.");
     } finally {
@@ -172,18 +203,26 @@ function Times() {
   };
 
   const promoverParaDono = async () => {
+    if (!selectedMember) return;
+
+    if (!window.confirm(`Promover ${selectedMember.nome} a dono do time?`)) {
+      closeContextMenu();
+      return;
+    }
+
     try {
       await api.post(`/times/${id}/promover`, {
         idNovoDono: selectedMember.id
       });
-      alert("Novo dono promovido com sucesso.");
-      await carregarDados();
+      alert("Novo dono promovido!");
+      await carregarDados(false);
     } catch {
       alert("Erro ao promover novo dono.");
     } finally {
       closeContextMenu();
     }
   };
+
 
   if (loading) {
     return (
@@ -205,7 +244,7 @@ function Times() {
     );
   }
 
-  const imagemTime = time.imagemBase64
+  const imagemTime = time?.imagemBase64
     ? `data:image/*;base64,${time.imagemBase64}`
     : "/default-team.png";
 
@@ -219,7 +258,7 @@ function Times() {
     MASTER: master,
   };
 
-  const timePontuacao = time.pontuacao || 0;
+  const timePontuacao = time?.pontuacao || 0;
 
   const getRankInfo = (pontuacao) => {
     if (pontuacao < 800) {
@@ -239,27 +278,31 @@ function Times() {
     ? Math.min(100, (rankInfo.pontuacaoAtual / rankInfo.pontuacaoProximo) * 100).toFixed(1)
     : 0;
 
-  const rankImage = time.rank ? rankToImage[time.rank.toUpperCase()] : null;
+  const rankImage = time?.rank ? rankToImage[time.rank.toUpperCase()] : null;
 
   return (
     <>
       <Navbar />
+
       <div className="container">
+        {/* === ESQUERDA === */}
         <div className="left-section">
           <div className="logo-section">
             <img className="logo" src={imagemTime} alt="Logo do time" />
+
             <h2 className="team-title">
-              {time.nome}
-              {time.apelido && <span className="team-apelido"> | {time.apelido}</span>}
+              {time?.nome}
+              {time?.apelido && <span className="team-apelido"> | {time.apelido}</span>}
             </h2>
+
             <p className="description-label">DESCRIÇÃO:</p>
-            <p className="description-text">{time.descricao}</p>
+            <p className="description-text">{time?.descricao}</p>
 
             <p className="description-label">RANK:</p>
             {rankImage ? (
               <div className="rank-display">
-                <img src={rankImage} alt={`Rank ${time.rank}`} className="rank-image" />
-                <span className={`rank-label rank-${time.rank.toLowerCase()}`}>{time.rank}</span>
+                <img src={rankImage} alt={`Rank ${time?.rank}`} className="rank-image" />
+                <span className={`rank-label rank-${time?.rank?.toLowerCase()}`}>{time?.rank}</span>
               </div>
             ) : (
               <p className="rank-text">Sem rank</p>
@@ -269,49 +312,49 @@ function Times() {
               {rankInfo.pontuacaoProximo ? (
                 <>
                   <div className="rank-progress-bar">
-                    <div
-                      className="rank-progress-fill"
-                      style={{ width: `${progresso}%` }}
-                    ></div>
+                    <div className="rank-progress-fill" style={{ width: `${progresso}%` }}></div>
                   </div>
-                  <p className="score-text">{rankInfo.pontuacaoAtual} / {rankInfo.pontuacaoProximo} PONTOS</p>
+                  <p className="score-text">
+                    {rankInfo.pontuacaoAtual} / {rankInfo.pontuacaoProximo} PONTOS
+                  </p>
                 </>
               ) : (
                 rankInfo.pontuacaoAtual >= 800 && (
-                  <span className="classified-text"> Classificados </span>
+                  <span className="classified-text">Classificados</span>
                 )
               )}
             </div>
 
-            {/* === NOVA BOX DE REDES SOCIAIS DO TIME === */}
+            {/* === Redes Sociais === */}
             <div className="team-social-box">
               <h3>REDES SOCIAIS</h3>
               <div className="social-icons">
-                {time.instagram && time.instagram.trim() !== '' && (
-                  <a href={time.instagram} target="_blank" rel="noopener noreferrer" title="Instagram">
+                {time?.instagram && (
+                  <a href={time.instagram} target="_blank" rel="noopener noreferrer">
                     <FaInstagram size={24} />
                   </a>
                 )}
-                {time.discord && time.discord.trim() !== '' && (
-                  <a href={time.discord} target="_blank" rel="noopener noreferrer" title="Discord">
-                    <FaDiscord size={24}  />
+                {time?.discord && (
+                  <a href={time.discord} target="_blank" rel="noopener noreferrer">
+                    <FaDiscord size={24} />
                   </a>
                 )}
-                {time.twitter && time.twitter.trim() !== '' && (
-                  <a href={time.twitter} target="_blank" rel="noopener noreferrer" title="Twitter">
-                    <FaTwitter size={24}  />
+                {time?.twitter && (
+                  <a href={time.twitter} target="_blank" rel="noopener noreferrer">
+                    <FaTwitter size={24} />
                   </a>
                 )}
               </div>
             </div>
 
             <div className="btn-group">
-              {user.id === time.idCriador && (
+              {user?.id === time?.idCriador && (
                 <button className="edit-logo" onClick={handleEdit}>
                   Editar Time
                 </button>
               )}
-              {membros.some(m => m.id === user.id) && (
+
+              {membros.some(m => m.id === user?.id) && (
                 <button className="leave-team" onClick={handleLeaveTeam}>
                   Sair do Time
                 </button>
@@ -320,7 +363,7 @@ function Times() {
           </div>
         </div>
 
-        {/* === SEÇÃO DE MEMBROS === */}
+        {/* === MEMBROS === */}
         <div className="team-section">
           <h2 className="team-title">MEMBROS</h2>
 
@@ -328,54 +371,50 @@ function Times() {
             membros.map((member, index) => (
               <div
                 className="member-card"
-                key={index}
+                key={member.id ?? index}
                 onContextMenu={(e) => openContextMenu(e, member)}
                 onClick={() => handleClickUser(member.id)}
                 style={{ cursor: 'pointer' }}
               >
                 <img
                   src={
-                    member.imagemUsuario?.startsWith('data:image')
+                    member.imagemUsuario?.startsWith?.("data:image")
                       ? member.imagemUsuario
                       : member.imagemUsuario
                         ? `data:image/*;base64,${member.imagemUsuario}`
-                        : "/default-avatar.png"
+                        : avatardefault
                   }
                   alt="Foto do membro"
                   className="member-logo"
                 />
+
                 <div className="member-info">
                   <strong>
                     {member.nome}
-                    {member.id === time.idCriador && ' (Dono)'}
+                    {member.id === time?.idCriador && ' (Dono)'}
                   </strong>
 
-                  <div className="profile-stats" style={{ display: 'flex', flexDirection: 'column', gap: '0px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0px' }}>
-                      <span className="ubisoft-label">
-                        <Icon path={mdiUbisoft} size={1} className="ubisoft-icon" />
-                        UbiConnect:
-                      </span>
-                      <span className="ubisoft-valor">{member.ubiConnect || 'Não informado'}</span>
-                    </div>
-
+                  <div className="profile-stats">
+                    <span className="ubisoft-label">
+                      <Icon path={mdiUbisoft} size={1} /> UbiConnect:
+                    </span>
+                    <span className="ubisoft-valor">{member.ubiConnect || 'Não informado'}</span>
                   </div>
 
-                  {/* === LINKS SOCIAIS DOS MEMBROS === */}
-                  <div className="social-links" style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
-                    {member.instagram && member.instagram.trim() !== '' && (
-                      <a href={member.instagram} target="_blank" rel="noopener noreferrer" title="Instagram">
-                        <FaInstagram size={20} color="#E1306C" />
+                  <div className="social-links">
+                    {member.instagram && (
+                      <a href={member.instagram} target="_blank" rel="noopener noreferrer">
+                        <FaInstagram size={20} />
                       </a>
                     )}
-                    {member.discord && member.discord.trim() !== '' && (
-                      <a href={member.discord} target="_blank" rel="noopener noreferrer" title="Discord">
-                        <FaDiscord size={20} color="#7289DA" />
+                    {member.discord && (
+                      <a href={member.discord} target="_blank" rel="noopener noreferrer">
+                        <FaDiscord size={20} />
                       </a>
                     )}
-                    {member.twitter && member.twitter.trim() !== '' && (
-                      <a href={member.twitter} target="_blank" rel="noopener noreferrer" title="Twitter">
-                        <FaTwitter size={20} color="#1DA1F2" />
+                    {member.twitter && (
+                      <a href={member.twitter} target="_blank" rel="noopener noreferrer">
+                        <FaTwitter size={20} />
                       </a>
                     )}
                   </div>
@@ -386,29 +425,40 @@ function Times() {
             <p>Nenhum membro encontrado.</p>
           )}
 
-          <button className="add-member" onClick={handleAddMember}>
-            ADICIONAR MEMBRO +
-          </button>
+          {membros.some(m => m.id === user?.id) && (
+            <button className="add-member" onClick={handleAddMember}>
+              ADICIONAR MEMBRO +
+            </button>
+          )}
         </div>
       </div>
 
-      {/* === POPUP DE CONVITE === */}
+      {/* === POPUP === */}
       {showInvitePopup && (
         <div className="popup-overlay" onClick={() => setShowInvitePopup(false)}>
           <div className="popup-box" onClick={(e) => e.stopPropagation()}>
             <h3>Convidar Amigos para o Time</h3>
+
             {amigos.length > 0 ? (
               <ul>
                 {amigos.map((amigo) => {
                   const jaEstaNoTime = membros.some(m => m.id === amigo.id);
+
                   return (
-                    <li key={amigo.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                    <li key={amigo.id}>
                       <img
-                        src={amigo.imagemUsuario || "/default-avatar.png"}
+                        src={
+                          amigo.imagemUsuario?.startsWith?.("data:image")
+                            ? amigo.imagemUsuario
+                            : amigo.imagemUsuario
+                              ? `data:image/*;base64,${amigo.imagemUsuario}`
+                              : avatardefault
+                        }
                         alt="Foto"
-                        style={{ width: '40px', height: '40px', borderRadius: '50%' }}
+                        style={{ width: 40, height: 40, borderRadius: '50%' }}
                       />
                       <span>{amigo.nome}</span>
+
                       {!jaEstaNoTime ? (
                         <button onClick={() => convidarParaTime(amigo.id)}>Convidar</button>
                       ) : (
@@ -421,7 +471,10 @@ function Times() {
             ) : (
               <p>Você não possui amigos.</p>
             )}
-            <button className="fechar-btn" onClick={() => setShowInvitePopup(false)}>Fechar</button>
+
+            <button className="fechar-btn" onClick={() => setShowInvitePopup(false)}>
+              Fechar
+            </button>
           </div>
         </div>
       )}
@@ -430,8 +483,13 @@ function Times() {
       {contextMenu && (
         <div
           className="contextual-popup"
-          style={{ top: contextMenu.y, left: contextMenu.x }}
-          onClick={closeContextMenu}
+          style={{
+            position: 'absolute',
+            top: contextMenu.y,
+            left: contextMenu.x,
+            zIndex: 9999
+          }}
+          onClick={(e) => e.stopPropagation()}
         >
           <button onClick={expulsarMembro}>Expulsar Membro</button>
           <button onClick={promoverParaDono}>Promover a Dono</button>

@@ -6,6 +6,7 @@ import Navbar from "../../Components/Navbar/Navbar";
 import Icon from "@mdi/react";
 import { mdiUbisoft } from "@mdi/js";
 import LoadingScreen from "../../Components/LoadingScreen/LoadingScreen";
+import avatardefault from '/src/assets/avatar-default.png';
 import "./Invites.css";
 
 function Invites() {
@@ -208,7 +209,7 @@ function Invites() {
                 >
                   <div className="avatar">
                     <img
-                      src={friend.imagemUsuario || "/default-avatar.png"}
+                      src={friend.imagemUsuario || avatardefault}
                       alt={`Foto de ${friend.nome}`}
                     />
                   </div>
@@ -278,7 +279,7 @@ function Invites() {
                   <li key={request.id} className="friend-card">
                     <div className="avatar">
                       <img
-                        src={request.imagemUsuario || "/default-avatar.png"}
+                        src={request.imagemUsuario || avatardefault}
                         alt={`Foto de ${request.nome}`}
                       />
                     </div>
@@ -380,7 +381,7 @@ function Invites() {
                     <li key={user.id} className="friend-card search-card">
                       <div className="avatar">
                         <img
-                          src={user.imagemUsuario || "/default-avatar.png"}
+                          src={user.imagemUsuario || avatardefault}
                           alt={`Foto de ${user.nome}`}
                         />
                       </div>

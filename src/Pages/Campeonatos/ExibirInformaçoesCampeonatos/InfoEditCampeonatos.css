@@ -12,7 +12,7 @@
 
 .detalhes-box {
   width: 100%;
-  max-width: 1100px;
+  max-width: 1300px;
   display: flex;
   flex-direction: column;
   gap: 30px;
@@ -224,7 +224,6 @@
   text-align: center;
 }
 
-/* Caixa do time (com hover e bordas arredondadas) */
 .time-box {
   display: flex;
   align-items: center;
@@ -234,8 +233,9 @@
   border-radius: 10px;
   padding: 10px 15px;
   transition: 0.3s;
-  flex: 1;
+  width: 300px; /* ajuste conforme desejar */
 }
+
 
 .time-box:hover {
   background: #2a2a2a;

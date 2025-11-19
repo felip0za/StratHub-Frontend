@@ -8,7 +8,7 @@ import avatarDefault from '../../../assets/avatar-default.png';
 import { useAuth } from '../../../contexts/AuthContext';
 
 const handleClickTeam = (timeId, navigate) => {
-  if (timeId) navigate(`/timesprofile/${timeId}`);
+  if (timeId) navigate(`/times/${timeId}`);
 };
 
 const Chaveamento = ({ grupos, maxEquipes }) => {

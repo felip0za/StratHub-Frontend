@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import StratHub from "/src/assets/StratHub.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserGroup } from "@fortawesome/free-solid-svg-icons";
+import avatardefault from '/src/assets/avatar-default.png';
 import "./Navbar.css";
 
 function Navbar() {
@@ -87,7 +88,7 @@ function Navbar() {
     );
   }
 
-  const imagemPerfil = usuario.imagemUsuario || "/default-avatar.png";
+  const imagemPerfil = usuario.imagemUsuario || avatardefault;
   const nomeUsuario = usuario.nome || "Usuário";
   const idTime = usuario.idTime || usuario.id_time;
 

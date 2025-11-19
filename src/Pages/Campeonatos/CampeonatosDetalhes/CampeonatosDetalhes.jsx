@@ -4,6 +4,7 @@ import Navbar from "../../../Components/Navbar/Navbar";
 import LoadingScreen from "../../../Components/LoadingScreen/LoadingScreen";
 import { useApi } from "../../../Services/API";
 import { useAuth } from "../../../contexts/AuthContext";
+import avatardefault from '/src/assets/avatar-default.png';
 import "./CampeonatosDetalhes.css";
 
 function CampeonatosDetalhes() {
@@ -129,7 +130,7 @@ function CampeonatosDetalhes() {
     ? campeonato.criador.imagemUsuario.startsWith("data:image")
       ? campeonato.criador.imagemUsuario
       : `data:image/png;base64,${campeonato.criador.imagemUsuario}`
-    : "/default-user.png";
+    : avatardefault;
 
   return (
     <>
@@ -200,7 +201,7 @@ function CampeonatosDetalhes() {
                 {/* ✅ NOVO BLOCO: Número de equipes inscritas */}
                 <div>
                   <p>🏆 Equipes inscritas</p>
-                  <span>{totalEquipes}</span>
+                  <span>{totalEquipes} / {campeonato.maxEquipes || campeonato.nm_max_equipes}</span>
                 </div>
               </div>
             </div>
@@ -224,25 +225,6 @@ function CampeonatosDetalhes() {
 
           {/* COLUNA DIREITA */}
           <div className="coluna-direita">
-            <div className="card-info">
-              <h3>Equipes</h3>
-              {campeonato.times && campeonato.times.length > 0 ? (
-                <div className="equipes-box">
-                  {campeonato.times.map((t, i) => (
-                    <div key={i} className="time-item">
-                      <img
-                        src={t.logo ? `data:image/png;base64,${t.logo}` : "https://via.placeholder.com/40"}
-                        alt={t.nome}
-                      />
-                      <span>{t.nome}</span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p>Nenhuma equipe cadastrada ainda.</p>
-              )}
-            </div>
-
             <div className="card-info">
               <h3>Configurações do jogo</h3>
               <p>
