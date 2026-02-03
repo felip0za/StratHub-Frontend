@@ -37,6 +37,11 @@ function User() {
   const [isAmigo, setIsAmigo] = useState(false);
   const [friendRequestStatus, setFriendRequestStatus] = useState('');
 
+  // Modal state
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editData, setEditData] = useState({ nome: '', ubiConnect: '', plataforma: '' });
+  const [editStatus, setEditStatus] = useState('');
+
   useEffect(() => {
     if (!id) {
       setError('ID do usuário não fornecido.');
@@ -47,34 +52,26 @@ function User() {
     async function fetchUsuario() {
       try {
         const headers = { Authorization: `Bearer ${token}` };
-
-        // Busca o usuário
         const { data: usuarioData } = await api.get(`/usuario/${id}`, { headers });
         setUsuario(usuarioData);
 
-        // Verifica amizade (se não for você mesmo)
+        // Preenche dados do modal para edição
+        setEditData({
+          nome: usuarioData.nome || '',
+          ubiConnect: usuarioData.ubiConnect || '',
+          plataforma: usuarioData.plataforma || ''
+        });
+
         if (parseInt(id) !== userId) {
-          try {
-            const { data: amigos } = await api.get('/amizade/amigos', { headers });
-            const amigoExiste = amigos.some(a => a.id === parseInt(id));
-            setIsAmigo(amigoExiste);
-          } catch {
-            setIsAmigo(false);
-          }
+          const { data: amigos } = await api.get('/amizade/amigos', { headers });
+          setIsAmigo(amigos.some(a => a.id === parseInt(id)));
         }
 
-        // Busca time
         const timeId = usuarioData.time?.id || usuarioData.idTime;
         if (timeId) {
-          try {
-            const { data: timeData } = await api.get(`/times/${timeId}`, { headers });
-            setTime(timeData);
-          } catch {
-            setTime(null);
-          }
-        } else {
-          setTime(null);
-        }
+          const { data: timeData } = await api.get(`/times/${timeId}`, { headers });
+          setTime(timeData);
+        } else setTime(null);
 
       } catch (err) {
         console.error('Erro ao buscar usuário:', err);
@@ -87,7 +84,6 @@ function User() {
     fetchUsuario();
   }, [id, api]);
 
-  // Enviar convite de amizade
   const handleAddFriend = async () => {
     try {
       await api.post(`/amizade/convidar/${id}`);
@@ -103,9 +99,48 @@ function User() {
     navigate("/login");
   };
 
-  const handleEdit = () => {
-    navigate(`/editar-usuario/${id}`);
+  // Modal handlers
+  const handleEditClick = () => setModalOpen(true);
+  const handleImageChange = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onloadend = () => {
+    setEditData(prev => ({
+      ...prev,
+      imagemUsuario: reader.result
+    }));
   };
+  reader.readAsDataURL(file);
+};
+
+  const handleModalClose = () => {
+    setModalOpen(false);
+    setEditStatus('');
+  };
+  const handleInputChange = (e) => {
+    setEditData({ ...editData, [e.target.name]: e.target.value });
+  };
+
+  const handleSaveEdit = async () => {
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      const { data } = await api.put(`/usuario/${id}`, editData, { headers });
+      setUsuario(data);
+      setEditStatus('✅ Perfil atualizado!');
+      setTimeout(() => setModalOpen(false), 1000);
+    } catch (err) {
+      const msg = err?.response?.data?.message || 'Erro ao atualizar perfil.';
+      setEditStatus(`❌ ${msg}`);
+    }
+  };
+
+  const handleReportUser = async (e) => {
+  e.preventDefault();
+  navigate(`/report-user/${id}`);
+};
+
 
   if (loading) return <LoadingScreen />;
 
@@ -146,13 +181,11 @@ function User() {
     <>
       <Navbar />
       <div className="profile-container">
-
         {/* HEADER */}
         <div className="profile-header">
           <img className="profile-avatar" src={imagemUsuario} alt="Foto" />
 
           <div className="profile-text">
-
             <h1 className="profile-nome">
               {usuario.apelidoTime && (
                 <span className="profile-apelido">{usuario.apelidoTime} | </span>
@@ -172,7 +205,6 @@ function User() {
             {/* Plataforma */}
             <p className="profile-ubi platform-row">
               <strong className="ubisoft-text">Plataforma:</strong>
-
               {usuario.plataforma ? (
                 <span className="platform-info platform-inline">
                   {usuario.plataforma.toUpperCase() === "PC" && (
@@ -181,14 +213,12 @@ function User() {
                       <span>PC</span>
                     </span>
                   )}
-
                   {usuario.plataforma.toUpperCase() === "XBOX" && (
                     <span className="platform-item">
                       <FaXbox size={22} color="#107C10" />
                       <span>Xbox</span>
                     </span>
                   )}
-
                   {usuario.plataforma.toUpperCase() === "PLAYSTATION" && (
                     <span className="platform-item">
                       <FaPlaystation size={22} color="#003791" />
@@ -200,13 +230,11 @@ function User() {
                 <span className="platform-info">Não informado</span>
               )}
             </p>
-
           </div>
         </div>
 
         {/* BODY */}
         <div className="profile-body">
-
           {/* Rank */}
           <div className="rank-card">
             <h3 className="rank-title">Rank do time:</h3>
@@ -218,7 +246,6 @@ function User() {
           {/* Títulos */}
           <div className="titles-card">
             <h3 className="titles-header">Títulos:</h3>
-
             <div className="titles-list">
               {usuario.titulos?.length > 0 ? (
                 usuario.titulos.map((t, i) => (
@@ -236,64 +263,117 @@ function User() {
               )}
             </div>
           </div>
-
-          {/* Campeonatos */}
-          <div className="titles-card">
-            <h3 className="titles-header">Campeonatos Participados:</h3>
-
-            <div className="titles-list">
-              {usuario.campeonatos?.length > 0 ? (
-                usuario.campeonatos.map((c, i) => (
-                  <div className="title-item" key={i}>
-                    <img
-                      className="champ-image"
-                      src={c.imagem ? `data:image/png;base64,${c.imagem}` : '/default-campeonato.png'}
-                      alt={c.nome}
-                    />
-                    <p className="title-name">{c.nome}</p>
-                  </div>
-                ))
-              ) : (
-                <p className="no-titles">Nenhum campeonato participado.</p>
-              )}
-            </div>
-          </div>
         </div>
 
         {/* BOTÕES */}
         <div className="profile-actions">
-
-          {/* Se for o próprio usuário → apenas Editar + Sair */}
           {usuario.id === userId && (
             <>
-              <button className="btn edit" onClick={handleEdit}>
+              <button className="btn edit" onClick={handleEditClick}>
                 ✏️ Editar Perfil
               </button>
-
               <button type="button" className="btn edit" onClick={handleSair}>
                 Sair
               </button>
             </>
           )}
 
-          {/* Se NÃO for o próprio usuário */}
           {usuario.id !== userId && (
             <>
-              {/* Se NÃO for amigo → botão adicionar */}
               {!isAmigo && (
                 <button className="btn add-friend" onClick={handleAddFriend}>
                   📨 Adicionar Amizade
                 </button>
               )}
 
-              {/* Status */}
+              <button className="btn report" onClick={handleReportUser}>
+                🚨 Reportar Usuário
+              </button>
+              
               {friendRequestStatus && (
                 <p className="friend-request-status">{friendRequestStatus}</p>
               )}
             </>
           )}
-
         </div>
+
+        {/* MODAL */}
+        {modalOpen && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+
+              {/* Avatar */}
+              <div className="modal-avatar-wrapper">
+                <label className="modal-avatar-label">
+                  <img
+                    src={
+                      editData.imagemUsuario
+                        ? (editData.imagemUsuario.startsWith("data:image")
+                            ? editData.imagemUsuario
+                            : `data:image/png;base64,${editData.imagemUsuario}`)
+                        : avatardefault
+                    }
+                    alt="Avatar"
+                    className="modal-avatar"
+                  />
+
+                  <div className="modal-avatar-overlay">Trocar foto</div>
+
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="modal-avatar-input"
+                  />
+                </label>
+              </div>
+
+              <h2>Editar Perfil</h2>
+
+              <label>
+                Nome:
+                <input
+                  type="text"
+                  name="nome"
+                  value={editData.nome}
+                  onChange={handleInputChange}
+                />
+              </label>
+
+              <label>
+                UbiConnect:
+                <input
+                  type="text"
+                  name="ubiConnect"
+                  value={editData.ubiConnect}
+                  onChange={handleInputChange}
+                />
+              </label>
+
+              <label>
+                Plataforma:
+                <select
+                  name="plataforma"
+                  value={editData.plataforma}
+                  onChange={handleInputChange}
+                >
+                  <option value="">Selecione</option>
+                  <option value="PC">PC</option>
+                  <option value="XBOX">Xbox</option>
+                  <option value="PLAYSTATION">PlayStation</option>
+                </select>
+              </label>
+
+              {editStatus && <p className="edit-status">{editStatus}</p>}
+
+              <div className="modal-actions">
+                <button className="btn save" onClick={handleSaveEdit}>💾 Salvar</button>
+                <button className="btn cancel" onClick={handleModalClose}>❌ Cancelar</button>
+              </div>
+
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

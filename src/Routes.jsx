@@ -11,7 +11,6 @@ import CreateTime from './Pages/Time/CreateTime/CreateTime';
 import Invites from './Pages/Invites/Invites';
 import Partidas from './Pages/Partidas/Partidas';
 import FPL from './Pages/Lobbys/FPL/FPL';
-import EditUser from './Pages/Usuario/EditUser/EditUser';
 import EliteCup from './Pages/EliteCup/EliteCup';
 import Campeonatos from './Pages/Campeonatos/Campeonatos';
 import EditTime from './Pages/Time/EditTime/EditTime';
@@ -22,6 +21,7 @@ import InfoEditCampeonatos from './Pages/Campeonatos/ExibirInformaçoesCampeonat
 import InfoCampeonatos from './Pages/Campeonatos/Campeonatos';
 import CampeonatoDetalhes from './Pages/Campeonatos/CampeonatosDetalhes/CampeonatosDetalhes';
 import CampeonatosInscritos from './Pages/Campeonatos/CampeonatosInscritos/CampeonatosInscritos';
+import ReportUser from './Pages/Usuario/ReportUser/ReportUser';
 
 function MainRoutes() {
   return (
@@ -39,6 +39,12 @@ function MainRoutes() {
       <Route path='/usuario/:id' element={
         <PrivateRoute>
           <User />
+        </PrivateRoute>
+      } />
+
+      <Route path='/report-user/:id' element={
+        <PrivateRoute>
+          <ReportUser />
         </PrivateRoute>
       } />
 
@@ -88,11 +94,6 @@ function MainRoutes() {
         </PrivateRoute>
       } />
       
-      <Route path='/editar-usuario/:id' element={
-        <PrivateRoute>
-          <EditUser />
-        </PrivateRoute>
-      } />
       <Route path='/editar-time/:id' element={
         <PrivateRoute>
           <EditTime />

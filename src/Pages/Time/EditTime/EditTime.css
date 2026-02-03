@@ -1,78 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
 .editar-time-container {
   max-width: 900px;
   margin: 3rem auto;
   padding: 2.5rem;
-  background-color: #2b2b2b;
-  border-radius: 16px;
-  box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+  background: linear-gradient(145deg, #1e1e1e, #2b2b2b);
+  border-radius: 20px;
+  box-shadow: 0 0 25px rgba(220, 20, 60, 0.4);
   font-family: 'Poppins', sans-serif;
   color: #fff;
 }
 
 .editar-time-container h2 {
-  font-size: 1.8rem;
-  margin-bottom: 2rem;
+  font-family: 'Poppins', sans-serif;
   text-align: center;
+  font-size: 2rem;
+  margin-bottom: 2rem;
   text-transform: uppercase;
-  font-weight: 900;
-  border-bottom: 1px solid #444;
+  letter-spacing: 0.1em;
+  border-bottom: 2px solid crimson;
   padding-bottom: 1rem;
-  letter-spacing: 0.08em;
 }
 
+/* FORM */
 .editar-time-form {
-  display: flex;
-  gap: 2rem;
-  align-items: flex-start;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 2.5rem;
 }
 
+/* LEFT */
 .left-column {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 200px;
+  justify-content: center;
 }
 
 .imagem-wrapper {
   position: relative;
-  width: 140px;
-  height: 140px;
+  width: 160px;
+  height: 160px;
   cursor: pointer;
 }
 
 .imagem-preview {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  border: 2px solid #fff;
   border-radius: 50%;
-  transition: filter 0.3s ease;
+  object-fit: cover;
+  border: 3px solid rgb(0, 0, 0);
+  transition: 0.3s ease;
 }
 
 .imagem-wrapper:hover .imagem-preview {
-  filter: brightness(0.6);
+  filter: brightness(0.5);
+  transform: scale(1.05);
 }
 
 .imagem-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  color: #000;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.7);
   border-radius: 50%;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: #fff;
   display: flex;
-  justify-content: center;
   align-items: center;
-  font-size: 0.9rem;
-  font-weight: bold;
-  text-transform: uppercase;
+  justify-content: center;
   opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
+  font-weight: bold;
   letter-spacing: 0.05em;
+  transition: 0.3s;
 }
 
 .imagem-wrapper:hover .imagem-overlay {
@@ -83,105 +79,99 @@
   display: none;
 }
 
+/* RIGHT */
 .right-column {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
-  min-width: 250px;
+  gap: 1rem;
 }
 
 .right-column label {
-  font-weight: bold;
-  font-size: 0.9rem;
-  color: #f0f0f0;
+  font-size: 0.8rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
+  color: #ddd;
 }
 
 .right-column input,
 .right-column textarea {
-  width: 100%;
-  padding: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: none;
+  background: #121212;
+  color: #fff;
   font-size: 0.95rem;
-  border-radius: 6px;
-  border: 1px solid #888;
-  background-color: #1c1c1c;
-  color: white;
-  transition: border-color 0.3s ease;
-  font-family: 'Poppins', sans-serif;
+  outline: none;
+  transition: 0.3s;
+}
+
+.right-column input::placeholder {
+  color: #777;
 }
 
 .right-column input:focus,
 .right-column textarea:focus {
-  outline: none;
-  border-color: crimson;
+  border: 1px solid crimson;
+  box-shadow: 0 0 8px crimson;
 }
 
 .right-column textarea {
-  resize: vertical;
-  min-height: 100px;
+  resize: none;
+  min-height: 90px;
 }
 
+/* BUTTONS */
 .buttons {
   margin-top: 2rem;
   display: flex;
   gap: 1rem;
-  flex-wrap: wrap;
 }
 
 .salvar-btn,
 .cancelar-btn {
-  padding: 12px 20px;
-  border-radius: 6px;
-  cursor: pointer;
+  flex: 1;
+  padding: 14px;
+  border-radius: 12px;
   font-weight: bold;
-  font-size: 0.95rem;
-  border: none;
-  transition: background-color 0.3s ease;
-  font-family: 'Poppins', sans-serif;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
 .salvar-btn {
-  background-color: crimson;
+  background: linear-gradient(135deg, crimson, #ff3b3b);
   color: white;
-  box-shadow: 0 4px 10px rgba(255, 0, 0, 0.4);
+  box-shadow: 0 4px 12px rgba(255,0,0,0.4);
 }
 
 .salvar-btn:hover {
-  background-color: #a10000;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(255,0,0,0.6);
 }
 
 .cancelar-btn {
-  background-color: #444;
-  color: #fff;
+  background: #333;
+  color: white;
 }
 
 .cancelar-btn:hover {
-  background-color: #333;
+  background: #222;
 }
 
+/* RESPONSIVO */
 @media (max-width: 768px) {
   .editar-time-form {
-    flex-direction: column;
-    align-items: center;
+    grid-template-columns: 1fr;
   }
 
-  .left-column,
-  .right-column {
-    width: 100%;
+  .imagem-wrapper {
+    margin-bottom: 1rem;
   }
 
   .buttons {
     flex-direction: column;
-    width: 100%;
-  }
-
-  .salvar-btn,
-  .cancelar-btn {
-    width: 100%;
   }
 }
-  

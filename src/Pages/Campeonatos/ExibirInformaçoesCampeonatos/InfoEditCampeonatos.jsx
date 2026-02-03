@@ -12,28 +12,31 @@ const handleClickTeam = (timeId, navigate) => {
 };
 
 const Chaveamento = ({ grupos, maxEquipes }) => {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
+    const letrasGrupos = ['A', 'B', 'C', 'D'].slice(0, Math.ceil(maxEquipes / 4));
 
-  const letrasGrupos = ['A', 'B', 'C', 'D'].slice(0, Math.ceil(maxEquipes / 4));
+    const gruposDinamicos = {};
 
-  // Criar grupos respeitando posição
-  const gruposDinamicos = {};
   letrasGrupos.forEach((letra) => {
     const grupo = grupos[letra] || [];
-    // Criar array de 4 posições
-    const grupoOrdenado = Array(4).fill(null);
-    grupo.forEach(time => {
-      const pos = Number(time.posicao);
-      if (pos && pos > 0 && pos <= 4) {
-        grupoOrdenado[pos - 1] = time;
-      } else {
-        // Caso posicao inválida, joga na primeira vaga livre
-        const firstEmpty = grupoOrdenado.findIndex(t => !t);
-        if (firstEmpty !== -1) grupoOrdenado[firstEmpty] = time;
-      }
+
+    // 🔥 Ordena o grupo por pontuação (maior → menor)
+    const grupoOrdenadoPorPontos = [...grupo].sort((a, b) => {
+      const pontosA = Number(a.pontuacao) || 0;
+      const pontosB = Number(b.pontuacao) || 0;
+      return pontosB - pontosA;
     });
-    gruposDinamicos[letra] = grupoOrdenado;
+
+    // 🔥 Mantém um array fixo de 4 slots (com null para mostrar os ícones de times vazios)
+    const grupoFinal = Array(4).fill(null);
+
+    grupoOrdenadoPorPontos.forEach((time, index) => {
+      if (index < 4) grupoFinal[index] = time;
+    });
+
+    gruposDinamicos[letra] = grupoFinal;
   });
+
 
   return (
     <div className="chaveamento-box">
@@ -71,10 +74,8 @@ const Chaveamento = ({ grupos, maxEquipes }) => {
   );
 };
 
-const TabelaEliminatorias = ({ times, maxEquipes }) => {
+const TabelaEliminatorias = ({ grupos, times, maxEquipes }) => {
   const navigate = useNavigate();
-  
-  // Garante que sempre haverá maxEquipes posições
   const timesOrdenados = Array.from({ length: maxEquipes }, (_, i) => {
     const time = times?.find(t => t.posicao === i + 1);
     return time || { nome: '-', pontuacao: 0, posicao: i + 1, logo: null };
@@ -109,13 +110,12 @@ const TabelaEliminatorias = ({ times, maxEquipes }) => {
   );
 };
 
-// === COMPONENTE PARTIDAS DE GRUPOS ===
+// === PARTIDAS DE GRUPOS ===
 const PartidasGrupos = ({ grupos }) => {
   const letras = ['A', 'B', 'C', 'D'];
   const [grupoSelecionado, setGrupoSelecionado] = useState('A');
   const navigate = useNavigate();
 
-  // Criar placeholder caso não haja grupos
   const gruposComPlaceholder = grupos || letras.reduce((acc, l) => {
     acc[l] = Array(4).fill({ nome: '-', pontuacao: 0, logo: null });
     return acc;
@@ -123,7 +123,6 @@ const PartidasGrupos = ({ grupos }) => {
 
   const times = gruposComPlaceholder[grupoSelecionado] || Array(4).fill({ nome: '-', pontuacao: 0, logo: null });
 
-  // Gerar pares de partidas (cada "semana")
   const partidas = [];
   for (let i = 0; i < times.length; i += 2) {
     const time1 = times[i];
@@ -133,7 +132,6 @@ const PartidasGrupos = ({ grupos }) => {
 
   return (
     <div className="partidas-grupos-box">
-      {/* SELECT PARA ESCOLHER GRUPO */}
       <div className="grupo-select-box">
         <label>GRUPO: </label>
         <select value={grupoSelecionado} onChange={(e) => setGrupoSelecionado(e.target.value)}>
@@ -143,12 +141,11 @@ const PartidasGrupos = ({ grupos }) => {
         </select>
       </div>
 
-      {/* EXIBIR PARTIDAS DO GRUPO SELECIONADO */}
       {partidas.map((p, idx) => (
         <div key={idx} className="semana-box">
           <h4>SEMANA {idx + 1}:</h4>
+
           <div className="partida-item">
-            {/* TIME 1 */}
             <div className="time">
               {p.time1.logo && (
                 <img
@@ -164,9 +161,14 @@ const PartidasGrupos = ({ grupos }) => {
             <span className="vs">VS</span>
             <span className="pontos-time">{p.time2.pontuacao || 0}</span>
 
-            {/* TIME 2 */}
             <div className="time">
-              {p.time2.logo && <img src={p.time2.logo} alt={p.time2.nome} />}
+              {p.time2.logo && (
+                <img
+                  src={p.time2.logo}
+                  alt={p.time2.nome}
+                  onClick={() => handleClickTeam(p.time2.id, navigate)}
+                />
+              )}
               <span className="nome-time">{p.time2.nome}</span>
             </div>
           </div>
@@ -176,25 +178,22 @@ const PartidasGrupos = ({ grupos }) => {
   );
 };
 
-// === COMPONENTE PARTIDAS SIMPLES (ROUND-ROBIN COMPLETO, SEM REPETIÇÕES) ===
+// === PARTIDAS SIMPLES ===
 const PartidasSimples = ({ times, maxEquipes }) => {
   const navigate = useNavigate();
   const [semanaSelecionada, setSemanaSelecionada] = useState(1);
 
-  // Preenche times até o máximo definido
   const timesOrdenados = Array.from({ length: maxEquipes }, (_, i) => {
     const time = times?.find(t => t.posicao === i + 1);
-    return time || { nome: '-', pontuacao: 0, posicao: i + 1, logo: null };
+    return time || { nome: '-', pontuacao: 0, logo: null };
   });
 
-  // Se houver número ímpar de times, adiciona um "descanso"
   let listaTimes = [...timesOrdenados];
   if (listaTimes.length % 2 !== 0) listaTimes.push({ nome: 'Descansa', bye: true });
 
   const numSemanas = listaTimes.length - 1;
   const numPartidasPorSemana = listaTimes.length / 2;
 
-  // --- Gerar partidas sem repetições (Round Robin / Berger Table) ---
   const semanas = [];
   let arr = [...listaTimes];
 
@@ -208,20 +207,13 @@ const PartidasSimples = ({ times, maxEquipes }) => {
     }
 
     semanas.push(partidasSemana);
-
-    // Rotacionar times mantendo o primeiro fixo
     arr = [arr[0], ...arr.slice(2), arr[1]];
   }
 
   const partidas = semanas[semanaSelecionada - 1] || [];
 
-  const handleClickTeam = (idTime) => {
-    navigate(`/times/${idTime}`);
-  };
-
   return (
     <div className="partidas-grupos-box">
-      {/* MENU HAMBÚRGUER PARA SEMANAS */}
       <div className="grupo-select-box">
         <label>SEMANA: </label>
         <select 
@@ -236,22 +228,19 @@ const PartidasSimples = ({ times, maxEquipes }) => {
         </select>
       </div>
 
-      {/* EXIBIÇÃO DAS PARTIDAS */}
       <div className="semana-box">
         <h4>SEMANA {semanaSelecionada}</h4>
 
         {partidas.map((p, idx) => (
           <div key={idx} className="partida-item">
-            {/* 🔹 Alterado para exibir “JOGO 1”, “JOGO 2”, etc. */}
             <h4 className="titulo-jogo">JOGO {idx + 1}</h4>
 
-            {/* TIME 1 */}
             <div className="time">
               {!p.time1.bye && p.time1.logo && (
                 <img
                   src={p.time1.logo}
                   alt={p.time1.nome}
-                  onClick={() => p.time1.id && handleClickTeam(p.time1.id)}
+                  onClick={() => p.time1.id && navigate(`/times/${p.time1.id}`)}
                 />
               )}
               <span className="nome-time">{p.time1.nome}</span>
@@ -267,13 +256,12 @@ const PartidasSimples = ({ times, maxEquipes }) => {
               <span className="vs">—</span>
             )}
 
-            {/* TIME 2 */}
             <div className="time">
               {!p.time2.bye && p.time2.logo && (
                 <img
                   src={p.time2.logo}
                   alt={p.time2.nome}
-                  onClick={() => p.time2.id && handleClickTeam(p.time2.id)}
+                  onClick={() => p.time2.id && navigate(`/times/${p.time2.id}`)}
                 />
               )}
               <span className="nome-time">{p.time2.nome}</span>
@@ -286,6 +274,7 @@ const PartidasSimples = ({ times, maxEquipes }) => {
 };
 
 
+// === COMPONENTE PRINCIPAL ===
 const InfoEditCampeonatos = () => {
   const [campeonato, setCampeonato] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -296,34 +285,27 @@ const InfoEditCampeonatos = () => {
   const [editImagem, setEditImagem] = useState('');
   const [previewImagem, setPreviewImagem] = useState('');
   const [saving, setSaving] = useState(false);
-  const { user } = useAuth();
 
-  // === NOVO ESTADO PARA ALTERNAR ENTRE INFORMAÇÕES / PARTIDAS ===
   const [abaSelecionada, setAbaSelecionada] = useState('informacoes');
-
-  // === NOVO ESTADO PARA TIMES INSCRITOS ===
   const [timesInscritos, setTimesInscritos] = useState({});
 
   const { id } = useParams();
   const navigate = useNavigate();
   const api = useApi();
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchDados = async () => {
       try {
-        // === 1️⃣ Buscar dados do campeonato
         const responseCampeonato = await api.get(`/campeonatos/${id}`);
         const campeonatoData = formatarDatas(responseCampeonato.data);
         setCampeonato(campeonatoData);
 
-        // === 2️⃣ Buscar inscrições (lista com idTime, grupo, posicao, pontos)
         const responseInscricoes = await api.get(`/inscricoes/campeonato/${id}/times`);
         const inscricoes = responseInscricoes.data;
 
-        // === 3️⃣ Criar objeto base de grupos
         const grupos = { A: [], B: [], C: [], D: [] };
 
-        // === 4️⃣ Buscar dados completos de cada time inscrito
         for (const inscricao of inscricoes) {
           try {
             const responseTime = await api.get(`/times/${inscricao.idTime}`);
@@ -335,8 +317,7 @@ const InfoEditCampeonatos = () => {
             const imagemTime = timeData.imagemBase64
               ? (timeData.imagemBase64.startsWith('data:image')
                   ? timeData.imagemBase64
-                  : `data:image/png;base64,${timeData.imagemBase64}`
-                )
+                  : `data:image/png;base64,${timeData.imagemBase64}`)
               : avatarDefault;
 
             grupos[grupo].push({
@@ -344,7 +325,6 @@ const InfoEditCampeonatos = () => {
               nome: timeData.nome,
               logo: imagemTime,
               pontuacao: inscricao.pontuacao || 0,
-              posicao: inscricao.posicao || '-',
             });
           } catch (err) {
             console.error(`Erro ao buscar dados do time ${inscricao.idTime}:`, err);
@@ -442,7 +422,7 @@ const InfoEditCampeonatos = () => {
       <div className="detalhes-pagina">
         <div className="detalhes-box">
 
-          {/* === NOVO SELECTOR DE ABA === */}
+          {/* ABA */}
           <div className="aba-selector">
             <button
               className={abaSelecionada === 'informacoes' ? 'aba-btn ativo' : 'aba-btn'}
@@ -458,10 +438,9 @@ const InfoEditCampeonatos = () => {
             </button>
           </div>
 
-          {/* === CONTEÚDO PRINCIPAL === */}
+          {/* INFORMAÇÕES */}
           {abaSelecionada === 'informacoes' && (
             <>
-              {/* HEADER */}
               <div className="header-box">
                 <div className="logo-box">
                   <img src={formatarImagem(campeonato.imagemCampeonato)} alt={campeonato.nome} />
@@ -490,7 +469,9 @@ const InfoEditCampeonatos = () => {
                       <strong>Prêmio💵:</strong> {campeonato.premio !== null ? `R$ ${Number(campeonato.valor || 0).toFixed(2)}` : '-'}
                     </div>
                     <div className="info-item">
-                      <strong>Entrada🎟️:</strong> {campeonato.tipo === 'GRATUITO' ? 'Gratuito' : `R$ ${Number(campeonato.valorPorEquipe || 0).toFixed(2)}`}
+                      <strong>Entrada🎟️:</strong> {campeonato.tipo === 'GRATUITO'
+                        ? 'Gratuito'
+                        : `R$ ${Number(campeonato.valorPorEquipe || 0).toFixed(2)}`}
                     </div>
                     <div className="info-item">
                       <strong>Numero de equipes👥:</strong> {campeonato.maxEquipes}
@@ -500,38 +481,39 @@ const InfoEditCampeonatos = () => {
 
                 <div className="botoes-box">
                   {user?.id === campeonato.idCriador && (
-                  <button className="btn-editar" onClick={abrirModal}>
-                    Editar
-                  </button>
-                )}
+                    <button className="btn-editar" onClick={abrirModal}>
+                      Editar
+                    </button>
+                  )}
                   <button className="btn-voltar2" onClick={handleVoltar}>Voltar</button>
                 </div>
               </div>
 
-              {/* DESCRIÇÃO */}
               <div className="card-desc">
                 <h2>DESCRIÇÃO</h2>
                 <p>{campeonato.descricao || '-'}</p>
               </div>
 
-              {/* TABELA OU CHAVEAMENTO DENTRO DE INFORMAÇÕES */}
               {campeonato.formatoCampeonato === 'TABELA_ELIMINATORIAS' ? (
-                <TabelaEliminatorias times={Object.values(timesInscritos).flat()} maxEquipes={campeonato.maxEquipes} />
+                <TabelaEliminatorias
+                  times={Object.values(timesInscritos).flat()}
+                  maxEquipes={campeonato.maxEquipes}
+                />
               ) : (
                 <Chaveamento grupos={timesInscritos} maxEquipes={campeonato.maxEquipes} />
               )}
             </>
           )}
 
-          {/* === ABA PARTIDAS === */}
+          {/* PARTIDAS */}
           {abaSelecionada === 'partidas' && (
             <>
               {campeonato.formatoCampeonato === 'FASE_DE_GRUPOS_E_ELIMINATORIAS' ? (
                 <PartidasGrupos grupos={timesInscritos} />
               ) : (
-                <PartidasSimples 
-                  times={Object.values(timesInscritos).flat()} 
-                  maxEquipes={campeonato.maxEquipes} 
+                <PartidasSimples
+                  times={Object.values(timesInscritos).flat()}
+                  maxEquipes={campeonato.maxEquipes}
                 />
               )}
             </>
@@ -539,22 +521,27 @@ const InfoEditCampeonatos = () => {
         </div>
       </div>
 
-      {/* MODAL DE EDIÇÃO */}
+      {/* MODAL */}
       {modalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <h2>Editar Campeonato</h2>
+
+            <h2 className="modal-title">Editar Campeonato</h2>
 
             <div className="modal-field">
               <label>Nome do Campeonato:</label>
-              <input type="text" value={editNome} onChange={(e) => setEditNome(e.target.value)} />
+              <input
+                type="text"
+                value={editNome}
+                onChange={(e) => setEditNome(e.target.value)}
+              />
             </div>
 
             <div className="modal-field">
               <label>Descrição:</label>
               <textarea
                 value={campeonato.descricao}
-                onChange={(e) => setCampeonato({...campeonato, descricao: e.target.value})}
+                onChange={(e) => setCampeonato({ ...campeonato, descricao: e.target.value })}
               />
             </div>
 
@@ -563,42 +550,49 @@ const InfoEditCampeonatos = () => {
               <select value={editStatus} onChange={(e) => setEditStatus(e.target.value)}>
                 {(() => {
                   const statusAtual = campeonato.status;
-                  let opcoes = [];
 
                   if (statusAtual === 'ABERTO') {
-                    opcoes = [
-                      { value: 'EM_ANDAMENTO', label: 'Em Andamento' },
-                      { value: 'FECHADO', label: 'Fechado' }
-                    ];
-                  } else if (statusAtual === 'EM_ANDAMENTO') {
-                    opcoes = [
-                      { value: 'ABERTO', label: 'Aberto' },
-                      { value: 'FECHADO', label: 'Fechado' }
-                    ];
-                  } else if (statusAtual === 'FECHADO') {
-                    opcoes = [
-                      { value: 'ABERTO', label: 'Aberto' },
-                      { value: 'EM_ANDAMENTO', label: 'Em Andamento' }
-                    ];
+                    return (
+                      <>
+                        <option value="EM_ANDAMENTO">Em Andamento</option>
+                        <option value="FECHADO">Fechado</option>
+                      </>
+                    );
                   }
 
-                  return opcoes.map(opt => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ));
+                  if (statusAtual === 'EM_ANDAMENTO') {
+                    return <option value="FINALIZADO">Finalizado</option>;
+                  }
+
+                  if (statusAtual === 'FECHADO') {
+                    return <option value="EM_ANDAMENTO">Reabrir (Em Andamento)</option>;
+                  }
+
+                  return <option value="FINALIZADO">Finalizado</option>;
                 })()}
               </select>
             </div>
 
             <div className="modal-field">
-              <label>Imagem do Campeonato:</label>
+              <label>Imagem:</label>
               <input type="file" accept="image/*" onChange={handleImagemChange} />
-              {previewImagem && <img src={previewImagem} alt="Preview" className="preview-modal-img" />}
+
+              {previewImagem && (
+                <img
+                  src={previewImagem}
+                  alt="Preview"
+                  className="preview-img"
+                />
+              )}
             </div>
 
             <div className="modal-buttons">
-              <button onClick={() => setModalOpen(false)} disabled={saving}>Cancelar</button>
-              <button onClick={handleSalvarEdicao} disabled={saving}>
+              <button className="btn-salvar" disabled={saving} onClick={handleSalvarEdicao}>
                 {saving ? 'Salvando...' : 'Salvar'}
+              </button>
+
+              <button className="btn-cancelar" onClick={() => setModalOpen(false)}>
+                Cancelar
               </button>
             </div>
           </div>

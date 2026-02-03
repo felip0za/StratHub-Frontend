@@ -1,156 +1,155 @@
 @import url('https://fonts.cdnfonts.com/css/akira-expanded');
 
 .nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 30px;
-    background-color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 30px;
+  background: linear-gradient(90deg, #0f0f0f, #1a1a1a);
+  border-bottom: 1px solid #2a2a2a;
 }
 
+/* SECTIONS */
+.nav-left,
+.nav-center,
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+/* LOGO */
 .nav-logo {
-    width: 100px;
-    cursor: pointer;
-    transition: 1s;
+  width: 95px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
 }
 
-.nav-logo:hover{
-    transform: scale(1.1);
-    transition: 1s;
+.nav-logo:hover {
+  transform: scale(1.1);
 }
 
-.nav-links {
-    display: flex;
-    gap: 30px; /* Reduzido de 100px para 30px */
-}
-
+/* LINKS */
 .nav-link {
-    font-family: 'Akira Expanded', sans-serif;
-    color: white;
-    cursor: pointer;
-    font-size: 18px;
-    padding: 5px 10px;
-    transition: 0.3s;
+  font-family: 'Akira Expanded', sans-serif;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: 0.3s;
 }
 
+.nav-link:hover {
+  background-color: rgb(180, 0, 0);
+}
+
+/* FRIENDS ICON */
 .nav-link-friends {
-    font-family: 'Akira Expanded', sans-serif;
-    color: white;
-    cursor: pointer;
-    font-size: 18px;
-    padding: 5px;
-    transition: 0.3s;
-    /* ❌ Removido: margin-right: -100px; */
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
-.nav-link:hover,
 .nav-link-friends:hover {
-    font-size: 20px;
-    padding: 8px;
-    color: rgb(180, 0, 0);
-    transition: 0.3s;
+  color: rgb(180, 0, 0);
 }
 
+/* WALLET */
+.wallet {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #222;
+  padding: 6px 12px;
+  border-radius: 8px;
+  color: #00ff99;
+  font-family: "Poppins", sans-serif;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
 
+.wallet:hover {
+  background-color: #00ff99;
+  color: black;
+}
 
+/* USER INFO */
 .user-info {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    background-color: #222;
-    padding: 8px 12px;
-    border-radius: 8px;
-    color: white;
-    font-family: 'Akira Expanded', sans-serif;
-    font-size: 16px;
-    font-weight: bold;
-    transition: 0.3s;
-    position: relative;
+  display: flex;
+  align-items: center;
+  background-color: #222;
+  padding: 6px 10px;
+  border-radius: 10px;
+  transition: 0.3s;
+  position: relative;
 }
 
 .user-info:hover {
-    background-color: rgb(180, 0, 0);
-    color: white;
+  background-color: rgb(180, 0, 0);
 }
 
+/* AVATAR */
 .profile-icon-img {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    object-fit: cover;
-    cursor: pointer;
-    transition: 0.3s;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
 .profile-icon-img:hover {
-    transform: scale(1.1);
+  transform: scale(1.1);
 }
 
-.friends-icon {
-    font-size: 22px;
-    color: white;
-}
-
-.friends-icon:hover {
-    font-size: 22px;
-    color: rgb(180, 0, 0);;
-    transition: 0.3s;
-}
+/* TOOLTIP */
 .user-tooltip {
-    position: absolute;
-    top: 50px;
-    right: 0;
-    background-color: #1a1a1a;
-    color: white;
-    padding: 10px;
-    border-radius: 12px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
-    z-index: 999;
-    min-width: 140px;
-    text-align: center;
-    font-family: 'Poppins', sans-serif;
-    animation: fadeIn 0.3s ease-in-out;
+  position: absolute;
+  top: 55px;
+  right: 0;
+  background-color: #1a1a1a;
+  color: white;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.5);
+  min-width: 160px;
+  animation: fadeIn 0.2s ease-in-out;
 }
 
-/* ✅ NOVO: container com logo e nome lado a lado */
 .tooltip-header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 6px;
-    font-family: "Poppins", sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
 }
 
 .tooltip-logo {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    object-fit: cover;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
 }
 
 .tooltip-name {
-    font-size: 14px;
-    font-weight: bold;
-    color: rgb(255, 255, 255);
-    text-align: left;
-    font-family: "Poppins", sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  font-family: "Poppins", sans-serif;
 }
 
 .tooltip-name.nao-possui {
-    font-size: 14px;
-    color: rgb(255, 80, 80);
-    font-weight: bold;
-    font-family: "Poppins", sans-serif;
+  color: #ff5a5a;
 }
 
+/* ANIMATION */
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-5px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

@@ -355,8 +355,210 @@
   background-color: #5f0000;
 }
 
+.btn.report {
+  background-color: rgb(180, 0, 0);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  transition: background-color 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.btn.report:hover {
+  background-color: #5f0000;
+}
+
+.btn.report {
+  background-color: #b40000;
+  color: white;
+}
+.btn.report:hover {
+  background-color: #5f0000;
+}
+
 .friend-request-status {
   margin-top: 10px;
   font-weight: 600;
   text-align: center;
 }
+
+/* OVERLAY */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+/* CONTEÚDO */
+.modal-content {
+  background: linear-gradient(145deg, #1e1e1e, #2a2a2a);
+  padding: 28px;
+  border-radius: 22px;
+  width: 420px;
+  max-width: 90%;
+  box-shadow: 0 0 30px rgba(255,0,0,0.45);
+  animation: scaleIn 0.3s ease;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* ESCONDE O INPUT PADRÃO */
+.modal-avatar-input {
+  display: none;
+}
+
+/* OVERLAY */
+.modal-avatar-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+/* HOVER */
+.modal-avatar-label:hover .modal-avatar {
+  filter: brightness(0.6);
+}
+
+.modal-avatar-label:hover .modal-avatar-overlay {
+  opacity: 1;
+}
+
+.modal-avatar-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.modal-avatar-label {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  cursor: pointer;
+}
+
+.modal-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  transition: filter 0.3s ease;
+}
+
+/* TÍTULO */
+.modal-content h2 {
+  text-align: center;
+  color: #ff2a2a;
+  margin-bottom: 5px;
+}
+
+/* LABELS */
+.modal-content label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+  gap: 6px;
+}
+
+
+/* INPUTS & SELECT */
+.modal-content input,
+.modal-content select {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #444;
+  background-color: #121212;
+  color: white;
+  font-size: 0.95rem;
+  transition: border-color 0.3s ease;
+}
+
+.modal-content input:focus,
+.modal-content select:focus {
+  outline: none;
+  border-color: #ff0000;
+}
+
+/* STATUS */
+.edit-status {
+  text-align: center;
+  font-weight: bold;
+}
+
+/* AÇÕES */
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+/* BOTÕES */
+.modal-actions .btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 14px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+
+/* SALVAR */
+.modal-actions .btn.save {
+  background-color: #b40000;
+  color: white;
+}
+
+.modal-actions .btn.save:hover {
+  background-color: #ff1e1e;
+  transform: scale(1.05);
+}
+
+/* CANCELAR */
+.modal-actions .btn.cancel {
+  background-color: #333;
+  color: white;
+}
+
+.modal-actions .btn.cancel:hover {
+  background-color: #555;
+  transform: scale(1.05);
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+

@@ -16,7 +16,10 @@ function EditarTime() {
     nome: "",
     apelido: "",
     descricao: "",
-    imagemBase64: ""
+    imagemBase64: "",
+    instagram: "",
+    discord: "",
+    twitter: ""
   });
 
   const [loading, setLoading] = useState(true);
@@ -155,6 +158,36 @@ function EditarTime() {
               value={time.descricao}
               onChange={handleChange}
               rows={4}
+            />
+
+            <label htmlFor="instagram">Instagram</label>
+            <input
+              type="text"
+              id="instagram"
+              name="instagram"
+              value={time.instagram}
+              onChange={handleChange}
+              placeholder="https://instagram.com/seutime"
+            />
+
+            <label htmlFor="discord">Discord</label>
+            <input
+              type="text"
+              id="discord"
+              name="discord"
+              value={time.discord}
+              onChange={handleChange}
+              placeholder="Link do Discord"
+            />
+
+            <label htmlFor="twitter">Twitter (X)</label>
+            <input
+              type="text"
+              id="twitter"
+              name="twitter"
+              value={time.twitter}
+              onChange={handleChange}
+              placeholder="https://twitter.com/seutime"
             />
 
             <div className="buttons">

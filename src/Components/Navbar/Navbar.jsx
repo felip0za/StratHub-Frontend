@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import StratHub from "/src/assets/StratHub.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserGroup } from "@fortawesome/free-solid-svg-icons";
-import avatardefault from '/src/assets/avatar-default.png';
+import avatardefault from "/src/assets/avatar-default.png";
 import "./Navbar.css";
 
 function Navbar() {
@@ -73,16 +73,18 @@ function Navbar() {
         <nav className="nav">
           <img
             src={StratHub}
-            alt="Logo do sistema"
+            alt="Logo"
             className="nav-logo"
             onClick={() => navigate("/")}
           />
-          <span className="nav-link" onClick={() => navigate("/login")}>
-            Entrar
-          </span>
-          <span className="nav-link" onClick={() => navigate("/cadastro")}>
-            Cadastrar
-          </span>
+          <div className="nav-center">
+            <span className="nav-link" onClick={() => navigate("/login")}>
+              Entrar
+            </span>
+            <span className="nav-link" onClick={() => navigate("/cadastro")}>
+              Cadastrar
+            </span>
+          </div>
         </nav>
       </header>
     );
@@ -95,59 +97,83 @@ function Navbar() {
   return (
     <header>
       <nav className="nav">
-        <img
-          src={StratHub}
-          alt="Logo"
-          className="nav-logo"
-          onClick={() => navigate("/")}
-        />
 
-        {/* Apenas os itens desejados */}
-        <span className="nav-link" onClick={() => navigate("/campeonatos")}>
-          Campeonatos
-        </span>
-        <span className="nav-link" onClick={() => navigate("/eliteCup")}>
-          ELITE CUP
-        </span>
-        <span
-          className="nav-link"
-          onClick={() => navigate(idTime ? `/times/${idTime}` : "/criartime")}
-        >
-          Time
-        </span>
-        <span className="nav-link-friends" onClick={() => navigate("/amigos")}>
-          <FontAwesomeIcon icon={faUserGroup} className="friends-icon" />
-        </span>
-
-        <div
-          className="user-info"
-          onMouseEnter={() => setShowTooltip(true)}
-          onMouseLeave={() => setShowTooltip(false)}
-        >
+        {/* LEFT */}
+        <div className="nav-left">
           <img
-            className="profile-icon-img"
-            src={imagemPerfil}
-            alt={`Foto de ${nomeUsuario}`}
-            onClick={() => navigate(`/usuario/${usuario.id || userId}`)}
+            src={StratHub}
+            alt="Logo"
+            className="nav-logo"
+            onClick={() => navigate("/")}
           />
+        </div>
 
-          {showTooltip && (
-            <div className="user-tooltip">
-              <p>Time:</p>
-              {timeInfo ? (
-                <div className="tooltip-header">
-                  <img
-                    src={`data:image/*;base64,${timeInfo.imagemBase64}`}
-                    alt="Logo do time"
-                    className="tooltip-logo"
-                  />
-                  <p className="tooltip-name">{timeInfo.nome}</p>
-                </div>
-              ) : (
-                <p className="tooltip-name nao-possui">Não possui</p>
-              )}
-            </div>
-          )}
+        {/* CENTER */}
+        <div className="nav-center">
+          <span className="nav-link" onClick={() => navigate("/campeonatos")}>
+            Campeonatos
+          </span>
+          <span className="nav-link" onClick={() => navigate("/eliteCup")}>
+            ELITE CUP
+          </span>
+          <span
+            className="nav-link"
+            onClick={() =>
+              navigate(idTime ? `/times/${idTime}` : "/criartime")
+            }
+          >
+            Time
+          </span>
+        </div>
+
+        {/* RIGHT */}
+        <div className="nav-right">
+          {/* Wallet futura */}
+          <div className="wallet">
+            💰 <span className="wallet-value">0.00</span>
+          </div>
+
+          <span
+            className="nav-link-friends"
+            onClick={() => navigate("/amigos")}
+          >
+            <FontAwesomeIcon icon={faUserGroup} />
+          </span>
+
+          <div
+            className="user-info"
+            onMouseEnter={() => setShowTooltip(true)}
+            onMouseLeave={() => setShowTooltip(false)}
+          >
+            <img
+              className="profile-icon-img"
+              src={imagemPerfil}
+              alt={`Foto de ${nomeUsuario}`}
+              onClick={() =>
+                navigate(`/usuario/${usuario.id || userId}`)
+              }
+            />
+
+            {showTooltip && (
+              <div className="user-tooltip">
+                <p>Time:</p>
+                {timeInfo ? (
+                  <div className="tooltip-header">
+                    <img
+                      src={`data:image/*;base64,${timeInfo.imagemBase64}`}
+                      alt="Logo do time"
+                      className="tooltip-logo"
+                    />
+                    <p className="tooltip-name">{timeInfo.nome}</p>
+                  </div>
+                ) : (
+                  <p className="tooltip-name nao-possui">
+                    Não possui
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </nav>
     </header>
