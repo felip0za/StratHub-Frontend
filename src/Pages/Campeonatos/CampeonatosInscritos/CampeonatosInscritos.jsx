@@ -17,24 +17,29 @@ const CampeonatosInscritos = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    console.log("Usuário logado:", user);
-    const idTimeUsuario = user.idTime; 
-    console.log("ID do time do usuário:", idTimeUsuario);
 
-    if (!user || !idTimeUsuario) {  
-      setError('⚠️ Você ainda não possui um time.');
+    if (!user) {
+      setError('⚠️ Usuário não autenticado.');
       return;
     }
 
     const fetchCampeonatosDoTime = async () => {
       try {
         setLoading(true);
-        const response = await api.get(`/inscricoes/time/${idTimeUsuario}`);
-        console.log("Resposta da API:", response.data);
+
+        // ✅ agora o backend resolve o time automaticamente
+        const response = await api.get('/inscricoes/time');
+
         setInscricoes(Array.isArray(response.data) ? response.data : []);
+        setError('');
       } catch (err) {
         console.error('Erro ao buscar campeonatos do time:', err);
-        setError('❌ Erro ao carregar campeonatos do time. Tente novamente.');
+
+        if (err.response?.status === 400) {
+          setError(err.response.data || '⚠️ Você não possui um time.');
+        } else {
+          setError('❌ Erro ao carregar campeonatos do time. Tente novamente.');
+        }
       } finally {
         setLoading(false);
       }
@@ -108,7 +113,6 @@ const CampeonatosInscritos = () => {
               <tbody>
                 {inscricoesFiltradas.length > 0 ? (
                   inscricoesFiltradas.map((inscricao) => {
-                    // Aqui você pode colocar uma imagem padrão ou adicionar imagem no backend
                     const imagemCampeonato =
                       inscricao.imagemCampeonato?.length > 100
                         ? `data:image/png;base64,${inscricao.imagemCampeonato}`

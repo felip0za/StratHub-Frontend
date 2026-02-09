@@ -135,13 +135,13 @@ function Times() {
         if (membros.length === 1 && isDono) {
           await api.delete(`/times/${id}`);
           alert("Você era o único membro. O time foi excluído.");
-          navigate("/home");
+          navigate("/campeonatos");
         } else if (isDono) {
           alert("Você é o dono do time. Promova outro membro antes de sair.");
         } else {
           await api.post(`/times/${id}/sair`);
           alert("Você saiu do time.");
-          navigate("/home");
+          navigate("/campeonatos");
         }
       } catch (err) {
         if (err.response?.status === 403) {
@@ -425,7 +425,7 @@ function Times() {
             <p>Nenhum membro encontrado.</p>
           )}
 
-          {membros.some(m => m.id === user?.id) && (
+          {membros.some(m => m.id === user?.id) && membros.length < 5 && (
             <button className="add-member" onClick={handleAddMember}>
               ADICIONAR MEMBRO +
             </button>
@@ -445,7 +445,7 @@ function Times() {
                   const jaEstaNoTime = membros.some(m => m.id === amigo.id);
 
                   return (
-                    <li key={amigo.id}>
+                    <li className='amigo-box' key={amigo.id}>
                       <img
                         src={
                           amigo.imagemUsuario?.startsWith?.("data:image")

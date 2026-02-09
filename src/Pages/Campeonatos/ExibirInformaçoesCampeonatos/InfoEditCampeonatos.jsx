@@ -116,19 +116,29 @@ const PartidasGrupos = ({ grupos }) => {
   const [grupoSelecionado, setGrupoSelecionado] = useState('A');
   const navigate = useNavigate();
 
-  const gruposComPlaceholder = grupos || letras.reduce((acc, l) => {
-    acc[l] = Array(4).fill({ nome: '-', pontuacao: 0, logo: null });
-    return acc;
-  }, {});
+  const times = grupos[grupoSelecionado] || [];
 
-  const times = gruposComPlaceholder[grupoSelecionado] || Array(4).fill({ nome: '-', pontuacao: 0, logo: null });
-
-  const partidas = [];
-  for (let i = 0; i < times.length; i += 2) {
-    const time1 = times[i];
-    const time2 = times[i + 1] || { nome: '-', pontuacao: 0, logo: null };
-    partidas.push({ time1, time2 });
+  // garante 4 times
+  const lista = [...times].slice(0, 4);
+  while (lista.length < 4) {
+    lista.push({ nome: '-', pontuacao: 0, logo: null });
   }
+
+  // 🔥 tabela fixa para 4 times (round-robin)
+  const semanas = [
+    [
+      { time1: lista[0], time2: lista[2] },
+      { time1: lista[1], time2: lista[3] },
+    ],
+    [
+      { time1: lista[3], time2: lista[0] },
+      { time1: lista[2], time2: lista[1] },
+    ],
+    [
+      { time1: lista[2], time2: lista[3] },
+      { time1: lista[1], time2: lista[0] },
+    ],
+  ];
 
   return (
     <div className="partidas-grupos-box">
@@ -141,42 +151,47 @@ const PartidasGrupos = ({ grupos }) => {
         </select>
       </div>
 
-      {partidas.map((p, idx) => (
+      {semanas.map((partidasSemana, idx) => (
         <div key={idx} className="semana-box">
-          <h4>SEMANA {idx + 1}:</h4>
+          <h4>SEMANA {idx + 1}</h4>
 
-          <div className="partida-item">
-            <div className="time">
-              {p.time1.logo && (
-                <img
-                  src={p.time1.logo}
-                  alt={p.time1.nome}
-                  onClick={() => handleClickTeam(p.time1.id, navigate)}
-                />
-              )}
-              <span className="nome-time">{p.time1.nome}</span>
+          {partidasSemana.map((p, i) => (
+            <div key={i} className="partida-item">
+
+              <div className="time">
+                {p.time1.logo && (
+                  <img
+                    src={p.time1.logo}
+                    alt={p.time1.nome}
+                    onClick={() => p.time1.id && navigate(`/times/${p.time1.id}`)}
+                  />
+                )}
+                <span className="nome-time">{p.time1.nome}</span>
+              </div>
+
+              <span className="pontos-time">{p.time1.pontuacao || 0}</span>
+              <span className="vs">VS</span>
+              <span className="pontos-time">{p.time2.pontuacao || 0}</span>
+
+              <div className="time">
+                {p.time2.logo && (
+                  <img
+                    src={p.time2.logo}
+                    alt={p.time2.nome}
+                    onClick={() => p.time2.id && navigate(`/times/${p.time2.id}`)}
+                  />
+                )}
+                <span className="nome-time">{p.time2.nome}</span>
+              </div>
+
             </div>
-
-            <span className="pontos-time">{p.time1.pontuacao || 0}</span>
-            <span className="vs">VS</span>
-            <span className="pontos-time">{p.time2.pontuacao || 0}</span>
-
-            <div className="time">
-              {p.time2.logo && (
-                <img
-                  src={p.time2.logo}
-                  alt={p.time2.nome}
-                  onClick={() => handleClickTeam(p.time2.id, navigate)}
-                />
-              )}
-              <span className="nome-time">{p.time2.nome}</span>
-            </div>
-          </div>
+          ))}
         </div>
       ))}
     </div>
   );
 };
+
 
 // === PARTIDAS SIMPLES ===
 const PartidasSimples = ({ times, maxEquipes }) => {

@@ -19,6 +19,21 @@ function Navbar() {
   const [timeInfo, setTimeInfo] = useState(null);
   const [showTooltip, setShowTooltip] = useState(false);
 
+  // WALLET
+  const [showWalletBox, setShowWalletBox] = useState(false);
+  const [stratCoins, setStratCoins] = useState(320); // depois vem da API
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!e.target.closest(".wallet-container")) {
+        setShowWalletBox(false);
+      }
+    };
+
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, []);
+
   useEffect(() => {
     const carregarUsuario = async () => {
       if (!userId) {
@@ -128,9 +143,45 @@ function Navbar() {
 
         {/* RIGHT */}
         <div className="nav-right">
-          {/* Wallet futura */}
-          <div className="wallet">
-            💰 <span className="wallet-value">0.00</span>
+
+          {/* WALLET */}
+          <div className="wallet-container">
+            <div
+              className="wallet"
+              onClick={() => setShowWalletBox(!showWalletBox)}
+            >
+              👝 <span className="wallet-value">{stratCoins}</span>
+            </div>
+
+            {showWalletBox && (
+              <div className="wallet-box">
+                <h4>Carteira </h4>
+
+                <p><strong>Saldo:</strong> {stratCoins} StratCoins</p>
+                <p>
+                  <strong>Em reais:</strong> R$ {(stratCoins / 8).toFixed(2)}
+                </p>
+
+                <div className="wallet-actions">
+                  <button onClick={() => navigate("/wallet/comprar")}>
+                    Comprar
+                  </button>
+
+                  <button
+                    disabled={(stratCoins / 8) < 40}
+                    onClick={() => navigate("/wallet/resgatar")}
+                  >
+                    Resgatar
+                  </button>
+                </div>
+
+                {(stratCoins / 8) < 40 && (
+                  <small className="wallet-warning">
+                    Saldo mínimo para resgate: R$40 (320 StratCoins)
+                  </small>
+                )}
+              </div>
+            )}
           </div>
 
           <span
@@ -174,6 +225,7 @@ function Navbar() {
               </div>
             )}
           </div>
+
         </div>
       </nav>
     </header>

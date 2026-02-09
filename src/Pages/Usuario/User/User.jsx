@@ -307,10 +307,10 @@ function User() {
                 <label className="modal-avatar-label">
                   <img
                     src={
-                      editData.imagemUsuario
-                        ? (editData.imagemUsuario.startsWith("data:image")
-                            ? editData.imagemUsuario
-                            : `data:image/png;base64,${editData.imagemUsuario}`)
+                      usuario.imagemUsuario
+                        ? (usuario.imagemUsuario.startsWith("data:image")
+                            ? usuario.imagemUsuario
+                            : `data:image/png;base64,${usuario.imagemUsuario}`)
                         : avatardefault
                     }
                     alt="Avatar"

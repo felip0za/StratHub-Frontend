@@ -256,6 +256,59 @@
   background-color: #218838;
 }
 
+.amigos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.amigo-box {
+  background: #1c1c1c;
+  border-radius: 12px;
+  padding: 10px;
+  text-align: center;
+  box-shadow: 0 0 8px rgba(0,0,0,0.4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.amigo-box:hover {
+  transform: translateY(-4px);
+}
+
+.amigo-img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 6px;
+}
+
+.amigo-nome {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.convidar-btn {
+  background: #6c2bd9;
+  border: none;
+  border-radius: 6px;
+  padding: 5px 10px;
+  color: white;
+  cursor: pointer;
+}
+
+.convidar-btn:hover {
+  background: #8145f5;
+}
+
+.ja-no-time {
+  color: #00ff88;
+  font-size: 13px;
+}
+
+
 .contextual-popup {
   position: absolute;
   background-color: #2a2a2a;

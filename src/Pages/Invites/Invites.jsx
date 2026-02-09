@@ -85,7 +85,7 @@ function Invites() {
 
   const verificarTimeUsuario = async () => {
     try {
-      const res = await api.get("/usuario/time");
+      const res = await api.get(`/usuario/${Id}`);
       setUsuarioJaTemTime(res.data?.hasTime === true);
     } catch {
       setUsuarioJaTemTime(false);

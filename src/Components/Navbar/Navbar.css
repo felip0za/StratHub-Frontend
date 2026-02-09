@@ -57,6 +57,10 @@
 }
 
 /* WALLET */
+.wallet-container {
+  position: relative;
+}
+
 .wallet {
   display: flex;
   align-items: center;
@@ -74,6 +78,62 @@
 .wallet:hover {
   background-color: #00ff99;
   color: black;
+}
+
+/* WALLET BOX */
+.wallet-box {
+  position: absolute;
+  top: 55px;
+  right: 0;
+  background-color: #1a1a1a;
+  color: white;
+  padding: 15px;
+  border-radius: 12px;
+  width: 240px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.6);
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.wallet-box h4 {
+  text-align: center;
+  margin-bottom: 10px;
+  font-family: "Poppins", sans-serif;
+}
+
+.wallet-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.wallet-actions button {
+  flex: 1;
+  background-color: #00ff99;
+  border: none;
+  padding: 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.wallet-actions button:hover {
+  background-color: rgb(180, 0, 0);
+  color: white;
+}
+
+.wallet-actions button:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+}
+
+.wallet-warning {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #ff5a5a;
+  text-align: center;
 }
 
 /* USER INFO */

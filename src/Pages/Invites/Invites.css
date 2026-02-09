@@ -1,352 +1,252 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+@import url('https://fonts.cdnfonts.com/css/akira-expanded');
 
-/* --- CONTAINER PRINCIPAL --- */
 .friends-screen {
-  max-width: 850px;
-  margin: 40px auto;
-  padding: 40px;
-  border-radius: 22px;
-
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(14px);
-
-  border: 1px solid rgba(255, 0, 0, 0.25);
-  box-shadow: 0 8px 25px rgba(255, 0, 0, 0.35);
-
-  font-family: "Poppins", sans-serif;
-  animation: fadeSlide .6s ease;
+  padding: 30px;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #0f0f0f, #141414);
+  color: white;
 }
 
-@keyframes fadeSlide {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.friends-screen h1 {
+/* TITLE */
+.title-neon {
+  font-family: 'Akira Expanded', sans-serif;
   text-align: center;
-  color: #fff;
-  font-size: 2.2rem;
-  margin-bottom: 25px;
+  margin-bottom: 30px;
+  color: rgb(180, 0, 0);  
 }
 
-/* --- LISTA DE AMIGOS --- */
-.friends-list ul {
+/* FRIENDS LIST */
+.friends-list ul,
+.popup-box ul {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-/* --- CARD DO AMIGO (MODERNIZADO) --- */
 .friend-card {
-  position: relative;
   display: flex;
   align-items: center;
-  gap: 16px;
-
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-
-  border-radius: 20px;
-  padding: 16px 22px;
-  margin-bottom: 20px;
-
-  box-shadow: 0 3px 14px rgba(255, 0, 0, 0.25);
-  border: 1px solid rgba(255, 0, 0, 0.28);
-
-  transition: transform .25s ease, box-shadow .25s ease;
+  gap: 15px;
+  background: #1a1a1a;
+  padding: 12px 15px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  transition: 0.3s;
   cursor: pointer;
+  box-shadow: 0 0 10px rgba(0,0,0,0.6);
 }
 
 .friend-card:hover {
-  transform: translateY(-5px) scale(1.02);
-  box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4);
+  transform: scale(1.01);
 }
 
-/* --- FOTO DO AMIGO --- */
-/* --- FOTO DO AMIGO (AVATAR) --- */
-.friend-card .avatar {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;       /* deixa redonda, opcional */
-  overflow: hidden;
-  border: none;             /* remove qualquer borda */
-  background: transparent;  /* fundo transparente */
-  box-shadow: none;         /* remove sombra da div */
-}
-
-.friend-card .avatar img {
-  width: 100%;
-  height: 100%;
+/* AVATAR */
+.avatar img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
   object-fit: cover;
-  border: none;             /* remove borda da imagem, se houver */
-  box-shadow: none;         /* remove sombra da imagem */
 }
 
-/* --- INFO DO AMIGO --- */
-.friend-card .info .username {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #fff;
+/* INFO */
+.info {
+  flex: 1;
 }
 
-.friend-card .info .profile-ubi2 {
-  font-size: 0.95rem;
-  color: #ddd;
+.username {
+  font-weight: bold;
+  font-family: "Poppins", sans-serif;
 }
 
-/* --- ÍCONE DA PLATAFORMA (MODERNIZADO) --- */
-.ubisoft-label,
-.platform-icon {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-
-  font-weight: 600;
-  font-size: 0.95rem;
+.userid {
+  font-size: 13px;
+  color: #ccc;
 }
 
-.platform-icon svg {
-  filter: drop-shadow(0 0 6px rgba(255, 80, 80, 0.7));
-}
-
-/* --- BOTÕES --- */
+/* BUTTONS */
 .remove-btn,
 .team-btn,
 .open-popup-button {
-  border: none;
-  font-weight: 600;
-  font-family: "Poppins";
-  cursor: pointer;
-  transition: .2s ease;
-}
-
-/* Modern neon button */
-.open-popup-button {
-  padding: 12px 26px;
-  background: linear-gradient(45deg, #ff1f1f, #b30000);
-  color: #fff;
-  font-size: 1.1rem;
-
-  border-radius: 12px;
-  box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
-}
-
-.open-popup-button:hover {
-  filter: brightness(1.15);
-}
-
-/* Badge */
-.notification-badge {
-  position: absolute;
-  top: -7px;
-  right: -10px;
-
-  background: #ff0000;
-  color: #fff;
-  border-radius: 50%;
-  width: 22px;
-  height: 22px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: .8rem;
-
-  box-shadow: 0 0 8px rgba(255,0,0,0.9);
-}
-
-/* --- MODAL DE CONFIRMAÇÃO --- */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(6px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10000;
-}
-
-.modal-box {
-  width: 90%;
-  max-width: 420px;
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(14px);
-  padding: 28px;
-  border-radius: 22px;
-  box-shadow: 0 0 25px rgba(255, 0, 0, 0.5);
-  text-align: center;
-  animation: popupDrop .45s ease;
-}
-
-@keyframes popupDrop {
-  from { transform: translateY(-70px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-.modal-box p {
-  font-family: "Poppins", sans-serif;
-  font-size: 1.1rem;
-  color: #fff;
-  margin-bottom: 24px;
-}
-
-.modal-actions {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.modal-btn {
-  padding: 10px 22px;
-  font-family: "Poppins", sans-serif;
-  font-weight: 600;
-  font-size: 1rem;
-  border-radius: 12px;
-  cursor: pointer;
-  border: none;
-  transition: all 0.2s ease;
-  box-shadow: 0 0 12px rgba(255, 0, 0, 0.5);
-}
-
-/* Botão de confirmação (Sim) */
-.modal-btn.confirm {
-  background: #ff2f2f;
-  color: #fff;
-}
-
-.modal-btn.confirm:hover {
-  background: #cc2626;
-  transform: scale(1.05);
-  box-shadow: 0 0 18px rgba(255, 50, 50, 0.8);
-}
-
-/* Botão de cancelamento (Cancelar) */
-.modal-btn.cancel {
-  background: #3cd45b;
-  color: #fff;
-}
-
-.modal-btn.cancel:hover {
-  background: #31b44d;
-  transform: scale(1.05);
-  box-shadow: 0 0 18px rgba(60, 212, 91, 0.8);
-}
-
-/* --- CLOSE BUTTON (SE FOR NECESSÁRIO) --- */
-.modal-close-btn {
-  margin-top: 18px;
-  padding: 10px 24px;
-  font-family: "Poppins", sans-serif;
-  font-weight: 600;
-  font-size: 1rem;
-  border-radius: 12px;
-  cursor: pointer;
-  border: none;
-  background: #ff4d4d;
-  color: #fff;
-  box-shadow: 0 0 12px rgba(255, 0, 0, 0.5);
-  transition: all 0.2s ease;
-}
-
-.modal-close-btn:hover {
-  background: #cc2626;
-  transform: scale(1.05);
-  box-shadow: 0 0 18px rgba(255, 50, 50, 0.8);
-}
-
-/* --- BOTÃO REMOVER NO CANTO DIREITO --- */
-.remove-btn {
-  position: absolute;
-  right: 22px;
-  top: 50%;
-  transform: translateY(-50%);
-
-  background: #ff2f2f;
-  color: #fff;
-  padding: 8px 16px;
-  border-radius: 10px;
-  box-shadow: 0 0 8px rgba(255, 50, 50, 0.7);
-}
-
-.remove-btn:hover {
-  background: #cc2626;
-}
-
-/* Botões convite */
-.team-btn.accept {
-  background: #ff3c3c;
+  background-color: rgb(180, 0, 0);
   color: white;
-  padding: 8px 16px;
-  border-radius: 10px;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
 }
 
-.team-btn.accept:hover {
-  background: #ff3c3c;
+.open-popup-button.close-btn {
+  background-color: rgb(180, 0, 0);
+}
+
+.open-popup-button.close-btn:hover {
+  background-color: rgb(180, 0, 0);
+}
+
+.remove-btn:hover,
+.team-btn.accept:hover,
+.open-popup-button:hover {
+  background-color: rgb(180, 0, 0);
+  color: white;
 }
 
 .team-btn.reject {
-  background: #ff3c3c;
+  background-color: #444;
   color: white;
-  padding: 8px 16px;
-  border-radius: 10px;
 }
 
 .team-btn.reject:hover {
-  background: #cc2f2f;
+  background-color: #ff5a5a;
 }
 
-/* --- POPUP (GLASSMORPHISM) --- */
-.popup-overlay {
+/* STATUS BADGE */
+.status-badge {
+  background-color: #00ff99;
+  color: black;
+  padding: 5px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* BUTTON AREA */
+.friend-requests {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 25px;
+}
+
+
+
+/* NOTIFICATION BADGE */
+.notification-badge {
+  background-color: red;
+  color: white;
+  font-size: 11px;
+  border-radius: 50%;
+  padding: 3px 7px;
+  margin-left: 6px;
+}
+
+/* POPUP OVERLAY */
+.popup-overlay,
+.modal-overlay {
   position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.75);
-  backdrop-filter: blur(5px);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9000;
+  z-index: 2000;
 }
 
-.popup-box {
-  width: 90%;
-  max-width: 480px;
-
-  background: rgba(255,255,255,0.12);
-  backdrop-filter: blur(12px);
-
-  padding: 28px;
-  border-radius: 20px;
-
-  box-shadow: 0 0 20px rgba(255,0,0,0.55);
-  text-align: center;
-  animation: popupDrop .45s ease;
+/* POPUP BOX */
+.popup-box,
+.modal-box {
+  background-color: #1a1a1a;
+  padding: 20px;
+  border-radius: 15px;
+  width: 420px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 0 20px rgba(0,0,0,0.8);
+  animation: fadeIn 0.2s ease-in-out;
 }
 
-@keyframes popupDrop {
-  from { transform: translateY(-70px); opacity: 0; }
-  to   { transform: translateY(0); opacity: 1; }
-}
-
+/* INPUT */
 .popup-box input {
-  width: 80%;
-  padding: 12px;
-  margin-top: 10px;
-
-  border-radius: 10px;
-  border: 1px solid #888;
-
-  background: rgba(255,255,255,0.18);
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  border: none;
+  margin-bottom: 10px;
+  outline: none;
+  background: #222;
   color: white;
-
-  font-size: 1rem;
 }
 
-.status-badge {
-  background: #ff5e5e;
+/* ACTIONS */
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* MODAL */
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.modal-btn.confirm {
+  background-color: rgb(180, 0, 0);
   color: white;
-  padding: 6px 14px;
-  border-radius: 12px;
-  font-size: .85rem;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.modal-btn.cancel {
+  background-color: #444;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.modal-close-btn{
+  background-color: rgb(180, 0, 0);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.modal-btn.confirm:hover {
+  background-color: rgb(180, 0, 0);
+  color: white;
+}
+
+.modal-btn.cancel:hover {
+  background-color: #444;
+  color: white;
+}
+
+/* CLOSE BUTTON */
+.close-btn {
+  margin-top: 15px;
+  width: 100%;
+}
+
+/* SEARCH CARD */
+.search-card {
+  background-color: #222;
+}
+
+/* ANIMATION */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

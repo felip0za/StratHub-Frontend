@@ -4,7 +4,7 @@ import Navbar from "../../../Components/Navbar/Navbar";
 import LoadingScreen from "../../../Components/LoadingScreen/LoadingScreen";
 import { useApi } from "../../../Services/API";
 import { useAuth } from "../../../contexts/AuthContext";
-import avatardefault from '/src/assets/avatar-default.png';
+import avatardefault from "/src/assets/avatar-default.png";
 import "./CampeonatosDetalhes.css";
 
 function CampeonatosDetalhes() {
@@ -18,11 +18,9 @@ function CampeonatosDetalhes() {
   const [erro, setErro] = useState("");
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mensagemModal, setMensagemModal] = useState("");
-  const [totalEquipes, setTotalEquipes] = useState(0); // ✅ novo estado
+  const [totalEquipes, setTotalEquipes] = useState(0);
 
   useEffect(() => {
-    console.log("Usuário logado:", user);
-
     const fetchCampeonato = async () => {
       try {
         const response = await api.get(`/campeonatos/${id}`);
@@ -34,11 +32,11 @@ function CampeonatosDetalhes() {
         setLoading(false);
       }
     };
-    
+
     fetchCampeonato();
   }, [api, id]);
 
-  // ✅ Novo useEffect para contar equipes inscritas
+  // ✅ Contar equipes inscritas
   useEffect(() => {
     const fetchContagem = async () => {
       try {
@@ -49,36 +47,16 @@ function CampeonatosDetalhes() {
         setTotalEquipes(0);
       }
     };
+
     if (id) fetchContagem();
   }, [api, id]);
 
-  // ✅ Método para inscrição no campeonato
+  // ✅ Inscrição agora SEM idTime
   const handleParticipar = async () => {
     try {
-      if (!user?.idTime) {
-        setMensagemModal("⚠️ Você não pertence nem possui um time.");
-        setMostrarModal(true);
-        return;
-      }
-
-      // Verifica se o usuário é o dono do time
-      const responseTime = await api.get(`/times/${user.idTime}`);
-      const time = responseTime.data;
-
-      // Corrigido: suporta diferentes formatos de retorno do backend
-      const idCriadorTime = time.criador?.id || time.criador?.idUsuario || time.idCriador;
-
-      if (idCriadorTime !== user.id) {
-        setMensagemModal("❌ Apenas o dono do time pode inscrever o time no campeonato.");
-        setMostrarModal(true);
-        return;
-      }
-
-      // Faz a inscrição
       const response = await api.post(
         "/inscricoes/inscrever",
         {
-          idTime: user.idTime,
           idCampeonato: parseInt(id),
         },
         {
@@ -88,27 +66,29 @@ function CampeonatosDetalhes() {
 
       setMensagemModal("✅ Time inscrito com sucesso!");
       setMostrarModal(true);
+
     } catch (err) {
       console.error("Erro ao inscrever time:", err);
+
       if (err.response?.status === 400) {
-        setMensagemModal("⚠️ Este time já está inscrito neste campeonato.");
+        setMensagemModal(err.response.data || "⚠️ Não foi possível realizar a inscrição.");
+      } else if (err.response?.status === 401) {
+        setMensagemModal("⚠️ Você precisa estar logado para participar.");
       } else {
         setMensagemModal("❌ Ocorreu um erro ao tentar inscrever o time.");
       }
+
       setMostrarModal(true);
     }
   };
 
-
   const fecharModal = () => {
-  setMostrarModal(false);
+    setMostrarModal(false);
 
-  // 🔁 Se a mensagem for de sucesso, redireciona ao fechar o modal
-  if (mensagemModal.includes("✅ Time inscrito com sucesso")) {
-    navigate(`/info-campeonato/${id}`);
-  }
-};
-
+    if (mensagemModal.includes("✅ Time inscrito com sucesso")) {
+      navigate(`/info-campeonato/${id}`);
+    }
+  };
 
   if (loading) return <LoadingScreen />;
 
@@ -124,7 +104,11 @@ function CampeonatosDetalhes() {
     return <div className="sem-dados">Campeonato não encontrado.</div>;
 
   const formatarImagem = (img) =>
-    !img ? "/placeholder_banner.png" : img.startsWith("data:image") ? img : `data:image/png;base64,${img}`;
+    !img
+      ? "/placeholder_banner.png"
+      : img.startsWith("data:image")
+      ? img
+      : `data:image/png;base64,${img}`;
 
   const imagemCriador = campeonato.criador?.imagemUsuario
     ? campeonato.criador.imagemUsuario.startsWith("data:image")
@@ -136,7 +120,8 @@ function CampeonatosDetalhes() {
     <>
       <Navbar />
       <div className="campeonato-detalhes-container">
-        {/* ===== HEADER / BANNER ===== */}
+
+        {/* ===== HEADER ===== */}
         <div
           className="header-campeonato"
           style={{
@@ -165,6 +150,7 @@ function CampeonatosDetalhes() {
 
         {/* ===== CONTEÚDO ===== */}
         <div className="conteudo-campeonato">
+
           {/* COLUNA ESQUERDA */}
           <div className="coluna-esquerda">
             <div className="card-info">
@@ -173,23 +159,21 @@ function CampeonatosDetalhes() {
                 <div>
                   <p>💰 Prêmio total</p>
                   <span>
-                    R${" "}
-                    {parseFloat(
+                    R$ {parseFloat(
                       campeonato.valor ||
-                        campeonato.nm_valor ||
-                        campeonato.valorPremio ||
-                        0
+                      campeonato.nm_valor ||
+                      campeonato.valorPremio ||
+                      0
                     ).toFixed(2)}
                   </span>
                 </div>
                 <div>
                   <p>💵 Valor por equipe</p>
                   <span>
-                    R${" "}
-                    {parseFloat(
+                    R$ {parseFloat(
                       campeonato.valorPorEquipe ||
-                        campeonato.nm_valor_por_equipe ||
-                        0
+                      campeonato.nm_valor_por_equipe ||
+                      0
                     ).toFixed(2)}
                   </span>
                 </div>
@@ -197,27 +181,41 @@ function CampeonatosDetalhes() {
                   <p>👥 Máx. Equipes</p>
                   <span>{campeonato.maxEquipes || campeonato.nm_max_equipes}</span>
                 </div>
-
-                {/* ✅ NOVO BLOCO: Número de equipes inscritas */}
                 <div>
                   <p>🏆 Equipes inscritas</p>
-                  <span>{totalEquipes} / {campeonato.maxEquipes || campeonato.nm_max_equipes}</span>
+                  <span>
+                    {totalEquipes} / {campeonato.maxEquipes || campeonato.nm_max_equipes}
+                  </span>
                 </div>
               </div>
             </div>
+
             <div className="card-info">
               <h3>Organizador</h3>
-              <span className="nome-criador">Organizado por</span>
-              <button className="btn-criador" onClick={() => navigate(`/userprofile/${campeonato.criador?.id || campeonato.criador?.idUsuario || campeonato.idCriador}`)}>
-                <img src={imagemCriador} alt={campeonato.criador?.nome || "Desconhecido"} className="img-criador" />
-                <span className="nome-criador">{campeonato.criador?.nome || "Desconhecido"}</span>
+              <button
+                className="btn-criador"
+                onClick={() =>
+                  navigate(
+                    `/userprofile/${campeonato.criador?.id || campeonato.criador?.idUsuario || campeonato.idCriador}`
+                  )
+                }
+              >
+                <img src={imagemCriador} alt="Criador" className="img-criador" />
+                <span className="nome-criador">
+                  {campeonato.criador?.nome || "Desconhecido"}
+                </span>
               </button>
             </div>
 
             <div className="card-info">
               <h3>Informações adicionais</h3>
               <p>
-                Criado em: <b>{new Date(campeonato.dataInicio || campeonato.dt_inicio).toLocaleDateString("pt-BR")}</b>
+                Criado em:{" "}
+                <b>
+                  {new Date(
+                    campeonato.dataInicio || campeonato.dt_inicio
+                  ).toLocaleDateString("pt-BR")}
+                </b>
               </p>
               <p>Status: <b>{campeonato.status || "Em andamento"}</b></p>
             </div>
@@ -227,9 +225,8 @@ function CampeonatosDetalhes() {
           <div className="coluna-direita">
             <div className="card-info">
               <h3>Configurações do jogo</h3>
-              <p>
-                <b>Plataforma:</b> {campeonato.plataforma || "-"}
-              </p>
+              <p><b>Plataforma:</b> {campeonato.plataforma || "-"}</p>
+
               {campeonato.plataforma === "CONSOLE" && (
                 <p>
                   <b>Tipo de console:</b>{" "}
@@ -247,7 +244,7 @@ function CampeonatosDetalhes() {
         </div>
       </div>
 
-      {/* ===== MODAL DE AVISO ===== */}
+      {/* ===== MODAL ===== */}
       {mostrarModal && (
         <div className="modal-overlay" onClick={fecharModal}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
