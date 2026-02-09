@@ -10,13 +10,15 @@ const Campeonatos = () => {
   const [filtro, setFiltro] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [temTime, setTemTime] = useState(false);
 
   const navigate = useNavigate();
   const api = useApi();
 
   const handleCriarCampeonato = () => navigate("/criar-campeonatos");
   const handleMeusCampeonatos = () => navigate("/meus-campeonatos");
-  const handleMeusCampeonatosInscritos = () => navigate("/campeonatos-inscritos");
+  const handleMeusCampeonatosInscritos = () =>
+    navigate("/campeonatos-inscritos");
 
   const fetchCampeonatos = async () => {
     try {
@@ -25,14 +27,37 @@ const Campeonatos = () => {
       setError("");
     } catch (err) {
       console.error("Erro ao carregar campeonatos:", err);
+      setError("Erro ao carregar campeonatos");
     } finally {
       setLoading(false);
     }
   };
 
+  // 🔥 verifica se o usuário tem time
+  const fetchTimeUsuario = async () => {
+    try {
+      const response = await api.get("/times/usuario");
+
+      if (response.data) {
+        setTemTime(true);
+      } else {
+        setTemTime(false);
+      }
+    } catch (err) {
+      console.error("Erro ao buscar time do usuário:", err);
+      setTemTime(false);
+    }
+  };
+
   useEffect(() => {
     fetchCampeonatos();
-    const interval = setInterval(fetchCampeonatos, 1000);
+    fetchTimeUsuario();
+
+    const interval = setInterval(() => {
+      fetchCampeonatos();
+      fetchTimeUsuario();
+    }, 1000);
+
     return () => clearInterval(interval);
   }, [api]);
 
@@ -44,32 +69,51 @@ const Campeonatos = () => {
 
   const formatarStatus = (status) => {
     switch (status) {
-      case "ABERTO": return { texto: "Aberto", classe: "aberto" };
-      case "EM_ANDAMENTO": return { texto: "Em andamento", classe: "em_andamento" };
-      case "FECHADO": return { texto: "Fechado", classe: "fechado" };
-      default: return { texto: "-", classe: "" };
+      case "ABERTO":
+        return { texto: "Aberto", classe: "aberto" };
+      case "EM_ANDAMENTO":
+        return { texto: "Em andamento", classe: "em_andamento" };
+      case "FECHADO":
+        return { texto: "Fechado", classe: "fechado" };
+      default:
+        return { texto: "-", classe: "" };
     }
   };
 
   const getImagemCampeonato = (imagemBase64) =>
-    imagemBase64 ? `data:image/png;base64,${imagemBase64}` : "https://via.placeholder.com/400x200?text=Sem+Imagem";
+    imagemBase64
+      ? `data:image/png;base64,${imagemBase64}`
+      : "https://via.placeholder.com/400x200?text=Sem+Imagem";
 
   if (loading) return <LoadingScreen />;
 
   return (
     <>
       <Navbar />
+
       <div className="campeonatos-page">
         <div className="campeonatos-header">
           <h1 className="campeonatos-title">🏆 Campeonatos</h1>
+
           <div className="header-buttons">
-            <button className="btn-criar" onClick={handleCriarCampeonato}>
-              + Criar Campeonato
-            </button>
-            <button className="btn-meus" onClick={handleMeusCampeonatos}>
-              Meus Campeonatos
-            </button>
-            <button className="btn-inscritos" onClick={handleMeusCampeonatosInscritos}>
+            {/* ❌ só aparece se NÃO tiver time */}
+            {!temTime && (
+              <>
+                <button className="btn-criar" onClick={handleCriarCampeonato}>
+                  + Criar Campeonato
+                </button>
+
+                <button className="btn-meus" onClick={handleMeusCampeonatos}>
+                  Meus Campeonatos
+                </button>
+              </>
+            )}
+
+            {/* ✅ sempre aparece */}
+            <button
+              className="btn-inscritos"
+              onClick={handleMeusCampeonatosInscritos}
+            >
               Campeonatos Inscritos
             </button>
           </div>
@@ -90,26 +134,44 @@ const Campeonatos = () => {
             <div className="campeonatos-grid">
               {campeonatosFiltrados.map((c) => {
                 const status = formatarStatus(c.status);
+
                 return (
                   <div key={c.id} className="card">
                     <div className="card-img">
-                      <img src={getImagemCampeonato(c.imagemCampeonato)} alt={c.nome} />
-                      <span className={`status ${status.classe}`}>{status.texto}</span>
+                      <img
+                        src={getImagemCampeonato(c.imagemCampeonato)}
+                        alt={c.nome}
+                      />
+                      <span className={`status ${status.classe}`}>
+                        {status.texto}
+                      </span>
                     </div>
+
                     <div className="card-body">
                       <h2>{c.nome}</h2>
+
                       <p className="detalhes">
-                        Tipo: {c.tipo === "GRATUITO" ? "Gratuito" : "Pago"} • Máx. {c.maxEquipes} equipes
+                        Tipo:{" "}
+                        {c.tipo === "GRATUITO" ? "Gratuito" : "Pago"} • Máx.{" "}
+                        {c.maxEquipes} equipes
                       </p>
+
                       <p className="organizador">
-                        Organizado por <strong>{c.criador?.nome || "Desconhecido"}</strong>
+                        Organizado por{" "}
+                        <strong>{c.criador?.nome || "Desconhecido"}</strong>
                       </p>
+
                       {c.status === "ABERTO" ? (
-                        <button className="btn-entrar" onClick={() => handleClick(c.id)}>
+                        <button
+                          className="btn-entrar"
+                          onClick={() => handleClick(c.id)}
+                        >
                           Participar
                         </button>
                       ) : (
-                        <button className="btn-fechado" disabled>Fechado</button>
+                        <button className="btn-fechado" disabled>
+                          Fechado
+                        </button>
                       )}
                     </div>
                   </div>
