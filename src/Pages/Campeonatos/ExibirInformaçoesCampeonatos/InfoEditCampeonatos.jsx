@@ -156,14 +156,18 @@ const PartidasGrupos = ({ grupos }) => {
           <h4>SEMANA {idx + 1}</h4>
 
           {partidasSemana.map((p, i) => (
-            <div key={i} className="partida-item">
+            <div
+              key={i}
+              className="partida-item"
+              onClick={() => navigate("/partida")}
+              style={{ cursor: "pointer" }}
+            >
 
               <div className="time">
                 {p.time1.logo && (
                   <img
                     src={p.time1.logo}
                     alt={p.time1.nome}
-                    onClick={() => p.time1.id && navigate(`/times/${p.time1.id}`)}
                   />
                 )}
                 <span className="nome-time">{p.time1.nome}</span>
