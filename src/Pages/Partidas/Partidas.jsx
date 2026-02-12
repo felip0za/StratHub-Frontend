@@ -12,19 +12,32 @@ import ChaletImg from "/src/assets/Maps/chalet.png";
 
 import TheDragonsFuryLogo from "/src/assets/Test1/TDF.png";
 import YnsanitLogo from "/src/assets/Test1/ynsanit.png";
+import AvatarDefault from "/src/assets/avatar-default.png";
 
 const team1 = {
   name: "The Dragons Fury",
   leader: "Player 1",
   logo: TheDragonsFuryLogo,
-  players: ["Player 1", "Player 2", "Player 3", "Player 4", "Player 5"]
+  players: [
+    { name: "Player 1", avatar: AvatarDefault },
+    { name: "Player 2", avatar: AvatarDefault },
+    { name: "Player 3", avatar: AvatarDefault },
+    { name: "Player 4", avatar: AvatarDefault },
+    { name: "Player 5", avatar: AvatarDefault },
+  ]
 };
 
 const team2 = {
   name: "Ynsanit",
   leader: "Player 6",
   logo: YnsanitLogo,
-  players: ["Player 6", "Player 7", "Player 8", "Player 9", "Player 10"]
+  players: [
+    { name: "Player 6", avatar: AvatarDefault },
+    { name: "Player 7", avatar: AvatarDefault },
+    { name: "Player 8", avatar: AvatarDefault },
+    { name: "Player 9", avatar: AvatarDefault },
+    { name: "Player 10", avatar: AvatarDefault },
+  ]
 };
 
 const loggedUser = "Player 1";
@@ -43,18 +56,22 @@ const Partidas = () => {
 
   const [confirmedPlayers, setConfirmedPlayers] = useState([loggedUser]);
   const [banPhase, setBanPhase] = useState(false);
-  const [bannedMaps, setBannedMaps] = useState([]); // {mapName, team}
+  const [bannedMaps, setBannedMaps] = useState([]);
+  const [countdown, setCountdown] = useState(20); // 5 minutos
   const [currentTurn, setCurrentTurn] = useState(team1.name);
 
-  const allPlayers = [...team1.players, ...team2.players];
-  const isLeader = loggedUser === team1.leader || loggedUser === team2.leader;
+  const [team1Ready, setTeam1Ready] = useState(false);
+  const [team2Ready, setTeam2Ready] = useState(false);
+  const [woTeam, setWoTeam] = useState(null);
+
+
+  const allPlayers = [
+    ...team1.players.map(p => p.name),
+    ...team2.players.map(p => p.name)
+  ];
 
   const userTeam =
-    team1.players.includes(loggedUser) ? team1.name : team2.name;
-
-  const getTeamLogo = (teamName) => {
-    return teamName === team1.name ? team1.logo : team2.logo;
-  };
+    team1.players.find(p => p.name === loggedUser) ? team1.name : team2.name;
 
   useEffect(() => {
     allPlayers.forEach((player, index) => {
@@ -63,10 +80,30 @@ const Partidas = () => {
           setConfirmedPlayers(prev =>
             prev.includes(player) ? prev : [...prev, player]
           );
-        }, 2000 + index * 1500);
+        }, 1200 + index * 800);
       }
     });
   }, []);
+
+  useEffect(() => {
+    if (bannedMaps.length === maps.length - 1 && !woTeam && !(team1Ready && team2Ready)) {
+      const timer = setInterval(() => {
+        setCountdown(prev => {
+          if (prev <= 1) {
+            clearInterval(timer);
+
+            if (team1Ready && !team2Ready) setWoTeam(team2.name);
+            if (team2Ready && !team1Ready) setWoTeam(team1.name);
+
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [team1Ready, team2Ready, bannedMaps]);
 
   useEffect(() => {
     if (confirmedPlayers.length === allPlayers.length) {
@@ -74,22 +111,22 @@ const Partidas = () => {
     }
   }, [confirmedPlayers]);
 
+  const getTeamLogo = (teamName) => {
+    return teamName === team1.name ? team1.logo : team2.logo;
+  };
+
   const banMap = (map) => {
-    if (!isLeader) return;
-    if (currentTurn !== userTeam) return;
+    
     if (bannedMaps.find(m => m.mapName === map.name)) return;
     if (bannedMaps.length >= maps.length - 1) return;
 
-    setBannedMaps(prev => [
-      ...prev,
-      { mapName: map.name, team: currentTurn }
-    ]);
+    setBannedMaps(prev => [...prev, { mapName: map.name, team: currentTurn }]);
+    setCurrentTurn(prev => prev === team1.name ? team2.name : team1.name);
+  };
 
-    if ((bannedMaps.length + 1) % 2 === 0) {
-      setCurrentTurn(prev =>
-        prev === team1.name ? team2.name : team1.name
-      );
-    }
+  const handleStartMatch = () => {
+    if (userTeam === team1.name) setTeam1Ready(true);
+    if (userTeam === team2.name) setTeam2Ready(true);
   };
 
   const finalMap = maps.find(
@@ -105,18 +142,22 @@ const Partidas = () => {
           Voltar
         </button>
 
-        <h1 className="match-title">PARTIDA</h1>
+        <h2 className="match-title">Partida</h2>
 
-        <div className="teams-box">
+        <div className="teams-row">
+
           <TeamCard team={team1} confirmedPlayers={confirmedPlayers} />
+
           <div className="vs-box">VS</div>
+
           <TeamCard team={team2} confirmedPlayers={confirmedPlayers} />
+
         </div>
 
         {!banPhase && (
           <div className="status-box">
             <h2>Aguardando confirmação dos jogadores...</h2>
-            <p>{confirmedPlayers.length} / {allPlayers.length} confirmados</p>
+            <p>{confirmedPlayers.length} / {allPlayers.length}</p>
           </div>
         )}
 
@@ -124,14 +165,16 @@ const Partidas = () => {
           <div className="ban-section">
             <h2>Banimento de Mapas</h2>
 
-            <p className="turn-info">
-              {currentTurn === userTeam
-                ? `Sua vez de banir (${currentTurn})`
-                : `⏳ Espere o time ${currentTurn} está banindo, aguarde um momento...`}
+            <p className={`turn-info ${bannedMaps.length === maps.length - 1 ? "map-defined" : ""}`}>
+              {bannedMaps.length === maps.length - 1
+                ? "Mapa Definido"
+                : currentTurn === userTeam
+                  ? `Sua vez de banir (${currentTurn})`
+                  : `⏳ Espere o time ${currentTurn} está banindo, aguarde um momento...`}
             </p>
 
             <div className="maps-grid">
-              {maps.map((map) => {
+              {maps.map(map => {
                 const bannedInfo = bannedMaps.find(b => b.mapName === map.name);
 
                 return (
@@ -146,7 +189,6 @@ const Partidas = () => {
                       <div className="ban-overlay">
                         <img
                           src={getTeamLogo(bannedInfo.team)}
-                          alt={bannedInfo.team}
                           className="ban-logo"
                         />
                       </div>
@@ -161,9 +203,30 @@ const Partidas = () => {
             {finalMap && bannedMaps.length === maps.length - 1 && (
               <div className="final-map">
                 <h2>Mapa Definido</h2>
-                <img src={finalMap.img} alt={finalMap.name} />
+                <img src={finalMap.img} />
                 <h3>{finalMap.name}</h3>
-                <button className="start-match">Iniciar Partida</button>
+
+                {!woTeam && !(team1Ready && team2Ready) && (
+                  <>
+                    <p>⏳ Tempo restante: {Math.floor(countdown / 60)}:{String(countdown % 60).padStart(2, "0")}</p>
+
+                    <button className="start-match" onClick={handleStartMatch}>
+                      Confirmar Início ({userTeam})
+                    </button>
+
+                    <p>{team1Ready ? "✅ The Dragons Fury confirmou" : "⏳ The Dragons Fury aguardando"}</p>
+                    <p>{team2Ready ? "✅ Ynsanit confirmou" : "⏳ Ynsanit aguardando"}</p>
+                  </>
+                )}
+
+                {team1Ready && team2Ready && (
+                  <h2>🎮 Partida iniciada!</h2>
+                )}
+
+                {woTeam && (
+                  <h2 className="wo-text">❌ {woTeam} perdeu por W.O.</h2>
+                )}
+
               </div>
             )}
           </div>
@@ -175,18 +238,27 @@ const Partidas = () => {
 
 const TeamCard = ({ team, confirmedPlayers }) => {
   return (
-    <div className="team-card">
-      <h2>{team.name}</h2>
+    <div className="team-card horizontal">
+
+      <div className="team-header">
+        <img src={team.logo} className="team-logo" />
+        <span>{team.name}</span>
+      </div>
 
       {team.players.map((player, i) => (
         <div key={i} className="player-row">
-          <span>{player}</span>
 
-          {confirmedPlayers.includes(player) ? (
+          <div className="player-left">
+            <img src={player.avatar} className="player-avatar" />
+            <span>{player.name}</span>
+          </div>
+
+          {confirmedPlayers.includes(player.name) ? (
             <span className="confirmed">✔ Confirmado</span>
           ) : (
-            <span className="waiting">⏳ Aguardando...</span>
+            <span className="waiting">⏳ Aguardando</span>
           )}
+
         </div>
       ))}
     </div>
