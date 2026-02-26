@@ -14,7 +14,7 @@ import platina from '../../../assets/platina.png';
 import challenger from '../../../assets/challenger.png';
 import master from '../../../assets/master.png';
 import { FaInstagram, FaDiscord, FaTwitter } from 'react-icons/fa';
-import avatardefault from '../../../assets/avatar-default.png';
+import timedefault from '../../../assets/time_default.png';
 import './Times.css';
 
 function Times() {
@@ -246,7 +246,7 @@ function Times() {
 
   const imagemTime = time?.imagemBase64
     ? `data:image/*;base64,${time.imagemBase64}`
-    : "/default-team.png";
+    : timedefault;
 
   const rankToImage = {
     FERRO: ferro,

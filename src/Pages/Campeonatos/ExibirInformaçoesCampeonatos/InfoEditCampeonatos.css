@@ -167,6 +167,71 @@
   font-family: 'Poppins', sans-serif;
 }
 
+/* ======== BOTÃO AGENDAR PARTIDA ======== */
+.btn-agendar-partida {
+  background: linear-gradient(135deg, #4caf50, #45a047);
+  border: none;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-weight: bold;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+}
+
+.btn-agendar-partida:hover {
+  background: linear-gradient(135deg, #45a047, #388e3c);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(76, 175, 80, 0.4);
+}
+
+/* ======== AVISO NO MODAL ======== */
+.info-warning {
+  background: rgba(255, 152, 0, 0.1);
+  border-left: 4px solid #ff9800;
+  padding: 12px;
+  border-radius: 6px;
+  color: #ffa726;
+  font-size: 0.9rem;
+  margin: 15px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ===== MODAL AGENDAR PARTIDA ===== */
+.modal-agendar {
+  max-width: 360px;
+}
+
+.agendar-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* inputs ocupam largura total */
+.agendar-grid .modal-field {
+  margin-bottom: 0;
+}
+
+/* warning menor */
+.modal-agendar .info-warning {
+  font-size: 12px;
+  margin: 8px 0;
+  padding: 8px;
+}
+
+/* mobile */
+@media (max-width: 500px) {
+  .agendar-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
 /* ======== CHAVEAMENTO ======== */
 .chaveamento-box {
   background: #1a1a1d;
@@ -383,9 +448,9 @@
 
 .modal-content {
   background: #1a1a1d;
-  padding: 40px;
+  padding: 25px;
   width: 90%;
-  max-width: 500px;
+  max-width: 480px;
   border-radius: 18px;
   box-shadow: 0 0 25px rgba(255, 255, 255, 0.15);
   animation: modalEnter 0.3s ease;
@@ -403,9 +468,9 @@
 }
 
 .modal-title {
-  font-size: 26px;
+  font-size: 22px;
   font-weight: 600;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   text-align: center;
   color: #e60023;
 }
@@ -413,13 +478,14 @@
 .modal-field {
   display: flex;
   flex-direction: column;
-  margin-bottom: 15px;
-  gap: 6px;
+  margin-bottom: 12px;
+  gap: 5px;
 }
 
 .modal-field label {
   color: #ccc;
   font-weight: 500;
+  font-size: 14px;
 }
 
 .modal-field input,
@@ -427,9 +493,9 @@
 .modal-field textarea {
   background: #0f0f12;
   border: 1px solid #333;
-  padding: 10px;
+  padding: 9px;
   border-radius: 8px;
-  font-size: 15px;
+  font-size: 14px;
   color: #fff;
   outline: none;
   transition: 0.2s;
@@ -445,7 +511,7 @@
 .preview-img {
   margin-top: 10px;
   width: 100%;
-  max-height: 180px;
+  max-height: 150px;
   border-radius: 10px;
   object-fit: cover;
   border: 1px solid #444;
@@ -454,7 +520,7 @@
 .modal-buttons {
   display: flex;
   justify-content: space-between;
-  margin-top: 25px;
+  margin-top: 20px;
   gap: 10px;
 }
 
@@ -462,11 +528,11 @@
 .btn-salvar,
 .btn-cancelar {
   flex: 1;
-  padding: 10px 18px;
+  padding: 9px 16px;
   border: none;
   border-radius: 10px;
   cursor: pointer;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   transition: 0.2s;
 }

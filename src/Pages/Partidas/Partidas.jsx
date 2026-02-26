@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../../Components/Navbar/Navbar";
+import { useApi } from "../../Services/API";
+import { useAuth } from "../../contexts/AuthContext";
 import "./Partidas.css";
 
 import OregonImg from "/src/assets/Maps/oregon.png";
@@ -9,38 +11,11 @@ import ClubHouseImg from "/src/assets/Maps/clubhouse.png";
 import BankImg from "/src/assets/Maps/banco.png";
 import KafeDostoyevskyImg from "/src/assets/Maps/kafeDostoyevsky.png";
 import ChaletImg from "/src/assets/Maps/chalet.png";
+import ConsulateImg from "/src/assets/Maps/Consulado.png";
+import LairImg from "/src/assets/Maps/covil.png";
+import NighthavenLabsImg from "/src/assets/Maps/LaboratorioNighthaven.png";
 
-import TheDragonsFuryLogo from "/src/assets/Test1/TDF.png";
-import YnsanitLogo from "/src/assets/Test1/ynsanit.png";
 import AvatarDefault from "/src/assets/avatar-default.png";
-
-const team1 = {
-  name: "The Dragons Fury",
-  leader: "Player 1",
-  logo: TheDragonsFuryLogo,
-  players: [
-    { name: "Player 1", avatar: AvatarDefault },
-    { name: "Player 2", avatar: AvatarDefault },
-    { name: "Player 3", avatar: AvatarDefault },
-    { name: "Player 4", avatar: AvatarDefault },
-    { name: "Player 5", avatar: AvatarDefault },
-  ]
-};
-
-const team2 = {
-  name: "Ynsanit",
-  leader: "Player 6",
-  logo: YnsanitLogo,
-  players: [
-    { name: "Player 6", avatar: AvatarDefault },
-    { name: "Player 7", avatar: AvatarDefault },
-    { name: "Player 8", avatar: AvatarDefault },
-    { name: "Player 9", avatar: AvatarDefault },
-    { name: "Player 10", avatar: AvatarDefault },
-  ]
-};
-
-const loggedUser = "Player 1";
 
 const maps = [
   { name: "Oregon", img: OregonImg },
@@ -49,41 +24,66 @@ const maps = [
   { name: "Chalet", img: ChaletImg },
   { name: "Kafe Dostoyevsky", img: KafeDostoyevskyImg },
   { name: "Fronteira", img: BorderImg },
+  { name: "Consulado", img: ConsulateImg },
+  { name: "Covil", img: LairImg },
+  { name: "Lab Nighthaven", img: NighthavenLabsImg },
 ];
 
 const Partidas = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const api = useApi();
+  const { user } = useAuth();
 
-  const [confirmedPlayers, setConfirmedPlayers] = useState([loggedUser]);
+  const [team1, setTeam1] = useState(null);
+  const [team2, setTeam2] = useState(null);
+
+  const [confirmedPlayers, setConfirmedPlayers] = useState([]);
   const [banPhase, setBanPhase] = useState(false);
   const [bannedMaps, setBannedMaps] = useState([]);
-  const [countdown, setCountdown] = useState(20); // 5 minutos
-  const [currentTurn, setCurrentTurn] = useState(team1.name);
+  const [countdown, setCountdown] = useState(20);
+  const [currentTurn, setCurrentTurn] = useState("");
 
   const [team1Ready, setTeam1Ready] = useState(false);
   const [team2Ready, setTeam2Ready] = useState(false);
   const [woTeam, setWoTeam] = useState(null);
 
+  useEffect(() => {
+    api.get(`/partidas/${id}`)
+      .then(res => {
+        setTeam1(res.data.time1);
+        setTeam2(res.data.time2);
+        setCurrentTurn(res.data.time1.nome);
+      })
+      .catch(err => console.error("Erro ao buscar partida:", err));
+  }, [id]);
+
+  if (!team1 || !team2) {
+    return (
+      <>
+        <Navbar />
+        <p style={{ textAlign: "center" }}>Carregando partida...</p>
+      </>
+    );
+  }
 
   const allPlayers = [
-    ...team1.players.map(p => p.name),
-    ...team2.players.map(p => p.name)
+    ...team1.membros.map(p => p.nome),
+    ...team2.membros.map(p => p.nome)
   ];
 
   const userTeam =
-    team1.players.find(p => p.name === loggedUser) ? team1.name : team2.name;
+    team1.membros.some(p => p.id === user.id) ? team1.nome : team2.nome;
 
   useEffect(() => {
     allPlayers.forEach((player, index) => {
-      if (player !== loggedUser) {
-        setTimeout(() => {
-          setConfirmedPlayers(prev =>
-            prev.includes(player) ? prev : [...prev, player]
-          );
-        }, 1200 + index * 800);
-      }
+      setTimeout(() => {
+        setConfirmedPlayers(prev =>
+          prev.includes(player) ? prev : [...prev, player]
+        );
+      }, 1200 + index * 800);
     });
-  }, []);
+  }, [team1, team2]);
 
   useEffect(() => {
     if (bannedMaps.length === maps.length - 1 && !woTeam && !(team1Ready && team2Ready)) {
@@ -92,8 +92,8 @@ const Partidas = () => {
           if (prev <= 1) {
             clearInterval(timer);
 
-            if (team1Ready && !team2Ready) setWoTeam(team2.name);
-            if (team2Ready && !team1Ready) setWoTeam(team1.name);
+            if (team1Ready && !team2Ready) setWoTeam(team2.nome);
+            if (team2Ready && !team1Ready) setWoTeam(team1.nome);
 
             return 0;
           }
@@ -111,22 +111,23 @@ const Partidas = () => {
     }
   }, [confirmedPlayers]);
 
-  const getTeamLogo = (teamName) => {
-    return teamName === team1.name ? team1.logo : team2.logo;
+  const getTeamLogo = (team) => {
+    return team.imagemBase64
+      ? `data:image/*;base64,${team.imagemBase64}`
+      : AvatarDefault;
   };
 
   const banMap = (map) => {
-    
     if (bannedMaps.find(m => m.mapName === map.name)) return;
     if (bannedMaps.length >= maps.length - 1) return;
 
     setBannedMaps(prev => [...prev, { mapName: map.name, team: currentTurn }]);
-    setCurrentTurn(prev => prev === team1.name ? team2.name : team1.name);
+    setCurrentTurn(prev => prev === team1.nome ? team2.nome : team1.nome);
   };
 
   const handleStartMatch = () => {
-    if (userTeam === team1.name) setTeam1Ready(true);
-    if (userTeam === team2.name) setTeam2Ready(true);
+    if (userTeam === team1.nome) setTeam1Ready(true);
+    if (userTeam === team2.nome) setTeam2Ready(true);
   };
 
   const finalMap = maps.find(
@@ -146,11 +147,11 @@ const Partidas = () => {
 
         <div className="teams-row">
 
-          <TeamCard team={team1} confirmedPlayers={confirmedPlayers} />
+          <TeamCard team={team1} confirmedPlayers={confirmedPlayers} getTeamLogo={getTeamLogo} />
 
           <div className="vs-box">VS</div>
 
-          <TeamCard team={team2} confirmedPlayers={confirmedPlayers} />
+          <TeamCard team={team2} confirmedPlayers={confirmedPlayers} getTeamLogo={getTeamLogo} />
 
         </div>
 
@@ -188,7 +189,7 @@ const Partidas = () => {
                     {bannedInfo && (
                       <div className="ban-overlay">
                         <img
-                          src={getTeamLogo(bannedInfo.team)}
+                          src={getTeamLogo(bannedInfo.team === team1.nome ? team1 : team2)}
                           className="ban-logo"
                         />
                       </div>
@@ -214,8 +215,8 @@ const Partidas = () => {
                       Confirmar Início ({userTeam})
                     </button>
 
-                    <p>{team1Ready ? "✅ The Dragons Fury confirmou" : "⏳ The Dragons Fury aguardando"}</p>
-                    <p>{team2Ready ? "✅ Ynsanit confirmou" : "⏳ Ynsanit aguardando"}</p>
+                    <p>{team1Ready ? `✅ ${team1.nome} confirmou` : `⏳ ${team1.nome} aguardando`}</p>
+                    <p>{team2Ready ? `✅ ${team2.nome} confirmou` : `⏳ ${team2.nome} aguardando`}</p>
                   </>
                 )}
 
@@ -236,24 +237,31 @@ const Partidas = () => {
   );
 };
 
-const TeamCard = ({ team, confirmedPlayers }) => {
+const TeamCard = ({ team, confirmedPlayers, getTeamLogo }) => {
   return (
     <div className="team-card horizontal">
 
       <div className="team-header">
-        <img src={team.logo} className="team-logo" />
-        <span>{team.name}</span>
+        <img src={getTeamLogo(team)} className="team-logo" />
+        <span>{team.nome}</span>
       </div>
 
-      {team.players.map((player, i) => (
+      {team.membros.map((player, i) => (
         <div key={i} className="player-row">
 
           <div className="player-left">
-            <img src={player.avatar} className="player-avatar" />
-            <span>{player.name}</span>
+            <img
+              src={
+                player.imagemUsuario
+                  ? `data:image/*;base64,${player.imagemUsuario}`
+                  : AvatarDefault
+              }
+              className="player-avatar"
+            />
+            <span>{player.nome}</span>
           </div>
 
-          {confirmedPlayers.includes(player.name) ? (
+          {confirmedPlayers.includes(player.nome) ? (
             <span className="confirmed">✔ Confirmado</span>
           ) : (
             <span className="waiting">⏳ Aguardando</span>

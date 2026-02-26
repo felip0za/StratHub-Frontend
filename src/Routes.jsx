@@ -109,7 +109,7 @@ function MainRoutes() {
           <Invites />
         </PrivateRoute>
       } />
-      <Route path='/partida' element={
+      <Route path='/partida/:id' element={
         <PrivateRoute>
           <Partidas />
         </PrivateRoute>
