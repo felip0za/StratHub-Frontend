@@ -5,17 +5,17 @@ import { useApi } from "../../Services/API";
 import { useAuth } from "../../contexts/AuthContext";
 import "./Partidas.css";
 
-import OregonImg from "../../assets/Maps/oregon.png";
-import BorderImg from "../../assets/Maps/border.png";
-import ClubHouseImg from "../../assets/Maps/clubhouse.png";
-import BankImg from "../../assets/Maps/banco.png";
-import KafeDostoyevskyImg from "../../assets/Maps/kafeDostoyevsky.png";
-import ChaletImg from "../../assets/Maps/chalet.png";
-import ConsulateImg from "../../assets/Maps/Consulado.png";
-import LairImg from "../../assets/Maps/covil.png";
-import NighthavenLabsImg from "../../assets/Maps/LaboratorioNighthaven.png";
+import OregonImg from "/src/assets/Maps/oregon.png";
+import BorderImg from "/src/assets/Maps/border.png";
+import ClubHouseImg from "/src/assets/Maps/clubhouse.png";
+import BankImg from "/src/assets/Maps/banco.png";
+import KafeDostoyevskyImg from "/src/assets/Maps/kafeDostoyevsky.png";
+import ChaletImg from "/src/assets/Maps/chalet.png";
+import ConsulateImg from "/src/assets/Maps/Consulado.png";
+import LairImg from "/src/assets/Maps/covil.png";
+import NighthavenLabsImg from "/src/assets/Maps/LaboratorioNighthaven.png";
 
-import AvatarDefault from "../../assets/avatar-default.png";
+import AvatarDefault from "/src/assets/avatar-default.png";
 
 const maps = [
   { name: "Oregon", img: OregonImg },
