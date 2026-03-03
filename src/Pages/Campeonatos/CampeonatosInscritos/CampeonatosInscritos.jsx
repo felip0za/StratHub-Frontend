@@ -28,7 +28,7 @@ const CampeonatosInscritos = () => {
         setLoading(true);
 
         // ✅ agora o backend resolve o time automaticamente
-        const response = await api.get('/inscricoes/time');
+        const response = await api.get('/inscricoes/listaInscritos');
 
         setInscricoes(Array.isArray(response.data) ? response.data : []);
         setError('');

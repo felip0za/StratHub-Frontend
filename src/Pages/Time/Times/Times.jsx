@@ -15,6 +15,7 @@ import challenger from '../../../assets/challenger.png';
 import master from '../../../assets/master.png';
 import { FaInstagram, FaDiscord, FaTwitter } from 'react-icons/fa';
 import timedefault from '../../../assets/time_default.png';
+import avatardefault from '../../../assets/avatar-default.png';
 import './Times.css';
 
 function Times() {
