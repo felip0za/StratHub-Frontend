@@ -24,10 +24,7 @@ function Invites() {
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Modal de aviso
   const [modalAviso, setModalAviso] = useState({ ativo: false, mensagem: "" });
-
-  // Modal de confirmação para remover amigo
   const [confirmRemove, setConfirmRemove] = useState({ ativo: false, amigo: null });
 
   const mostrarAviso = (mensagem) => {
@@ -45,13 +42,11 @@ function Invites() {
           api.get("/amizade/pendentes"),
           api.get(`/convites/usuario/${userId}`),
         ]);
-
         setFriends(friendsRes.data || []);
         setFriendRequests(friendReqRes.data || []);
         setTeamInvites(
           teamInvitesRes.data?.filter((i) => i.status === "PENDENTE") || []
         );
-
         await verificarTimeUsuario();
       } catch {
         mostrarAviso("Erro ao buscar dados. Tente novamente mais tarde.");
@@ -67,13 +62,11 @@ function Invites() {
           api.get("/amizade/pendentes"),
           api.get(`/convites/usuario/${userId}`),
         ]);
-
         setFriends(friendsRes.data || []);
         setFriendRequests(friendReqRes.data || []);
         setTeamInvites(
           teamInvitesRes.data?.filter((i) => i.status === "PENDENTE") || []
         );
-
         await verificarTimeUsuario();
       } catch {}
     };
@@ -85,7 +78,7 @@ function Invites() {
 
   const verificarTimeUsuario = async () => {
     try {
-      const res = await api.get(`/usuario/${Id}`);
+      const res = await api.get(`/usuario/${userId}`);
       setUsuarioJaTemTime(res.data?.hasTime === true);
     } catch {
       setUsuarioJaTemTime(false);
@@ -94,12 +87,12 @@ function Invites() {
 
   const handleSearch = async () => {
     if (!searchName.trim()) return;
-
     try {
       const res = await api.get(
         `/convites/usuarios/busca?nome=${encodeURIComponent(searchName)}`
       );
-      setSearchResults(res.data || []);
+      const resultados = (res.data || []).filter((user) => user.id !== userId);
+      setSearchResults(resultados);
     } catch {
       mostrarAviso("Erro ao buscar usuários.");
     }
@@ -109,24 +102,20 @@ function Invites() {
     try {
       await api.post(`/amizade/convidar/${idUsuario}`);
       mostrarAviso("Convite enviado com sucesso!");
-
       setSearchResults([]);
       setSearchName("");
-
       const [friendsRes, friendReqRes, teamInvitesRes] = await Promise.all([
         api.get("/amizade/amigos"),
         api.get("/amizade/pendentes"),
         api.get(`/convites/usuario/${userId}`),
       ]);
-
       setFriends(friendsRes.data || []);
       setFriendRequests(friendReqRes.data || []);
       setTeamInvites(
         teamInvitesRes.data?.filter((i) => i.status === "PENDENTE") || []
       );
     } catch (err) {
-      const msg =
-        err?.response?.data?.message || "Não foi possível enviar o convite.";
+      const msg = err?.response?.data?.message || "Não foi possível enviar o convite.";
       mostrarAviso(`Erro: ${msg}`);
     }
   };
@@ -135,9 +124,7 @@ function Invites() {
     try {
       await api.post(`/amizade/aceitar/${idConvite}`);
       mostrarAviso("Amizade aceita com sucesso!");
-
       setFriendRequests((prev) => prev.filter((req) => req.id !== idConvite));
-
       const updatedFriends = await api.get("/amizade/amigos");
       setFriends(updatedFriends.data || []);
     } catch {
@@ -158,11 +145,9 @@ function Invites() {
       );
       return;
     }
-
     try {
       await api.post(`/convites/${idConvite}/aceitar`);
       mostrarAviso("Você entrou no time!");
-
       setTeamInvites((prev) => prev.filter((invite) => invite.id !== idConvite));
       setUsuarioJaTemTime(true);
     } catch (err) {
@@ -175,7 +160,6 @@ function Invites() {
     try {
       await api.post(`/convites/${idConvite}/recusarTime`);
       mostrarAviso("Convite recusado.");
-
       setTeamInvites((prev) => prev.filter((invite) => invite.id !== idConvite));
     } catch {
       mostrarAviso("Erro ao recusar convite de time.");
@@ -194,42 +178,41 @@ function Invites() {
     <>
       <Navbar />
 
-      <div className="friends-screen">
-        <h1 className="title-neon">Amigos e Convites</h1>
+      <div className="inv-screen">
+        <h1 className="inv-title">Amigos e Convites</h1>
 
         {/* Lista de amigos */}
-        <section className="friends-list">
-          <ul>
+        <section>
+          <ul className="inv-list">
             {friends.length > 0 ? (
               friends.map((friend) => (
                 <li
                   key={friend.id}
-                  className="friend-card"
+                  className="inv-card"
                   onClick={() => navigate(`/usuario/${friend.id}`)}
                 >
-                  <div className="avatar">
+                  <div className="inv-avatar">
                     <img
                       src={friend.imagemUsuario || avatardefault}
                       alt={`Foto de ${friend.nome}`}
                     />
                   </div>
 
-                  <div className="info">
-                    <div className="username">{friend.nome}</div>
-
-                    <p className="profile-ubi2">
-                      <strong className="ubisoft-label">
-                        <Icon path={mdiUbisoft} size={1} />
+                  <div className="inv-info">
+                    <div className="inv-name">{friend.nome}</div>
+                    <p className="inv-ubi-row">
+                      <strong className="inv-ubi-label">
+                        <Icon path={mdiUbisoft} size={0.8} />
                         UbiConnect:
                       </strong>
-                      <span className="ubisoft-valor">
+                      <span className="inv-ubi-valor">
                         {friend.username || friend.ubiConnect || "Não informado"}
                       </span>
                     </p>
                   </div>
 
                   <button
-                    className="remove-btn"
+                    className="inv-btn-ghost"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleRemoveFriend(friend.id);
@@ -240,57 +223,58 @@ function Invites() {
                 </li>
               ))
             ) : (
-              <p>Você ainda não tem amigos.</p>
+              <p className="inv-empty">Você ainda não tem amigos.</p>
             )}
           </ul>
         </section>
 
-        {/* Botões */}
-        <section className="friend-requests">
+        {/* Botões inferiores */}
+        <div className="inv-actions-row">
           <button
-            className="open-popup-button"
+            className="inv-btn-primary"
             onClick={() => setShowRequestsPopup(true)}
           >
             Convites
             {(friendRequests.length + teamInvites.length) > 0 && (
-              <span className="notification-badge">
+              <span className="inv-badge">
                 {(friendRequests.length + teamInvites.length) > 1 ? "1+" : "1"}
               </span>
             )}
           </button>
 
           <button
-            className="open-popup-button"
+            className="inv-btn-primary"
             onClick={() => setShowSearchPopup(true)}
           >
             Adicionar Amigos
           </button>
-        </section>
+        </div>
       </div>
 
-      {/* Popups existentes (Convites e busca) */}
+      {/* Popup — Convites */}
       {showRequestsPopup && (
-        <div className="popup-overlay">
-          <div className="popup-box">
-            <h3 className="title-neon">Convites de Amizade</h3>
+        <div className="inv-overlay">
+          <div className="inv-popup">
+            <h3 className="inv-title">Convites de Amizade</h3>
+
             {friendRequests.length > 0 ? (
-              <ul>
+              <ul className="inv-list">
                 {friendRequests.map((request) => (
-                  <li key={request.id} className="friend-card">
-                    <div className="avatar">
+                  <li key={request.id} className="inv-card">
+                    <div className="inv-avatar">
                       <img
                         src={request.imagemUsuario || avatardefault}
                         alt={`Foto de ${request.nome}`}
                       />
                     </div>
-                    <div className="info">
-                      <div className="username">{request.nome}</div>
-                      <div className="userid">
+                    <div className="inv-info">
+                      <div className="inv-name">{request.nome}</div>
+                      <div className="inv-sub">
                         UbiConnect: {request.username || request.nome.toLowerCase()}
                       </div>
                     </div>
                     <button
-                      className="team-btn accept"
+                      className="inv-btn-primary"
                       onClick={() => handleAcceptFriend(request.id)}
                     >
                       Aceitar
@@ -299,19 +283,20 @@ function Invites() {
                 ))}
               </ul>
             ) : (
-              <p>Nenhum convite de amizade.</p>
+              <p className="inv-empty">Nenhum convite de amizade.</p>
             )}
 
-            <h3 className="title-neon" style={{ marginTop: 24 }}>
+            <h3 className="inv-title" style={{ marginTop: 24 }}>
               Convites de Time
             </h3>
+
             {teamInvites.length > 0 ? (
-              <ul>
+              <ul className="inv-list">
                 {teamInvites.map((convite) => {
                   const time = convite.time || {};
                   return (
-                    <li key={convite.id} className="friend-card">
-                      <div className="avatar">
+                    <li key={convite.id} className="inv-card">
+                      <div className="inv-avatar">
                         <img
                           src={
                             time.imagemBase64
@@ -321,19 +306,19 @@ function Invites() {
                           alt={`Time ${time.nome || "Desconhecido"}`}
                         />
                       </div>
-                      <div className="info">
-                        <div className="username">{time.nome || "Time desconhecido"}</div>
-                        <div className="userid">Convite para entrar no time</div>
+                      <div className="inv-info">
+                        <div className="inv-name">{time.nome || "Time desconhecido"}</div>
+                        <div className="inv-sub">Convite para entrar no time</div>
                       </div>
-                      <div className="actions">
+                      <div className="inv-card-actions">
                         <button
-                          className="team-btn accept"
+                          className="inv-btn-primary"
                           onClick={() => handleAcceptTeamInvite(convite.id)}
                         >
                           Aceitar
                         </button>
                         <button
-                          className="team-btn reject"
+                          className="inv-btn-ghost"
                           onClick={() => handleRejectTeamInvite(convite.id)}
                         >
                           Recusar
@@ -344,11 +329,11 @@ function Invites() {
                 })}
               </ul>
             ) : (
-              <p>Nenhum convite de time.</p>
+              <p className="inv-empty">Nenhum convite de time.</p>
             )}
 
             <button
-              className="open-popup-button close-btn"
+              className="inv-btn-close"
               onClick={() => setShowRequestsPopup(false)}
             >
               Fechar
@@ -357,48 +342,50 @@ function Invites() {
         </div>
       )}
 
+      {/* Popup — Buscar */}
       {showSearchPopup && (
-        <div className="popup-overlay">
-          <div className="popup-box">
-            <h3 className="title-neon">Buscar Usuários</h3>
+        <div className="inv-overlay">
+          <div className="inv-popup">
+            <h3 className="inv-title">Buscar Usuários</h3>
+
             <input
+              className="inv-input"
               type="text"
               placeholder="Digite o nome"
               value={searchName}
               onChange={(e) => setSearchName(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             />
-            <button className="open-popup-button" onClick={handleSearch}>
+            <button className="inv-btn-primary" onClick={handleSearch}>
               Buscar
             </button>
 
             {searchResults.length > 0 ? (
-              <ul>
+              <ul className="inv-list" style={{ marginTop: 12 }}>
                 {searchResults.map((user) => {
                   const isAmigo = friends.some((f) => f.id === user.id);
                   const jaTemConvite = friendRequests.some((r) => r.id === user.id);
                   return (
-                    <li key={user.id} className="friend-card search-card">
-                      <div className="avatar">
+                    <li key={user.id} className="inv-card inv-card-search">
+                      <div className="inv-avatar">
                         <img
                           src={user.imagemUsuario || avatardefault}
                           alt={`Foto de ${user.nome}`}
                         />
                       </div>
-                      <div className="info">
-                        <div className="username">{user.nome}</div>
-                        <div className="userid">
+                      <div className="inv-info">
+                        <div className="inv-name">{user.nome}</div>
+                        <div className="inv-sub">
                           UbiConnect: {user.ubiConnect || user.nome.toLowerCase()}
                         </div>
                       </div>
-
                       {isAmigo ? (
-                        <span className="status-badge">Amigo</span>
+                        <span className="inv-status">Amigo</span>
                       ) : jaTemConvite ? (
-                        <span className="status-badge">Convite pendente</span>
+                        <span className="inv-status">Pendente</span>
                       ) : (
                         <button
-                          className="remove-btn"
+                          className="inv-btn-primary"
                           onClick={() => handleSendFriendRequest(user.id)}
                         >
                           Adicionar
@@ -409,11 +396,13 @@ function Invites() {
                 })}
               </ul>
             ) : (
-              searchName.trim() !== "" && <p>Nenhum usuário encontrado.</p>
+              searchName.trim() !== "" && (
+                <p className="inv-empty">Nenhum usuário encontrado.</p>
+              )
             )}
 
             <button
-              className="open-popup-button close-btn"
+              className="inv-btn-close"
               onClick={() => setShowSearchPopup(false)}
             >
               Fechar
@@ -422,14 +411,18 @@ function Invites() {
         </div>
       )}
 
-      {/* Modal de confirmação para remover amigo */}
+      {/* Modal — Confirmar remoção */}
       {confirmRemove.ativo && (
-        <div className="modal-overlay">
-          <div className="modal-box">
-            <p>Tem certeza que deseja remover {confirmRemove.amigo.nome} da sua lista de amigos?</p>
-            <div className="modal-actions">
+        <div className="inv-overlay">
+          <div className="inv-modal">
+            <p>
+              Tem certeza que deseja remover{" "}
+              <strong style={{ color: "#f0f0f0" }}>{confirmRemove.amigo.nome}</strong>{" "}
+              da sua lista de amigos?
+            </p>
+            <div className="inv-modal-actions">
               <button
-                className="modal-btn confirm"
+                className="inv-btn-primary"
                 onClick={async () => {
                   try {
                     await api.delete(`/amizade/remover/${confirmRemove.amigo.id}`);
@@ -451,10 +444,10 @@ function Invites() {
                   }
                 }}
               >
-                Sim
+                Sim, remover
               </button>
               <button
-                className="modal-btn cancel"
+                className="inv-btn-ghost"
                 onClick={() => setConfirmRemove({ ativo: false, amigo: null })}
               >
                 Cancelar
@@ -464,13 +457,14 @@ function Invites() {
         </div>
       )}
 
-      {/* Modal de Avisos */}
+      {/* Modal — Avisos */}
       {modalAviso.ativo && (
-        <div className="modal-overlay">
-          <div className="modal-box">
+        <div className="inv-overlay">
+          <div className="inv-modal">
             <p>{modalAviso.mensagem}</p>
             <button
-              className="modal-close-btn"
+              className="inv-btn-primary"
+              style={{ marginTop: 18, width: "100%" }}
               onClick={() => setModalAviso({ ativo: false, mensagem: "" })}
             >
               Fechar

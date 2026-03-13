@@ -1,252 +1,427 @@
 @import url('https://fonts.cdnfonts.com/css/akira-expanded');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
-.friends-screen {
-  padding: 30px;
+/* ─── SCREEN ─────────────────────────────────────── */
+.inv-screen {
+  padding: 48px 32px 80px;
   min-height: 100vh;
-  background: linear-gradient(180deg, #0f0f0f, #141414);
-  color: white;
+  background: #0c0c0c;
+  color: #f0f0f0;
+  width: 100%;
+  max-width: 1800px;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
-/* TITLE */
-.title-neon {
+/* ─── TITLE ──────────────────────────────────────── */
+.inv-title {
   font-family: 'Akira Expanded', sans-serif;
+  font-size: clamp(0.9rem, 2.5vw, 1.2rem);
   text-align: center;
-  margin-bottom: 30px;
-  color: rgb(180, 0, 0);  
+  margin: 0 0 36px;
+  color: #b40000;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  position: relative;
 }
 
-/* FRIENDS LIST */
-.friends-list ul,
-.popup-box ul {
+.inv-title::after {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 2px;
+  background: #b40000;
+  margin: 8px auto 0;
+  border-radius: 2px;
+  opacity: 0.6;
+}
+
+/* ─── FRIENDS LIST ───────────────────────────────── */
+.inv-list {
   list-style: none;
   padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.friend-card {
+/* ─── FRIEND CARD ────────────────────────────────── */
+.inv-card {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 14px;
   background: #1a1a1a;
-  padding: 12px 15px;
-  border-radius: 12px;
-  margin-bottom: 12px;
-  transition: 0.3s;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.07);
+  transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
   cursor: pointer;
-  box-shadow: 0 0 10px rgba(0,0,0,0.6);
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
-.friend-card:hover {
-  transform: scale(1.01);
+.inv-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: #b40000;
+  opacity: 0;
+  transition: opacity 180ms ease;
 }
 
-/* AVATAR */
-.avatar img {
-  width: 50px;
-  height: 50px;
+.inv-card:hover {
+  background: #212121;
+  border-color: rgba(180, 0, 0, 0.4);
+  transform: translateX(3px);
+}
+
+.inv-card:hover::before {
+  opacity: 1;
+}
+
+/* ─── AVATAR ─────────────────────────────────────── */
+.inv-avatar {
+  flex-shrink: 0;
+}
+
+.inv-avatar img {
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   object-fit: cover;
+  border: 2px solid rgba(255,255,255,0.08);
+  transition: border-color 180ms ease;
+  display: block;
 }
 
-/* INFO */
-.info {
+.inv-card:hover .inv-avatar img {
+  border-color: #b40000;
+}
+
+/* ─── INFO ───────────────────────────────────────── */
+.inv-info {
   flex: 1;
+  min-width: 0;
 }
 
-.username {
-  font-weight: bold;
-  font-family: "Poppins", sans-serif;
+.inv-name {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: #f0f0f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0 0 3px;
 }
 
-.userid {
-  font-size: 13px;
-  color: #ccc;
+.inv-sub {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.72rem;
+  color: #777777;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
 }
 
-/* BUTTONS */
-.remove-btn,
-.team-btn,
-.open-popup-button {
-  background-color: rgb(180, 0, 0);
-  color: white;
+/* UbiConnect row */
+.inv-ubi-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.72rem;
+  color: #777777;
+  margin: 0;
+}
+
+.inv-ubi-label {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  color: #555555;
+  font-weight: 500;
+  font-size: 0.7rem;
+}
+
+.inv-ubi-valor {
+  color: #aaaaaa;
+  font-weight: 600;
+}
+
+/* ─── BUTTON — sólido vermelho (ação primária) ────── */
+.inv-btn-primary {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #ffffff;
+  background: #b40000;
   border: none;
-  padding: 6px 12px;
+  padding: 8px 18px;
   border-radius: 8px;
   cursor: pointer;
-  font-weight: bold;
-  transition: 0.3s;
+  transition: background 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
-.open-popup-button.close-btn {
-  background-color: rgb(180, 0, 0);
+.inv-btn-primary:hover {
+  background: #d40000;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(180, 0, 0, 0.3);
 }
 
-.open-popup-button.close-btn:hover {
-  background-color: rgb(180, 0, 0);
+.inv-btn-primary:active {
+  transform: translateY(0);
+  box-shadow: none;
 }
 
-.remove-btn:hover,
-.team-btn.accept:hover,
-.open-popup-button:hover {
-  background-color: rgb(180, 0, 0);
-  color: white;
+/* ─── BUTTON — ghost (remover / rejeitar / cancelar) */
+.inv-btn-ghost {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #777777;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 8px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
-.team-btn.reject {
-  background-color: #444;
-  color: white;
+.inv-btn-ghost:hover {
+  background: rgba(255, 70, 70, 0.08);
+  border-color: rgba(255, 70, 70, 0.35);
+  color: #ff6666;
 }
 
-.team-btn.reject:hover {
-  background-color: #ff5a5a;
-}
-
-/* STATUS BADGE */
-.status-badge {
-  background-color: #00ff99;
-  color: black;
-  padding: 5px 10px;
-  border-radius: 10px;
-  font-size: 12px;
-  font-weight: bold;
-}
-
-/* BUTTON AREA */
-.friend-requests {
+/* ─── BOTÕES DA SEÇÃO INFERIOR ───────────────────── */
+.inv-actions-row {
   display: flex;
   justify-content: center;
-  gap: 20px;
-  margin-top: 25px;
+  gap: 10px;
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255,255,255,0.06);
 }
 
-
-
-/* NOTIFICATION BADGE */
-.notification-badge {
-  background-color: red;
+/* ─── NOTIFICATION BADGE ─────────────────────────── */
+.inv-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #cc0000;
   color: white;
-  font-size: 11px;
+  font-size: 0.58rem;
+  font-weight: 700;
   border-radius: 50%;
-  padding: 3px 7px;
+  width: 17px;
+  height: 17px;
   margin-left: 6px;
+  vertical-align: middle;
+  animation: inv-pulse 2s infinite;
 }
 
-/* POPUP OVERLAY */
-.popup-overlay,
-.modal-overlay {
+@keyframes inv-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(180, 0, 0, 0.4); }
+  60%       { box-shadow: 0 0 0 5px rgba(180, 0, 0, 0); }
+}
+
+/* ─── STATUS BADGE ───────────────────────────────── */
+.inv-status {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: rgba(0, 200, 120, 0.1);
+  color: #00c878;
+  border: 1px solid rgba(0, 200, 120, 0.25);
+  padding: 4px 10px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+/* ─── CARD ACTIONS ───────────────────────────────── */
+.inv-card-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* ─── POPUP OVERLAY ──────────────────────────────── */
+.inv-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.8);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(3px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 2000;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
-/* POPUP BOX */
-.popup-box,
-.modal-box {
-  background-color: #1a1a1a;
-  padding: 20px;
-  border-radius: 15px;
-  width: 420px;
+/* ─── POPUP BOX ──────────────────────────────────── */
+.inv-popup {
+  background: #161616;
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 28px 24px;
+  border-radius: 14px;
+  width: 100%;
+  max-width: 460px;
   max-height: 80vh;
   overflow-y: auto;
-  box-shadow: 0 0 20px rgba(0,0,0,0.8);
-  animation: fadeIn 0.2s ease-in-out;
+  animation: inv-slide-up 0.2s cubic-bezier(0.34, 1.4, 0.64, 1);
+  scrollbar-width: thin;
+  scrollbar-color: #b40000 transparent;
+  box-sizing: border-box;
 }
 
-/* INPUT */
-.popup-box input {
+.inv-popup::-webkit-scrollbar { width: 4px; }
+.inv-popup::-webkit-scrollbar-thumb { background: #b40000; border-radius: 4px; }
+
+/* ─── MODAL BOX ──────────────────────────────────── */
+.inv-modal {
+  background: #161616;
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 28px 24px;
+  border-radius: 14px;
   width: 100%;
-  padding: 8px;
+  max-width: 360px;
+  text-align: center;
+  animation: inv-slide-up 0.2s cubic-bezier(0.34, 1.4, 0.64, 1);
+  box-sizing: border-box;
+}
+
+.inv-modal p {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.88rem;
+  color: #999999;
+  line-height: 1.6;
+  margin: 0 0 4px;
+}
+
+/* ─── POPUP INPUT ────────────────────────────────── */
+.inv-input {
+  width: 100%;
+  padding: 9px 13px;
   border-radius: 8px;
-  border: none;
+  border: 1px solid rgba(255,255,255,0.08);
   margin-bottom: 10px;
   outline: none;
-  background: #222;
-  color: white;
+  background: #111111;
+  color: #f0f0f0;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.84rem;
+  transition: border-color 180ms ease;
+  box-sizing: border-box;
 }
 
-/* ACTIONS */
-.actions {
-  display: flex;
-  gap: 8px;
+.inv-input:focus {
+  border-color: #b40000;
+  box-shadow: 0 0 0 3px rgba(180, 0, 0, 0.1);
 }
 
-/* MODAL */
-.modal-actions {
+.inv-input::placeholder {
+  color: #444444;
+}
+
+/* ─── MODAL ACTIONS ──────────────────────────────── */
+.inv-modal-actions {
   display: flex;
   justify-content: center;
-  gap: 15px;
-  margin-top: 15px;
+  gap: 10px;
+  margin-top: 20px;
 }
 
-.modal-btn.confirm {
-  background-color: rgb(180, 0, 0);
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: 0.3s;
-}
-
-.modal-btn.cancel {
-  background-color: #444;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: 0.3s;
-}
-
-.modal-close-btn{
-  background-color: rgb(180, 0, 0);
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: 0.3s;
-}
-
-.modal-btn.confirm:hover {
-  background-color: rgb(180, 0, 0);
-  color: white;
-}
-
-.modal-btn.cancel:hover {
-  background-color: #444;
-  color: white;
-}
-
-/* CLOSE BUTTON */
-.close-btn {
-  margin-top: 15px;
+/* ─── CLOSE BUTTON ───────────────────────────────── */
+.inv-btn-close {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: 18px;
   width: 100%;
+  border-radius: 8px;
+  background: transparent;
+  color: #666666;
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 8px 18px;
+  cursor: pointer;
+  transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
 }
 
-/* SEARCH CARD */
-.search-card {
-  background-color: #222;
+.inv-btn-close:hover {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.14);
+  color: #aaaaaa;
 }
 
-/* ANIMATION */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
+/* ─── SEARCH CARD ────────────────────────────────── */
+.inv-card-search {
+  background: #111111;
+}
+
+/* ─── EMPTY STATE ────────────────────────────────── */
+.inv-empty {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.8rem;
+  color: #444444;
+  text-align: center;
+  padding: 16px 0;
+  margin: 0;
+}
+
+/* ─── ANIMATIONS ─────────────────────────────────── */
+@keyframes inv-slide-up {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ─── RESPONSIVE ─────────────────────────────────── */
+@media (max-width: 500px) {
+  .inv-screen {
+    padding: 28px 16px 60px;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  .inv-popup,
+  .inv-modal {
+    padding: 20px 16px;
+    border-radius: 12px;
+  }
+
+  .inv-card {
+    gap: 10px;
+    padding: 11px 12px;
+  }
+
+  .inv-avatar img {
+    width: 38px;
+    height: 38px;
+  }
+
+  .inv-actions-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .inv-actions-row .inv-btn-primary {
+    text-align: center;
   }
 }
