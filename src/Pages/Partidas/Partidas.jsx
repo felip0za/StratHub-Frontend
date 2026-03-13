@@ -1,64 +1,145 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../../Components/Navbar/Navbar";
 import { useApi } from "../../Services/API";
 import { useAuth } from "../../contexts/AuthContext";
 import "./Partidas.css";
 
-import OregonImg from "../../assets/Maps/oregon.png";
-import BorderImg from "../../assets/Maps/border.png";
-import ClubHouseImg from "../../assets/Maps/clubhouse.png";
-import BankImg from "../../assets/Maps/banco.png";
-import KafeDostoyevskyImg from "../../assets/Maps/kafeDostoyevsky.png";
-import ChaletImg from "../../assets/Maps/chalet.png";
-import ConsulateImg from "../../assets/Maps/Consulado.png";
-import LairImg from "../../assets/Maps/covil.png";
-import NighthavenLabsImg from "../../assets/Maps/LaboratorioNighthaven.png";
+import OregonImg           from "../../assets/Maps/Oregon.png";
+import BorderImg           from "../../assets/Maps/border.png";
+import ClubHouseImg        from "../../assets/Maps/clubhouse.png";
+import BankImg             from "../../assets/Maps/banco.png";
+import KafeDostoyevskyImg  from "../../assets/Maps/kafeDostoyevsky.png";
+import ChaletImg           from "../../assets/Maps/chalet.png";
+import ConsulateImg        from "../../assets/Maps/Consulado.png";
+import LairImg             from "../../assets/Maps/covil.png";
+import NighthavenLabsImg   from "../../assets/Maps/LaboratorioNighthaven.png";
+import AvatarDefault       from "../../assets/avatar-default.png";
 
-import AvatarDefault from "../../assets/avatar-default.png";
+const MAP_CONFIG = {
+  BANCO:                  { label: "Banco",            img: BankImg },
+  OREGON:                 { label: "Oregon",           img: OregonImg },
+  FRONTEIRA:              { label: "Fronteira",        img: BorderImg },
+  CHALET:                 { label: "Chalet",           img: ChaletImg },
+  CLUBHOUSE:              { label: "Clubhouse",        img: ClubHouseImg },
+  CONSULADO:              { label: "Consulado",        img: ConsulateImg },
+  KAFE:                   { label: "Kafe Dostoyevsky", img: KafeDostoyevskyImg },
+  COVIL:                  { label: "Covil",            img: LairImg },
+  LABORATORIO_NIGHTHAVEN: { label: "Lab Nighthaven",   img: NighthavenLabsImg },
+};
 
-const maps = [
-  { name: "Oregon", img: OregonImg },
-  { name: "Clubhouse", img: ClubHouseImg },
-  { name: "Banco", img: BankImg },
-  { name: "Chalet", img: ChaletImg },
-  { name: "Kafe Dostoyevsky", img: KafeDostoyevskyImg },
-  { name: "Fronteira", img: BorderImg },
-  { name: "Consulado", img: ConsulateImg },
-  { name: "Covil", img: LairImg },
-  { name: "Lab Nighthaven", img: NighthavenLabsImg },
-];
+const STATUS_LABEL = {
+  ESPERANDO_O_HORARIO:    { texto: "Aguardando horário",     classe: "status-esperando" },
+  AGUARDANDO_CONFIRMACAO: { texto: "Aguardando confirmação", classe: "status-aguardando" },
+  FASE_DE_BANIMENTO:      { texto: "Fase de banimento",      classe: "status-banimento" },
+  EM_ANDAMENTO:           { texto: "Em andamento",           classe: "status-em_andamento" },
+  FINALIZADO:             { texto: "Finalizado",             classe: "status-finalizado" },
+  WO:                     { texto: "W.O.",                   classe: "status-wo" },
+};
+
+const STATUSES_ATIVOS = ["FASE_DE_BANIMENTO", "EM_ANDAMENTO", "FINALIZADO", "WO"];
 
 const Partidas = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
-  const api = useApi();
+  const { id }   = useParams();
+  const api      = useApi();
   const { user } = useAuth();
 
-  const [team1, setTeam1] = useState(null);
-  const [team2, setTeam2] = useState(null);
+  const [loading, setLoading]                   = useState(true);
+  const [team1, setTeam1]                       = useState(null);
+  const [team2, setTeam2]                       = useState(null);
+  const [confirmedIds, setConfirmedIds]         = useState([]);
+  const [myConfirmLoading, setMyConfirmLoading] = useState(false);
+  const [partidaInfo, setPartidaInfo]           = useState(null);
 
-  const [confirmedPlayers, setConfirmedPlayers] = useState([]);
-  const [banPhase, setBanPhase] = useState(false);
-  const [bannedMaps, setBannedMaps] = useState([]);
-  const [countdown, setCountdown] = useState(20);
-  const [currentTurn, setCurrentTurn] = useState("");
+  const [mapasState, setMapasState] = useState(null);
+  const [banPhase, setBanPhase]     = useState(false);
+  const [banLoading, setBanLoading] = useState(false);
 
-  const [team1Ready, setTeam1Ready] = useState(false);
-  const [team2Ready, setTeam2Ready] = useState(false);
-  const [woTeam, setWoTeam] = useState(null);
-
+  const banPhaseRef = useRef(false);
   useEffect(() => {
-    api.get(`/partidas/${id}`)
-      .then(res => {
-        setTeam1(res.data.time1);
-        setTeam2(res.data.time2);
-        setCurrentTurn(res.data.time1.nome);
-      })
-      .catch(err => console.error("Erro ao buscar partida:", err));
+    banPhaseRef.current = banPhase;
+  }, [banPhase]);
+
+  // ── Carrega estado dos mapas ─────────────────────────────────────────────
+  const carregarMapas = async () => {
+    try {
+      const res = await api.get(`/partidas/${id}/mapas`);
+      setMapasState(res.data);
+    } catch {
+      // Mapas ainda nao iniciados
+    }
+  };
+
+  // ── Carrega partida + confirmacoes ──────────────────────────────────────
+  const carregarDados = async (mostrarLoading = true) => {
+    try {
+      if (mostrarLoading) setLoading(true);
+
+      const [partidaRes, confirmacoesRes] = await Promise.all([
+        api.get(`/partidas/${id}/detalhe`),
+        api.get(`/partidas/${id}/confirmacoes`),
+      ]);
+
+      const { time1, time2 } = partidaRes.data;
+      if (!time1 || !time2) return;
+
+      setTeam1(time1);
+      setTeam2(time2);
+      setPartidaInfo(partidaRes.data);
+      setConfirmedIds(confirmacoesRes.data.map(c => c.idMembro));
+
+      const status = partidaRes.data.statusPartida;
+      if (STATUSES_ATIVOS.includes(status)) {
+        setBanPhase(true);
+        // Garante que mapas sejam carregados imediatamente
+        // (resolve tela em branco para espectadores e reentradas)
+        if (!banPhaseRef.current) await carregarMapas();
+      }
+    } catch (err) {
+      console.error("Erro ao carregar dados da partida:", err);
+    } finally {
+      if (mostrarLoading) setLoading(false);
+    }
+  };
+
+  // ── Polling principal ────────────────────────────────────────────────────
+  useEffect(() => {
+    let ativo = true;
+
+    carregarDados(true);
+
+    const intervalo = setInterval(() => {
+      if (!ativo) return;
+      carregarDados(false);
+      if (banPhaseRef.current) carregarMapas();
+    }, 1000);
+
+    return () => {
+      ativo = false;
+      clearInterval(intervalo);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  if (!team1 || !team2) {
+  // ── Inicia ban phase quando todos confirmaram ───────────────────────────
+  const allPlayers = team1 && team2 ? [...team1.membros, ...team2.membros] : [];
+
+  useEffect(() => {
+    if (allPlayers.length === 0) return;
+    if (confirmedIds.length < allPlayers.length) return;
+    if (banPhase) return;
+
+    api.post(`/partidas/${id}/mapas/iniciar`)
+      .then(res => {
+        setMapasState(res.data);
+        setBanPhase(true);
+      })
+      .catch(err => console.error("Erro ao iniciar mapas:", err));
+  }, [confirmedIds, allPlayers.length]);
+
+  // ── Loading inicial ──────────────────────────────────────────────────────
+  if (loading || !team1 || !team2) {
     return (
       <>
         <Navbar />
@@ -67,73 +148,76 @@ const Partidas = () => {
     );
   }
 
-  const allPlayers = [
-    ...team1.membros.map(p => p.nome),
-    ...team2.membros.map(p => p.nome)
-  ];
+  // ── Derived state ────────────────────────────────────────────────────────
+  const isParticipant =
+    team1.membros.some(p => p.id === user?.id) ||
+    team2.membros.some(p => p.id === user?.id);
 
-  const userTeam =
-    team1.membros.some(p => p.id === user.id) ? team1.nome : team2.nome;
+  const isTime1     = team1.membros.some(p => p.id === user?.id);
+  const userTeam    = isTime1 ? team1.nome : team2.nome;
+  const myConfirmed = confirmedIds.includes(user?.id);
 
-  useEffect(() => {
-    allPlayers.forEach((player, index) => {
-      setTimeout(() => {
-        setConfirmedPlayers(prev =>
-          prev.includes(player) ? prev : [...prev, player]
-        );
-      }, 1200 + index * 800);
-    });
-  }, [team1, team2]);
+  const status              = partidaInfo?.statusPartida;
+  const mapaDecisivoDefined = mapasState?.mapaDecisivo != null;
+  const partidaEncerrada    = status === "FINALIZADO" || status === "WO";
 
-  useEffect(() => {
-    if (bannedMaps.length === maps.length - 1 && !woTeam && !(team1Ready && team2Ready)) {
-      const timer = setInterval(() => {
-        setCountdown(prev => {
-          if (prev <= 1) {
-            clearInterval(timer);
+  const scoreTime1 = partidaInfo?.scoreTime1 ?? 0;
+  const scoreTime2 = partidaInfo?.scoreTime2 ?? 0;
 
-            if (team1Ready && !team2Ready) setWoTeam(team2.nome);
-            if (team2Ready && !team1Ready) setWoTeam(team1.nome);
+  // Overtime: ambos chegaram a 6 pontos
+  const isOvertime = scoreTime1 >= 6 && scoreTime2 >= 6;
 
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+  // Vitória por overtime: alguém chegou a 8
+  const isOvertimeVictory =
+    partidaEncerrada && (scoreTime1 === 8 || scoreTime2 === 8);
 
-      return () => clearInterval(timer);
-    }
-  }, [team1Ready, team2Ready, bannedMaps]);
+  const totalMapas  = 9;
+  const poolSize    = mapasState?.mapas?.length ?? totalMapas;
+  const bansFeitos  = totalMapas - poolSize;
+  const vezDoTime1  = bansFeitos % 2 === 0;
+  const currentTurn = vezDoTime1 ? team1.nome : team2.nome;
+  const isMyTurn    = isParticipant && currentTurn === userTeam;
 
-  useEffect(() => {
-    if (confirmedPlayers.length === allPlayers.length) {
-      setBanPhase(true);
-    }
-  }, [confirmedPlayers]);
-
-  const getTeamLogo = (team) => {
-    return team.imagemBase64
+  const getTeamLogo = (team) =>
+    team?.imagemBase64
       ? `data:image/*;base64,${team.imagemBase64}`
       : AvatarDefault;
+
+  // ── Confirmar presenca ───────────────────────────────────────────────────
+  const handleConfirmarPresenca = async () => {
+    if (!isParticipant || myConfirmed || myConfirmLoading) return;
+    setMyConfirmLoading(true);
+    try {
+      await api.post(`/partidas/${id}/confirmar/${user.id}`);
+      setConfirmedIds(prev => [...prev, user.id]);
+    } catch (err) {
+      console.error("Erro ao confirmar presenca:", err);
+    } finally {
+      setMyConfirmLoading(false);
+    }
   };
 
-  const banMap = (map) => {
-    if (bannedMaps.find(m => m.mapName === map.name)) return;
-    if (bannedMaps.length >= maps.length - 1) return;
+  // ── Banear mapa ──────────────────────────────────────────────────────────
+  const handleBanMap = async (mapaEnum) => {
+    if (!isMyTurn || banLoading || mapaDecisivoDefined) return;
 
-    setBannedMaps(prev => [...prev, { mapName: map.name, team: currentTurn }]);
-    setCurrentTurn(prev => prev === team1.nome ? team2.nome : team1.nome);
+    setBanLoading(true);
+    try {
+      const res = await api.post(
+        `/partidas/${id}/mapas/banear/${user.id}`,
+        { mapa: mapaEnum }
+      );
+      setMapasState(res.data);
+    } catch (err) {
+      console.error("Erro ao banear mapa:", err);
+    } finally {
+      setBanLoading(false);
+    }
   };
 
-  const handleStartMatch = () => {
-    if (userTeam === team1.nome) setTeam1Ready(true);
-    if (userTeam === team2.nome) setTeam2Ready(true);
-  };
+  const poolAtual = mapasState?.mapas ?? [];
 
-  const finalMap = maps.find(
-    m => !bannedMaps.find(b => b.mapName === m.name)
-  );
-
+  // ── Render ───────────────────────────────────────────────────────────────
   return (
     <>
       <Navbar />
@@ -145,89 +229,142 @@ const Partidas = () => {
 
         <h2 className="match-title">Partida</h2>
 
-        <div className="teams-row">
-
-          <TeamCard team={team1} confirmedPlayers={confirmedPlayers} getTeamLogo={getTeamLogo} />
-
-          <div className="vs-box">VS</div>
-
-          <TeamCard team={team2} confirmedPlayers={confirmedPlayers} getTeamLogo={getTeamLogo} />
-
-        </div>
-
-        {!banPhase && (
-          <div className="status-box">
-            <h2>Aguardando confirmação dos jogadores...</h2>
-            <p>{confirmedPlayers.length} / {allPlayers.length}</p>
+        {/* Badge de status */}
+        {status && STATUS_LABEL[status] && (
+          <div className={`match-status ${STATUS_LABEL[status].classe}`}>
+            {STATUS_LABEL[status].texto}
+            {isOvertime && status === "EM_ANDAMENTO" && (
+              <span className="overtime-badge"> — OVERTIME</span>
+            )}
           </div>
         )}
 
-        {banPhase && (
+        {!isParticipant && (
+          <p className="spectator-notice">Voce esta assistindo esta partida</p>
+        )}
+
+        <div className="teams-row">
+          <TeamCard team={team1} confirmedIds={confirmedIds} getTeamLogo={getTeamLogo} />
+
+          {/* Placar — visível a partir de EM_ANDAMENTO */}
+          {["EM_ANDAMENTO", "FINALIZADO", "WO"].includes(status) ? (
+            <div className={`scoreboard ${isOvertime ? "overtime" : ""}`}>
+              {isOvertime && (
+                <div className="overtime-label">OVERTIME</div>
+              )}
+              <div className="score-row">
+                <div className="score-team">
+                  <img src={getTeamLogo(team1)} alt={team1.nome} />
+                  <span>{team1.nome}</span>
+                  <strong className={scoreTime1 > scoreTime2 && partidaEncerrada ? "score-winner" : ""}>
+                    {scoreTime1}
+                  </strong>
+                </div>
+                <div className="score-vs">X</div>
+                <div className="score-team">
+                  <strong className={scoreTime2 > scoreTime1 && partidaEncerrada ? "score-winner" : ""}>
+                    {scoreTime2}
+                  </strong>
+                  <span>{team2.nome}</span>
+                  <img src={getTeamLogo(team2)} alt={team2.nome} />
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="vs-box">VS</div>
+          )}
+
+          <TeamCard team={team2} confirmedIds={confirmedIds} getTeamLogo={getTeamLogo} />
+        </div>
+
+        {/* Vencedor */}
+        {partidaEncerrada && partidaInfo?.idTimeVencedor && (
+          <h2 className="winner-text">
+            🏆 {partidaInfo.idTimeVencedor === team1.id ? team1.nome : team2.nome} venceu!
+            {isOvertimeVictory && " (Overtime)"}
+            {status === "WO" && " (W.O.)"}
+          </h2>
+        )}
+
+        {/* ── Fase de confirmacao de presenca ─────────────────────────── */}
+        {!banPhase && (
+          <div className="status-box">
+            {status === "ESPERANDO_O_HORARIO" ? (
+              <h2>A partida ainda nao abriu confirmacao</h2>
+            ) : (
+              <>
+                <h2>Aguardando confirmacao dos jogadores...</h2>
+                <p>{confirmedIds.length} / {allPlayers.length} confirmados</p>
+
+                {isParticipant && !myConfirmed && (
+                  <button
+                    className="confirm-presence-btn"
+                    onClick={handleConfirmarPresenca}
+                    disabled={myConfirmLoading}
+                  >
+                    {myConfirmLoading ? "Confirmando..." : "Confirmar Presenca"}
+                  </button>
+                )}
+
+                {isParticipant && myConfirmed && (
+                  <p className="confirmed">Presenca confirmada</p>
+                )}
+              </>
+            )}
+          </div>
+        )}
+
+        {/* ── Fase de banimento de mapas ──────────────────────────────── */}
+        {banPhase && mapasState && (
           <div className="ban-section">
             <h2>Banimento de Mapas</h2>
 
-            <p className={`turn-info ${bannedMaps.length === maps.length - 1 ? "map-defined" : ""}`}>
-              {bannedMaps.length === maps.length - 1
-                ? "Mapa Definido"
-                : currentTurn === userTeam
-                  ? `Sua vez de banir (${currentTurn})`
-                  : `⏳ Espere o time ${currentTurn} está banindo, aguarde um momento...`}
-            </p>
+            {!mapaDecisivoDefined && (
+              <p className="turn-info">
+                {!isParticipant
+                  ? `${currentTurn} esta escolhendo...`
+                  : isMyTurn
+                    ? `Sua vez de banir (${currentTurn})`
+                    : `Aguarde - ${currentTurn} esta banindo...`}
+              </p>
+            )}
 
             <div className="maps-grid">
-              {maps.map(map => {
-                const bannedInfo = bannedMaps.find(b => b.mapName === map.name);
+              {Object.entries(MAP_CONFIG).map(([enumKey, { label, img }]) => {
+                const isBanned   = !poolAtual.includes(enumKey);
+                const isDecisive = mapasState.mapaDecisivo === enumKey;
+                const clickable  = isMyTurn && !isBanned && !mapaDecisivoDefined && !banLoading;
 
                 return (
                   <div
-                    key={map.name}
-                    className={`map-card ${bannedInfo ? "banned" : ""}`}
-                    onClick={() => banMap(map)}
+                    key={enumKey}
+                    className={`map-card ${isBanned && !isDecisive ? "banned" : ""} ${isDecisive ? "decisive" : ""} ${clickable ? "clickable" : "locked"}`}
+                    onClick={() => clickable && handleBanMap(enumKey)}
                   >
-                    <img src={map.img} alt={map.name} />
-
-                    {bannedInfo && (
-                      <div className="ban-overlay">
-                        <img
-                          src={getTeamLogo(bannedInfo.team === team1.nome ? team1 : team2)}
-                          className="ban-logo"
-                        />
-                      </div>
-                    )}
-
-                    <span>{map.name}</span>
+                    <img src={img} alt={label} />
+                    <span>{label}</span>
                   </div>
                 );
               })}
             </div>
 
-            {finalMap && bannedMaps.length === maps.length - 1 && (
+            {/* ── Mapa decisivo ── */}
+            {mapaDecisivoDefined && (
               <div className="final-map">
                 <h2>Mapa Definido</h2>
-                <img src={finalMap.img} />
-                <h3>{finalMap.name}</h3>
-
-                {!woTeam && !(team1Ready && team2Ready) && (
+                {MAP_CONFIG[mapasState.mapaDecisivo] && (
                   <>
-                    <p>⏳ Tempo restante: {Math.floor(countdown / 60)}:{String(countdown % 60).padStart(2, "0")}</p>
-
-                    <button className="start-match" onClick={handleStartMatch}>
-                      Confirmar Início ({userTeam})
-                    </button>
-
-                    <p>{team1Ready ? `✅ ${team1.nome} confirmou` : `⏳ ${team1.nome} aguardando`}</p>
-                    <p>{team2Ready ? `✅ ${team2.nome} confirmou` : `⏳ ${team2.nome} aguardando`}</p>
+                    <img
+                      src={MAP_CONFIG[mapasState.mapaDecisivo].img}
+                      alt={MAP_CONFIG[mapasState.mapaDecisivo].label}
+                    />
+                    <h3>{MAP_CONFIG[mapasState.mapaDecisivo].label}</h3>
                   </>
                 )}
 
-                {team1Ready && team2Ready && (
-                  <h2>🎮 Partida iniciada!</h2>
-                )}
-
-                {woTeam && (
-                  <h2 className="wo-text">❌ {woTeam} perdeu por W.O.</h2>
-                )}
-
+                {status === "EM_ANDAMENTO" && <h2>Partida em andamento!</h2>}
+                {status === "FINALIZADO"   && <h2>Partida finalizada!</h2>}
+                {status === "WO"           && <h2 className="wo-text">Partida encerrada por W.O.</h2>}
               </div>
             )}
           </div>
@@ -237,40 +374,36 @@ const Partidas = () => {
   );
 };
 
-const TeamCard = ({ team, confirmedPlayers, getTeamLogo }) => {
-  return (
-    <div className="team-card horizontal">
-
-      <div className="team-header">
-        <img src={getTeamLogo(team)} className="team-logo" />
-        <span>{team.nome}</span>
-      </div>
-
-      {team.membros.map((player, i) => (
-        <div key={i} className="player-row">
-
-          <div className="player-left">
-            <img
-              src={
-                player.imagemUsuario
-                  ? `data:image/*;base64,${player.imagemUsuario}`
-                  : AvatarDefault
-              }
-              className="player-avatar"
-            />
-            <span>{player.nome}</span>
-          </div>
-
-          {confirmedPlayers.includes(player.nome) ? (
-            <span className="confirmed">✔ Confirmado</span>
-          ) : (
-            <span className="waiting">⏳ Aguardando</span>
-          )}
-
-        </div>
-      ))}
+const TeamCard = ({ team, confirmedIds, getTeamLogo }) => (
+  <div className="team-card horizontal">
+    <div className="team-header">
+      <img src={getTeamLogo(team)} className="team-logo" alt={team.nome} />
+      <span>{team.nome}</span>
     </div>
-  );
-};
+
+    {team.membros.map((player, i) => (
+      <div key={i} className="player-row">
+        <div className="player-left">
+          <img
+            src={
+              player.imagemUsuario
+                ? `data:image/*;base64,${player.imagemUsuario}`
+                : AvatarDefault
+            }
+            className="player-avatar"
+            alt={player.nome}
+          />
+          <span>{player.nome}</span>
+        </div>
+
+        {confirmedIds.includes(player.id) ? (
+          <span className="confirmed">Confirmado</span>
+        ) : (
+          <span className="waiting">Aguardando</span>
+        )}
+      </div>
+    ))}
+  </div>
+);
 
 export default Partidas;

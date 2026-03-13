@@ -11,7 +11,7 @@
 .match-title {
   text-align: center;
   font-size: 42px;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
   letter-spacing: 3px;
 }
 
@@ -34,7 +34,26 @@
   box-shadow: 0 0 10px crimson;
 }
 
-/* ===== TIMES ROW (CORREÇÃO PRINCIPAL) ===== */
+/* ===== BADGE DE STATUS ===== */
+.match-status {
+  text-align: center;
+  margin: 0 auto 20px;
+  font-size: 12px;
+  padding: 6px 20px;
+  border-radius: 20px;
+  display: block;
+  width: fit-content;
+  letter-spacing: 1px;
+}
+
+.status-esperando    { background: rgba(255,255,255,0.08); color: #aaa; }
+.status-aguardando   { background: rgba(255,204,0,0.15);   color: #ffcc00; }
+.status-banimento    { background: rgba(180,0,0,0.2);      color: #ff4444; }
+.status-em_andamento { background: rgba(0,200,83,0.15);    color: #00c853; }
+.status-finalizado   { background: rgba(255,255,255,0.1);  color: #aaa; }
+.status-wo           { background: rgba(255,100,0,0.15);   color: #ff6400; }
+
+/* ===== TIMES ROW ===== */
 .teams-row {
   display: flex;
   justify-content: center;
@@ -52,7 +71,96 @@
   align-self: center;
 }
 
-/* CARD TIME */
+.score-row {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.overtime-label {
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #ffcc00;
+  margin-bottom: 8px;
+}
+
+.overtime-badge {
+  color: #ffcc00;
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+
+.scoreboard.overtime {
+  border-color: rgba(255, 204, 0, 0.4);
+  box-shadow: 0 0 20px rgba(255, 204, 0, 0.15);
+}
+
+.score-winner {
+  color: #00ff88 !important;
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+/* ===== PLACAR ===== */
+.scoreboard {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 14px;
+  padding: 20px 40px;
+  align-self: center;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.score-team {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.score-team img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 50%;
+  border: 1px solid #333;
+}
+
+.score-team strong {
+  font-size: 52px;
+  color: white;
+  line-height: 1;
+}
+
+.score-team span {
+  font-size: 11px;
+  color: #aaa;
+  text-align: center;
+}
+
+.score-vs {
+  font-size: 32px;
+  color: #444;
+  font-weight: bold;
+}
+
+/* ===== VENCEDOR ===== */
+.winner-text {
+  text-align: center;
+  color: #ffd700;
+  font-size: 20px;
+  margin-top: 20px;
+  text-shadow: 0 0 15px rgba(255,215,0,0.5);
+}
+
+.wo-text {
+  color: #ff6400;
+}
+
+/* ===== CARD TIME ===== */
 .team-card {
   background: linear-gradient(180deg,#1a1a1a,#0e0e0e);
   border-radius: 6px;
@@ -60,7 +168,7 @@
   overflow: hidden;
 }
 
-.team-card.horizontal{
+.team-card.horizontal {
   width: 700px;
 }
 
@@ -115,7 +223,7 @@
   font-size: 11px;
 }
 
-/* STATUS */
+/* ===== STATUS BOX (confirmacao de presenca) ===== */
 .status-box {
   text-align: center;
   margin-top: 30px;
@@ -125,7 +233,38 @@
   box-shadow: inset 0 0 10px rgba(255,255,255,0.05);
 }
 
-/* BAN */
+.spectator-notice {
+  text-align: center;
+  color: #aaa;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.confirm-presence-btn {
+  margin-top: 12px;
+  padding: 10px 24px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, crimson, darkred);
+  border: none;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+  font-family: 'Akira Expanded', sans-serif;
+}
+
+.confirm-presence-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px crimson;
+}
+
+.confirm-presence-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ===== BAN SECTION ===== */
 .ban-section {
   margin-top: 40px;
   text-align: center;
@@ -141,14 +280,10 @@
   color: rgb(180, 0, 0);
 }
 
-.turn-info.map-defined {
-  color: #00c853; /* verde */
-  font-weight: bold;
-}
-
+/* ===== MAPS GRID ===== */
 .maps-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(160px,1fr));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 20px;
   margin-top: 25px;
 }
@@ -184,12 +319,12 @@
   border-top: 1px solid #222;
 }
 
-.map-card:hover {
+.map-card.clickable:hover {
   transform: scale(1.05);
   border-color: rgb(180, 0, 0);
 }
 
-.map-card:hover img {
+.map-card.clickable:hover img {
   filter: brightness(1.2);
 }
 
@@ -200,30 +335,24 @@
   pointer-events: none;
 }
 
-/* BAN OVERLAY */
-.ban-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6); /* transparente */
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* DECISIVO */
+.map-card.decisive {
+  border-color: #00ff88;
+  box-shadow: 0 0 20px rgba(0,255,136,0.4);
 }
 
-.ban-logo {
-  width: 60px;
-  height: 60px;
-  object-fit: contain;
-  filter: drop-shadow(0 0 10px red);
+/* LOCKED (nao e a vez) */
+.map-card.locked {
+  cursor: not-allowed;
 }
 
-/* FINAL MAP */
+/* ===== FINAL MAP ===== */
 .final-map {
   margin-top: 30px;
-  padding: 20px;
+  padding: 30px 20px;
   background: rgba(255,255,255,0.05);
   border-radius: 16px;
-  box-shadow: 0 0 20px rgba(0,255,136,0.3);
+  box-shadow: 0 0 20px rgba(0,255,136,0.2);
   text-align: center;
 }
 
@@ -234,28 +363,21 @@
   box-shadow: 0 0 15px #00ff88;
 }
 
-/* START MATCH */
-.start-match {
-  padding: 12px 25px;
-  border-radius: 10px;
-  background: linear-gradient(135deg,#00ff88,#00c853);
-  border: none;
-  font-weight: bold;
-  cursor: pointer;
-  margin-top: 15px;
-  transition: 0.3s;
+.final-map h2 {
+  margin-bottom: 10px;
 }
 
-.start-match:hover {
-  transform: scale(1.1);
-  box-shadow: 0 0 15px #00ff88;
+.final-map h3 {
+  color: #00ff88;
+  margin-bottom: 20px;
 }
 
-/* RESPONSIVO */
+/* ===== RESPONSIVO ===== */
 @media (max-width: 1400px) {
   .teams-row {
     flex-direction: column;
-    gap: 30px;
+    align-items: center;
+    gap: 20px;
   }
 
   .vs-box {
@@ -263,6 +385,25 @@
   }
 
   .team-card.horizontal {
+    width: 100%;
+  }
+
+  .scoreboard {
+    width: 100%;
+    padding: 15px 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .match-title {
+    font-size: 24px;
+  }
+
+  .score-team strong {
+    font-size: 36px;
+  }
+
+  .final-map img {
     width: 100%;
   }
 }
