@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import './InfoEditCampeonatos.css';
 import Navbar from '../../../Components/Navbar/Navbar';
 import LoadingScreen from '../../../Components/LoadingScreen/LoadingScreen';
@@ -7,29 +7,41 @@ import { useApi } from '../../../Services/API';
 import timeDefault from '../../../assets/time_default.png';
 import { useAuth } from '../../../contexts/AuthContext';
 
+/* ─────────────────────────────────────────────
+   Helpers
+───────────────────────────────────────────── */
 const handleClickTeam = (timeId, navigate) => {
   if (timeId) navigate(`/times/${timeId}`);
 };
 
 const STATUS_PARTIDA_LABEL = {
-  ESPERANDO_O_HORARIO:    { texto: "Aguardando",   cor: "#888" },
-  AGUARDANDO_CONFIRMACAO: { texto: "Confirmação",  cor: "#ffcc00" },
-  FASE_DE_BANIMENTO:      { texto: "Banimento",    cor: "#ff4444" },
-  EM_ANDAMENTO:           { texto: "Ao vivo",      cor: "#00c853" },
-  FINALIZADO:             { texto: "Finalizado",   cor: "#aaa" },
-  WO:                     { texto: "W.O.",         cor: "#ff6400" },
+  ESPERANDO_O_HORARIO:    { texto: 'Aguardando',  cor: '#6b7280' },
+  AGUARDANDO_CONFIRMACAO: { texto: 'Confirmação', cor: '#f59e0b' },
+  FASE_DE_BANIMENTO:      { texto: 'Banimento',   cor: '#ef4444' },
+  EM_ANDAMENTO:           { texto: 'Ao Vivo',     cor: '#10b981' },
+  FINALIZADO:             { texto: 'Finalizado',  cor: '#6b7280' },
+  WO:                     { texto: 'W.O.',        cor: '#f97316' },
 };
 
 const formatarHorario = (dataHora) => {
   if (!dataHora) return '--:--';
   const d = new Date(dataHora);
-  return d.toLocaleString('pt-BR', {
-    day: '2-digit', month: '2-digit',
-    hour: '2-digit', minute: '2-digit'
-  });
+  return d.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
 };
 
-// ── Chaveamento ──────────────────────────────────────────────────────────────
+const formatarImagem = (img) => {
+  if (!img || img === '') return timeDefault;
+  return img.startsWith('data:image') ? img : `data:image/png;base64,${img}`;
+};
+
+const formatarStatus = (status) => {
+  if (!status) return '';
+  return status.replaceAll('_', ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+};
+
+/* ─────────────────────────────────────────────
+   Chaveamento (Grupos)
+───────────────────────────────────────────── */
 const Chaveamento = ({ grupos, maxEquipes }) => {
   const navigate = useNavigate();
   const letrasGrupos = ['A', 'B', 'C', 'D'].slice(0, Math.ceil(maxEquipes / 4));
@@ -37,38 +49,34 @@ const Chaveamento = ({ grupos, maxEquipes }) => {
   const gruposDinamicos = {};
   letrasGrupos.forEach((letra) => {
     const grupo = grupos[letra] || [];
-    const grupoOrdenadoPorPontos = [...grupo].sort((a, b) =>
-      (Number(b.pontuacao) || 0) - (Number(a.pontuacao) || 0)
-    );
+    const sorted = [...grupo].sort((a, b) => (Number(b.pontuacao) || 0) - (Number(a.pontuacao) || 0));
     const grupoFinal = Array(4).fill(null);
-    grupoOrdenadoPorPontos.forEach((time, index) => {
-      if (index < 4) grupoFinal[index] = time;
-    });
+    sorted.forEach((time, i) => { if (i < 4) grupoFinal[i] = time; });
     gruposDinamicos[letra] = grupoFinal;
   });
 
   return (
-    <div className="chaveamento-box">
-      <h2>CHAVEAMENTO</h2>
+    <div className="section-card">
+      <div className="section-header">
+        <span className="section-icon">⚔️</span>
+        <h2 className="section-title">Chaveamento</h2>
+      </div>
       <div className="grupos-container">
         {letrasGrupos.map((letra) => (
           <div key={letra} className="grupo">
-            <h3>Grupo {letra}</h3>
+            <div className="grupo-header">Grupo {letra}</div>
             <div className="grupo-times">
               {gruposDinamicos[letra].map((time, index) => (
-                <div key={index} className="time-card">
-                  <div className="posicao-label">{index + 1}°</div>
-                  <div
-                    className="time-box"
-                    onClick={() => handleClickTeam(time?.id, navigate)}
-                    style={{ cursor: time?.id ? 'pointer' : 'default' }}
-                  >
-                    <img className="time-logo" src={time?.logo || timeDefault} alt={time?.nome || '-'} />
-                    <div className="time-info">
-                      <span className="time-nome">{time?.nome || '-'}</span>
-                      <span className="time-pontos">{time?.pontuacao ?? 0}</span>
-                    </div>
-                  </div>
+                <div
+                  key={index}
+                  className="time-card"
+                  onClick={() => handleClickTeam(time?.id, navigate)}
+                  style={{ cursor: time?.id ? 'pointer' : 'default' }}
+                >
+                  <div className="posicao-badge">{index + 1}</div>
+                  <img className="time-logo" src={time?.logo || timeDefault} alt={time?.nome || '-'} />
+                  <span className="time-nome">{time?.nome || '—'}</span>
+                  <span className="time-pontos">{time?.pontuacao ?? 0} pts</span>
                 </div>
               ))}
             </div>
@@ -79,32 +87,34 @@ const Chaveamento = ({ grupos, maxEquipes }) => {
   );
 };
 
-// ── TabelaEliminatorias ──────────────────────────────────────────────────────
+/* ─────────────────────────────────────────────
+   TabelaEliminatorias
+───────────────────────────────────────────── */
 const TabelaEliminatorias = ({ times, maxEquipes }) => {
   const navigate = useNavigate();
   const timesOrdenados = Array.from({ length: maxEquipes }, (_, i) => {
     const time = times?.find(t => t.posicao === i + 1);
-    return time || { nome: '-', pontuacao: 0, posicao: i + 1, logo: null };
+    return time || { nome: '—', pontuacao: 0, posicao: i + 1, logo: null };
   });
 
   return (
-    <div className="tabela-eliminatorias-box">
-      <h2>TABELA</h2>
+    <div className="section-card">
+      <div className="section-header">
+        <span className="section-icon">🏆</span>
+        <h2 className="section-title">Tabela</h2>
+      </div>
       <div className="grupo-times">
         {timesOrdenados.map((time, i) => (
-          <div key={i} className="time-card">
-            <div className="posicao-label">{time.posicao}°</div>
-            <div
-              className="time-box"
-              onClick={() => handleClickTeam(time?.id, navigate)}
-              style={{ cursor: time?.id ? 'pointer' : 'default' }}
-            >
-              <img className="time-logo" src={time.logo || timeDefault} alt={time.nome || '-'} />
-              <div className="time-info">
-                <span className="time-nome">{time.nome || '-'}</span>
-                <span className="time-pontos">{time.pontuacao ?? 0}</span>
-              </div>
-            </div>
+          <div
+            key={i}
+            className="time-card"
+            onClick={() => handleClickTeam(time?.id, navigate)}
+            style={{ cursor: time?.id ? 'pointer' : 'default' }}
+          >
+            <div className={`posicao-badge ${i < 3 ? `top-${i + 1}` : ''}`}>{time.posicao}</div>
+            <img className="time-logo" src={time.logo || timeDefault} alt={time.nome || '—'} />
+            <span className="time-nome">{time.nome || '—'}</span>
+            <span className="time-pontos">{time.pontuacao ?? 0} pts</span>
           </div>
         ))}
       </div>
@@ -112,62 +122,48 @@ const TabelaEliminatorias = ({ times, maxEquipes }) => {
   );
 };
 
-// ── Card de partida ──────────────────────────────────────────────────────────
+/* ─────────────────────────────────────────────
+   PartidaCard
+───────────────────────────────────────────── */
 const PartidaCard = ({ p, isAdmin, navigate, onEditarPlacar }) => {
-  const statusInfo = STATUS_PARTIDA_LABEL[p.statusPartida] || { texto: p.statusPartida, cor: "#888" };
-  const isAoVivo   = p.statusPartida === "EM_ANDAMENTO";
-  const isFinalizado = p.statusPartida === "FINALIZADO" || p.statusPartida === "WO";
+  const statusInfo = STATUS_PARTIDA_LABEL[p.statusPartida] || { texto: p.statusPartida, cor: '#6b7280' };
+  const isAoVivo   = p.statusPartida === 'EM_ANDAMENTO';
+  const isFinalizado = p.statusPartida === 'FINALIZADO' || p.statusPartida === 'WO';
+  const vencedor1 = isFinalizado && p.scoreTime1 > p.scoreTime2;
+  const vencedor2 = isFinalizado && p.scoreTime2 > p.scoreTime1;
 
   return (
-    <div className={`partida-card ${isAoVivo ? "ao-vivo" : ""} ${isFinalizado ? "finalizada" : ""}`}>
-
-      {/* Linha superior: horário + status */}
+    <div className={`partida-card ${isAoVivo ? 'ao-vivo' : ''} ${isFinalizado ? 'finalizada' : ''}`}>
       <div className="partida-card-header">
         <span className="partida-horario">🕐 {formatarHorario(p.dataHoraPartida)}</span>
-        <span className="partida-status-badge" style={{ color: statusInfo.cor, borderColor: statusInfo.cor }}>
+        <span className="partida-status-badge" style={{ color: statusInfo.cor, borderColor: `${statusInfo.cor}44` }}>
           {isAoVivo && <span className="live-dot" />}
           {statusInfo.texto}
         </span>
       </div>
 
-      {/* Conteúdo: times + placar */}
-      <div className="partida-card-body" onClick={() => navigate(`/partida/${p.id}`)} style={{ cursor: "pointer" }}>
-        <div className="partida-time">
+      <div className="partida-card-body" onClick={() => navigate(`/partida/${p.id}`)} style={{ cursor: 'pointer' }}>
+        <div className={`partida-time ${vencedor1 ? 'winner' : ''}`}>
           <img src={p.time1.imagem} alt={p.time1.nome} />
           <span>{p.time1.nome}</span>
         </div>
-
         <div className="partida-placar">
-          <span className={isFinalizado && p.scoreTime1 > p.scoreTime2 ? "placar-vencedor" : ""}>
-            {p.scoreTime1 ?? 0}
-          </span>
-          <span className="placar-separador">×</span>
-          <span className={isFinalizado && p.scoreTime2 > p.scoreTime1 ? "placar-vencedor" : ""}>
-            {p.scoreTime2 ?? 0}
-          </span>
+          <span className={vencedor1 ? 'placar-vencedor' : ''}>{p.scoreTime1 ?? 0}</span>
+          <span className="placar-sep">×</span>
+          <span className={vencedor2 ? 'placar-vencedor' : ''}>{p.scoreTime2 ?? 0}</span>
         </div>
-
-        <div className="partida-time direita">
+        <div className={`partida-time direita ${vencedor2 ? 'winner' : ''}`}>
           <img src={p.time2.imagem} alt={p.time2.nome} />
           <span>{p.time2.nome}</span>
         </div>
       </div>
 
-      {/* Botões admin */}
       {isAdmin && (
         <div className="partida-card-actions">
-          <button
-            className="btn-partida-action editar"
-            onClick={(e) => { e.stopPropagation(); onEditarPlacar(p); }}
-            title="Editar placar"
-          >
+          <button className="btn-action editar" onClick={(e) => { e.stopPropagation(); onEditarPlacar(p); }}>
             ✏️ Placar
           </button>
-          <button
-            className="btn-partida-action ver"
-            onClick={(e) => { e.stopPropagation(); navigate(`/partida/${p.id}`); }}
-            title="Ver partida"
-          >
+          <button className="btn-action ver" onClick={(e) => { e.stopPropagation(); navigate(`/partida/${p.id}`); }}>
             👁 Ver
           </button>
         </div>
@@ -176,129 +172,221 @@ const PartidaCard = ({ p, isAdmin, navigate, onEditarPlacar }) => {
   );
 };
 
-// ── PartidasGrupos ───────────────────────────────────────────────────────────
+/* ─────────────────────────────────────────────
+   PartidasGrupos
+───────────────────────────────────────────── */
 const PartidasGrupos = ({ idCampeonato, onAgendarPartida, isAdmin, onEditarPlacar }) => {
-  const letras = ["A", "B", "C", "D"];
-  const [grupoSelecionado, setGrupoSelecionado] = useState("A");
+  const letras = ['A', 'B', 'C', 'D'];
+  const [grupoSelecionado, setGrupoSelecionado] = useState('A');
   const [partidas, setPartidas] = useState([]);
   const navigate = useNavigate();
   const api = useApi();
 
   useEffect(() => {
     if (!idCampeonato) return;
-
     const carregarPartidas = async () => {
       try {
         const res = await api.get(`/partidas/campeonato/${idCampeonato}`);
-        const partidasRaw = res.data;
-
         const partidasComTimes = await Promise.all(
-          partidasRaw.map(async (p) => {
-            const [time1Res, time2Res] = await Promise.all([
-              api.get(`/times/${p.idTime1}`),
-              api.get(`/times/${p.idTime2}`)
-            ]);
-            const time1 = time1Res.data;
-            const time2 = time2Res.data;
+          res.data.map(async (p) => {
+            const [t1, t2] = await Promise.all([api.get(`/times/${p.idTime1}`), api.get(`/times/${p.idTime2}`)]);
             return {
               ...p,
-              time1: {
-                nome: time1.nome,
-                imagem: time1.imagemBase64 ? `data:image/*;base64,${time1.imagemBase64}` : timeDefault
-              },
-              time2: {
-                nome: time2.nome,
-                imagem: time2.imagemBase64 ? `data:image/*;base64,${time2.imagemBase64}` : timeDefault
-              }
+              time1: { nome: t1.data.nome, imagem: t1.data.imagemBase64 ? `data:image/*;base64,${t1.data.imagemBase64}` : timeDefault },
+              time2: { nome: t2.data.nome, imagem: t2.data.imagemBase64 ? `data:image/*;base64,${t2.data.imagemBase64}` : timeDefault },
             };
           })
         );
-
         setPartidas(partidasComTimes);
       } catch (err) {
-        console.error("Erro ao buscar partidas:", err);
+        console.error('Erro ao buscar partidas:', err);
       }
     };
-
     carregarPartidas();
   }, [idCampeonato]);
 
-  const partidasGrupo = partidas.filter(
-    (p) => p.grupos && p.grupos.toUpperCase().trim() === grupoSelecionado
-  );
-
+  const partidasGrupo = partidas.filter(p => p.grupos && p.grupos.toUpperCase().trim() === grupoSelecionado);
   const semanas = {};
-  partidasGrupo.forEach((p) => {
-    const semanaNumero = p.semana ? parseInt(p.semana.replace("SEMANA", "")) : 1;
-    if (!semanas[semanaNumero]) semanas[semanaNumero] = [];
-    semanas[semanaNumero].push(p);
+  partidasGrupo.forEach(p => {
+    const n = p.semana ? parseInt(p.semana.replace('SEMANA', '')) : 1;
+    if (!semanas[n]) semanas[n] = [];
+    semanas[n].push(p);
   });
 
-  const semanasFixas = [1, 2, 3];
-
   return (
-    <div className="partidas-grupos-box">
-      <div className="grupo-select-box">
-        <label>GRUPO: </label>
-        <select
-          value={grupoSelecionado}
-          onChange={(e) => setGrupoSelecionado(e.target.value.toUpperCase())}
-        >
-          {letras.map((letra) => (
-            <option key={letra} value={letra}>{letra}</option>
-          ))}
-        </select>
-
+    <div className="partidas-wrap">
+      <div className="partidas-toolbar">
+        <div className="toolbar-left">
+          <label className="toolbar-label">Grupo</label>
+          <div className="group-tabs">
+            {letras.map(l => (
+              <button key={l} className={`group-tab ${grupoSelecionado === l ? 'active' : ''}`} onClick={() => setGrupoSelecionado(l)}>
+                {l}
+              </button>
+            ))}
+          </div>
+        </div>
         {isAdmin && (
-          <button className="btn-agendar-partida" onClick={() => onAgendarPartida(grupoSelecionado)}>
+          <button className="btn-agendar" onClick={() => onAgendarPartida(grupoSelecionado)}>
             ➕ Agendar Partida
           </button>
         )}
       </div>
 
-      {semanasFixas.map((numSemana) => {
-        const partidasSemana = semanas[numSemana] || [];
-
-        return (
-          <div key={numSemana} className="semana-box">
-            <h4>SEMANA {numSemana}</h4>
-
-            {partidasSemana.length === 0 ? (
-              <div className="partida-item">
-                <span className="nome-time">-</span>
-                <span className="pontos-time">0</span>
-                <span className="vs">VS</span>
-                <span className="pontos-time">0</span>
-                <span className="nome-time">-</span>
-              </div>
-            ) : (
-              <div className="partidas-lista">
-                {partidasSemana.map((p) => (
-                  <PartidaCard
-                    key={p.id}
-                    p={p}
-                    isAdmin={isAdmin}
-                    navigate={navigate}
-                    onEditarPlacar={onEditarPlacar}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        );
-      })}
+      {[1, 2, 3].map(n => (
+        <div key={n} className="semana-section">
+          <div className="semana-label">Semana {n}</div>
+          {(semanas[n] || []).length === 0 ? (
+            <div className="empty-partida">Nenhuma partida agendada</div>
+          ) : (
+            <div className="partidas-lista">
+              {semanas[n].map(p => (
+                <PartidaCard key={p.id} p={p} isAdmin={isAdmin} navigate={navigate} onEditarPlacar={onEditarPlacar} />
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   );
 };
 
-// ── PartidasSimples ──────────────────────────────────────────────────────────
+/* ─────────────────────────────────────────────
+   Playoffs – Single Elimination Bracket
+───────────────────────────────────────────── */
+const PlayoffsBracket = ({ idCampeonato, isAdmin, onEditarPlacar, onAgendarPartida }) => {
+  const navigate = useNavigate();
+  const api = useApi();
+  const [partidas, setPartidas] = useState([]);
+
+  useEffect(() => {
+    if (!idCampeonato) return;
+    const load = async () => {
+      try {
+        const res = await api.get(`/partidas/campeonato/${idCampeonato}`);
+        const playoffs = res.data.filter(p =>
+          p.fasePartida === 'PLAYOFFS' || p.grupos === 'PLAYOFF' || p.grupos === 'PLAYOFFS'
+        );
+        const comTimes = await Promise.all(
+          playoffs.map(async (p) => {
+            const [t1, t2] = await Promise.all([api.get(`/times/${p.idTime1}`), api.get(`/times/${p.idTime2}`)]);
+            return {
+              ...p,
+              time1: { nome: t1.data.nome, imagem: t1.data.imagemBase64 ? `data:image/*;base64,${t1.data.imagemBase64}` : timeDefault },
+              time2: { nome: t2.data.nome, imagem: t2.data.imagemBase64 ? `data:image/*;base64,${t2.data.imagemBase64}` : timeDefault },
+            };
+          })
+        );
+        setPartidas(comTimes);
+      } catch (err) {
+        console.error('Erro ao buscar playoffs:', err);
+      }
+    };
+    load();
+  }, [idCampeonato]);
+
+  // Organiza por fase: QF, SF, FINAL
+  const faseMap = {
+    QUARTAS:       { label: 'Quartas de Final', ordem: 1 },
+    SEMIFINAL:     { label: 'Semifinal',        ordem: 2 },
+    FINAL:         { label: 'Final',            ordem: 3 },
+    TERCEIRO_LUGAR:{ label: '3º Lugar',         ordem: 4 },
+  };
+
+  const porFase = {};
+  partidas.forEach(p => {
+    const fase = p.semana || p.fasePlayoff || 'QUARTAS';
+    if (!porFase[fase]) porFase[fase] = [];
+    porFase[fase].push(p);
+  });
+
+  const fasesOrdenadas = Object.keys(porFase).sort((a, b) => {
+    const oa = faseMap[a]?.ordem ?? 99;
+    const ob = faseMap[b]?.ordem ?? 99;
+    return oa - ob;
+  });
+
+  return (
+    <div className="partidas-wrap">
+      <div className="partidas-toolbar">
+        <div className="toolbar-left">
+          <span className="toolbar-label">🏅 Fase Eliminatória</span>
+        </div>
+        {isAdmin && (
+          <button className="btn-agendar" onClick={() => onAgendarPartida('PLAYOFF')}>
+            ➕ Agendar Playoffs
+          </button>
+        )}
+      </div>
+
+      {partidas.length === 0 ? (
+        <div className="empty-bracket">
+          <div className="empty-bracket-icon">🏆</div>
+          <p>Nenhuma partida de playoffs agendada ainda.</p>
+          {isAdmin && (
+            <button className="btn-agendar" onClick={() => onAgendarPartida('PLAYOFF')} style={{ marginTop: 16 }}>
+              ➕ Agendar primeira partida
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="bracket-container">
+          {fasesOrdenadas.map(fase => (
+            <div key={fase} className="bracket-round">
+              <div className="bracket-round-label">{faseMap[fase]?.label || fase}</div>
+              <div className="bracket-matches">
+                {porFase[fase].map(p => (
+                  <BracketMatch key={p.id} p={p} navigate={navigate} isAdmin={isAdmin} onEditarPlacar={onEditarPlacar} />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const BracketMatch = ({ p, navigate, isAdmin, onEditarPlacar }) => {
+  const isFinalizado = p.statusPartida === 'FINALIZADO' || p.statusPartida === 'WO';
+  const v1 = isFinalizado && p.scoreTime1 > p.scoreTime2;
+  const v2 = isFinalizado && p.scoreTime2 > p.scoreTime1;
+
+  return (
+    <div className={`bracket-match ${p.statusPartida === 'EM_ANDAMENTO' ? 'ao-vivo' : ''} ${isFinalizado ? 'finalizada' : ''}`}>
+      <div className="bracket-match-time" onClick={() => navigate(`/partida/${p.id}`)} style={{ cursor: 'pointer' }}>
+        <div className={`bm-team ${v1 ? 'bm-winner' : v2 ? 'bm-loser' : ''}`}>
+          <img src={p.time1.imagem} alt={p.time1.nome} />
+          <span>{p.time1.nome}</span>
+          <span className={`bm-score ${v1 ? 'score-win' : ''}`}>{p.scoreTime1 ?? 0}</span>
+        </div>
+        <div className="bm-divider" />
+        <div className={`bm-team ${v2 ? 'bm-winner' : v1 ? 'bm-loser' : ''}`}>
+          <img src={p.time2.imagem} alt={p.time2.nome} />
+          <span>{p.time2.nome}</span>
+          <span className={`bm-score ${v2 ? 'score-win' : ''}`}>{p.scoreTime2 ?? 0}</span>
+        </div>
+      </div>
+      <div className="bracket-match-footer">
+        <span className="bm-date">🕐 {formatarHorario(p.dataHoraPartida)}</span>
+        {isAdmin && (
+          <button className="btn-action editar small" onClick={() => onEditarPlacar(p)}>✏️</button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/* ─────────────────────────────────────────────
+   PartidasSimples
+───────────────────────────────────────────── */
 const PartidasSimples = ({ times, maxEquipes, onAgendarPartida, isAdmin, onEditarPlacar }) => {
   const navigate = useNavigate();
   const [semanaSelecionada, setSemanaSelecionada] = useState(1);
 
   const timesOrdenados = Array.from({ length: maxEquipes }, (_, i) => {
     const time = times?.find(t => t.posicao === i + 1);
-    return time || { nome: '-', pontuacao: 0, logo: null };
+    return time || { nome: '—', pontuacao: 0, logo: null };
   });
 
   let listaTimes = [...timesOrdenados];
@@ -306,85 +394,69 @@ const PartidasSimples = ({ times, maxEquipes, onAgendarPartida, isAdmin, onEdita
 
   const numSemanas = listaTimes.length - 1;
   const numPartidasPorSemana = listaTimes.length / 2;
-
   const semanas = [];
   let arr = [...listaTimes];
-
   for (let r = 0; r < numSemanas; r++) {
-    const partidasSemana = [];
-    for (let i = 0; i < numPartidasPorSemana; i++) {
-      const time1 = arr[i];
-      const time2 = arr[arr.length - 1 - i];
-      partidasSemana.push({ time1, time2 });
-    }
-    semanas.push(partidasSemana);
+    const ps = [];
+    for (let i = 0; i < numPartidasPorSemana; i++) ps.push({ time1: arr[i], time2: arr[arr.length - 1 - i] });
+    semanas.push(ps);
     arr = [arr[0], ...arr.slice(2), arr[1]];
   }
-
   const partidas = semanas[semanaSelecionada - 1] || [];
 
   return (
-    <div className="partidas-grupos-box">
-      <div className="grupo-select-box">
-        <label>SEMANA: </label>
-        <select
-          value={semanaSelecionada}
-          onChange={(e) => setSemanaSelecionada(Number(e.target.value))}
-        >
-          {Array.from({ length: numSemanas }, (_, i) => (
-            <option key={i + 1} value={i + 1}>Semana {i + 1}</option>
-          ))}
-        </select>
-
+    <div className="partidas-wrap">
+      <div className="partidas-toolbar">
+        <div className="toolbar-left">
+          <label className="toolbar-label">Semana</label>
+          <select className="toolbar-select" value={semanaSelecionada} onChange={(e) => setSemanaSelecionada(Number(e.target.value))}>
+            {Array.from({ length: numSemanas }, (_, i) => (
+              <option key={i + 1} value={i + 1}>Semana {i + 1}</option>
+            ))}
+          </select>
+        </div>
         {isAdmin && (
-          <button className="btn-agendar-partida" onClick={() => onAgendarPartida()}>
+          <button className="btn-agendar" onClick={() => onAgendarPartida()}>
             ➕ Agendar Partida
           </button>
         )}
       </div>
 
-      <div className="semana-box">
-        <h4>SEMANA {semanaSelecionada}</h4>
+      <div className="semana-section">
+        <div className="semana-label">Semana {semanaSelecionada}</div>
         <div className="partidas-lista">
-          {partidas.map((p, idx) => (
+          {partidas.map((p, idx) =>
             p.id ? (
-              <PartidaCard
-                key={p.id}
-                p={p}
-                isAdmin={isAdmin}
-                navigate={navigate}
-                onEditarPlacar={onEditarPlacar}
-              />
+              <PartidaCard key={p.id} p={p} isAdmin={isAdmin} navigate={navigate} onEditarPlacar={onEditarPlacar} />
             ) : (
-              <div key={idx} className="partida-item">
-                <h4 className="titulo-jogo">JOGO {idx + 1}</h4>
-                <div className="time">
-                  {!p.time1.bye && p.time1.logo && <img src={p.time1.logo} alt={p.time1.nome} />}
-                  <span className="nome-time">{p.time1.nome}</span>
-                </div>
-                {!p.time1.bye && !p.time2.bye ? (
-                  <>
-                    <span className="pontos-time">{p.time1.pontuacao || 0}</span>
-                    <span className="vs">VS</span>
-                    <span className="pontos-time">{p.time2.pontuacao || 0}</span>
-                  </>
-                ) : (
-                  <span className="vs">—</span>
-                )}
-                <div className="time">
-                  {!p.time2.bye && p.time2.logo && <img src={p.time2.logo} alt={p.time2.nome} />}
-                  <span className="nome-time">{p.time2.nome}</span>
+              <div key={idx} className="partida-card placeholder">
+                <div className="partida-card-body">
+                  <div className="partida-time">
+                    {!p.time1.bye && p.time1.logo && <img src={p.time1.logo} alt={p.time1.nome} />}
+                    <span>{p.time1.nome}</span>
+                  </div>
+                  <div className="partida-placar">
+                    {!p.time1.bye && !p.time2.bye ? (
+                      <><span>{p.time1.pontuacao || 0}</span><span className="placar-sep">×</span><span>{p.time2.pontuacao || 0}</span></>
+                    ) : <span className="placar-sep">—</span>}
+                  </div>
+                  <div className="partida-time direita">
+                    {!p.time2.bye && p.time2.logo && <img src={p.time2.logo} alt={p.time2.nome} />}
+                    <span>{p.time2.nome}</span>
+                  </div>
                 </div>
               </div>
             )
-          ))}
+          )}
         </div>
       </div>
     </div>
   );
 };
 
-// ── Componente principal ─────────────────────────────────────────────────────
+/* ─────────────────────────────────────────────
+   Componente Principal
+───────────────────────────────────────────── */
 const InfoEditCampeonatos = () => {
   const [campeonato, setCampeonato]       = useState(null);
   const [loading, setLoading]             = useState(true);
@@ -396,8 +468,9 @@ const InfoEditCampeonatos = () => {
   const [previewImagem, setPreviewImagem] = useState('');
   const [saving, setSaving]               = useState(false);
 
-  const [abaSelecionada, setAbaSelecionada] = useState('informacoes');
-  const [timesInscritos, setTimesInscritos] = useState({});
+  const [abaSelecionada, setAbaSelecionada]   = useState('informacoes');
+  const [subAbaPartidas, setSubAbaPartidas]   = useState('grupos');
+  const [timesInscritos, setTimesInscritos]   = useState({});
 
   const [modalAgendarOpen, setModalAgendarOpen] = useState(false);
   const [partidaTime1, setPartidaTime1]         = useState('');
@@ -408,55 +481,46 @@ const InfoEditCampeonatos = () => {
   const [partidaSemana, setPartidaSemana]       = useState('SEMANA1');
   const [agendando, setAgendando]               = useState(false);
 
-  // Modal editar placar
-  const [modalPlacarOpen, setModalPlacarOpen]   = useState(false);
-  const [partidaEditando, setPartidaEditando]   = useState(null);
-  const [editScore1, setEditScore1]             = useState(0);
-  const [editScore2, setEditScore2]             = useState(0);
-  const [salvandoPlacar, setSalvandoPlacar]     = useState(false);
+  const [modalPlacarOpen, setModalPlacarOpen] = useState(false);
+  const [partidaEditando, setPartidaEditando] = useState(null);
+  const [editScore1, setEditScore1]           = useState(0);
+  const [editScore2, setEditScore2]           = useState(0);
+  const [salvandoPlacar, setSalvandoPlacar]   = useState(false);
 
   const { id } = useParams();
   const navigate = useNavigate();
   const api = useApi();
   const { user } = useAuth();
 
+  const formatarDatas = (c) => {
+    if (c.dataInicio) c.dataInicio = c.dataInicio.split('T')[0];
+    if (c.dataFim)    c.dataFim    = c.dataFim.split('T')[0];
+    return c;
+  };
+
   useEffect(() => {
     const fetchDados = async () => {
       try {
         const responseCampeonato = await api.get(`/campeonatos/${id}`);
-        const campeonatoData = formatarDatas(responseCampeonato.data);
-        setCampeonato(campeonatoData);
+        setCampeonato(formatarDatas(responseCampeonato.data));
 
         const responseInscricoes = await api.get(`/inscricoes/campeonato/${id}/times`);
-        const inscricoes = responseInscricoes.data;
-
         const grupos = { A: [], B: [], C: [], D: [] };
 
-        for (const inscricao of inscricoes) {
+        for (const inscricao of responseInscricoes.data) {
           try {
             const responseTime = await api.get(`/times/${inscricao.idTime}`);
             const timeData = responseTime.data;
             const grupo = inscricao.grupo || 'A';
             if (!grupos[grupo]) grupos[grupo] = [];
-
             const imagemTime = timeData.imagemBase64
-              ? (timeData.imagemBase64.startsWith('data:image')
-                  ? timeData.imagemBase64
-                  : `data:image/png;base64,${timeData.imagemBase64}`)
+              ? (timeData.imagemBase64.startsWith('data:image') ? timeData.imagemBase64 : `data:image/png;base64,${timeData.imagemBase64}`)
               : timeDefault;
-
-            grupos[grupo].push({
-              id: timeData.id,
-              nome: timeData.nome,
-              logo: imagemTime,
-              pontuacao: inscricao.pontuacao || 0,
-              grupo
-            });
+            grupos[grupo].push({ id: timeData.id, nome: timeData.nome, logo: imagemTime, pontuacao: inscricao.pontuacao || 0, grupo });
           } catch (err) {
-            console.error(`Erro ao buscar dados do time ${inscricao.idTime}:`, err);
+            console.error(`Erro ao buscar time ${inscricao.idTime}:`, err);
           }
         }
-
         setTimesInscritos(grupos);
       } catch (err) {
         console.error('Erro ao buscar dados:', err);
@@ -465,27 +529,8 @@ const InfoEditCampeonatos = () => {
         setLoading(false);
       }
     };
-
     fetchDados();
   }, [api, id]);
-
-  const handleVoltar = () => navigate('/campeonatos');
-
-  const formatarDatas = (campeonato) => {
-    if (campeonato.dataInicio) campeonato.dataInicio = campeonato.dataInicio.split('T')[0];
-    if (campeonato.dataFim)    campeonato.dataFim    = campeonato.dataFim.split('T')[0];
-    return campeonato;
-  };
-
-  const formatarImagem = (img) => {
-    if (!img || img === '') return 'https://via.placeholder.com/200?text=Sem+Imagem';
-    return img.startsWith('data:image') ? img : `data:image/png;base64,${img}`;
-  };
-
-  const formatarStatus = (status) => {
-    if (!status) return '';
-    return status.replaceAll('_', ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
-  };
 
   const abrirModal = () => {
     setEditNome(campeonato.nome);
@@ -500,8 +545,7 @@ const InfoEditCampeonatos = () => {
     if (!file || !file.type.startsWith('image/')) return;
     const reader = new FileReader();
     reader.onloadend = () => {
-      const base64 = reader.result.split(',')[1];
-      setEditImagem(base64);
+      setEditImagem(reader.result.split(',')[1]);
       setPreviewImagem(reader.result);
     };
     reader.readAsDataURL(file);
@@ -510,13 +554,7 @@ const InfoEditCampeonatos = () => {
   const handleSalvarEdicao = async () => {
     setSaving(true);
     try {
-      const payload = {
-        nome: editNome,
-        descricao: campeonato.descricao,
-        status: editStatus,
-        imagemCampeonato: editImagem || null
-      };
-      await api.put(`/campeonatos/${id}`, payload);
+      await api.put(`/campeonatos/${id}`, { nome: editNome, descricao: campeonato.descricao, status: editStatus, imagemCampeonato: editImagem || null });
       alert('✅ Campeonato atualizado com sucesso!');
       setModalOpen(false);
       const response = await api.get(`/campeonatos/${id}`);
@@ -529,7 +567,6 @@ const InfoEditCampeonatos = () => {
     }
   };
 
-  // ── Abrir modal editar placar ──────────────────────────────────────────────
   const abrirModalPlacar = (partida) => {
     setPartidaEditando(partida);
     setEditScore1(partida.scoreTime1 ?? 0);
@@ -541,13 +578,10 @@ const InfoEditCampeonatos = () => {
     if (!partidaEditando) return;
     setSalvandoPlacar(true);
     try {
-      await api.put(`/partidas/${partidaEditando.id}/placar`, null, {
-        params: { scoreTime1: editScore1, scoreTime2: editScore2 }
-      });
+      await api.put(`/partidas/${partidaEditando.id}/placar`, null, { params: { scoreTime1: editScore1, scoreTime2: editScore2 } });
       alert('✅ Placar atualizado!');
       setModalPlacarOpen(false);
     } catch (err) {
-      console.error('Erro ao atualizar placar:', err);
       alert('❌ Erro ao atualizar placar.');
     } finally {
       setSalvandoPlacar(false);
@@ -555,10 +589,11 @@ const InfoEditCampeonatos = () => {
   };
 
   const abrirModalAgendarPartida = (grupoSelecionado = 'A') => {
+    const isPlayoff = grupoSelecionado === 'PLAYOFF' || grupoSelecionado === 'PLAYOFFS';
     setPartidaTime1('');
     setPartidaTime2('');
-    setPartidaGrupo(grupoSelecionado);
-    setPartidaSemana('SEMANA1');
+    setPartidaGrupo(isPlayoff ? 'PLAYOFF' : grupoSelecionado);
+    setPartidaSemana(isPlayoff ? 'QUARTAS' : 'SEMANA1');
     setPartidaData('');
     setPartidaHora('');
     setModalAgendarOpen(true);
@@ -569,10 +604,8 @@ const InfoEditCampeonatos = () => {
     if (partidaTime1 === partidaTime2)  { alert('❌ Os times devem ser diferentes!'); return; }
     if (!partidaData || !partidaHora)   { alert('❌ Data e horário são obrigatórios!'); return; }
 
-    const dataHoraISO = `${partidaData}T${partidaHora}:00`;
-    const fasePartida = ["SEMANA1","SEMANA2","SEMANA3"].includes(partidaSemana)
-      ? "FASE_DE_GRUPOS"
-      : "PLAYOFFS";
+    const isPlayoff = partidaGrupo === 'PLAYOFF' || partidaGrupo === 'PLAYOFFS';
+    const fasePartida = isPlayoff ? 'PLAYOFFS' : (["SEMANA1","SEMANA2","SEMANA3"].includes(partidaSemana) ? "FASE_DE_GRUPOS" : "PLAYOFFS");
 
     setAgendando(true);
     try {
@@ -582,269 +615,294 @@ const InfoEditCampeonatos = () => {
           idTime1: partidaTime1,
           idTime2: partidaTime2,
           fasePartida,
-          grupos: partidaGrupo,
+          grupos: isPlayoff ? 'PLAYOFFS' : partidaGrupo,
           semana: partidaSemana,
-          dataHora: dataHoraISO
+          dataHora: `${partidaData}T${partidaHora}:00`
         }
       });
       alert('✅ Partida agendada com sucesso!');
       setModalAgendarOpen(false);
     } catch (err) {
-      console.error('Erro ao agendar partida:', err);
       alert(`❌ ${err.response?.data?.mensagem || 'Erro ao agendar partida'}`);
     } finally {
       setAgendando(false);
     }
   };
 
-  const timesDoGrupo = timesInscritos[partidaGrupo] || [];
+  const isPlayoffAgendar = partidaGrupo === 'PLAYOFF' || partidaGrupo === 'PLAYOFFS';
+  const timesDisponiveisAgendar = isPlayoffAgendar
+    ? Object.values(timesInscritos).flat()
+    : (timesInscritos[partidaGrupo] || []);
 
   if (loading) return <LoadingScreen />;
   if (error)   return (<><Navbar /><div className="erro-msg">{error}</div></>);
   if (!campeonato) return null;
 
   const isAdmin = user?.id === campeonato.idCriador;
+  const isFaseGrupos = campeonato.formatoCampeonato === 'FASE_DE_GRUPOS_E_ELIMINATORIAS';
+
+  const statusColors = {
+    ABERTO: '#10b981', EM_ANDAMENTO: '#f59e0b', FECHADO: '#ef4444', FINALIZADO: '#6b7280'
+  };
 
   return (
     <>
       <Navbar />
-      <div className="detalhes-pagina">
-        <div className="detalhes-box">
+      <div className="page-wrapper">
+        <div className="page-container">
 
-          {/* ABAS */}
-          <div className="aba-selector">
-            <button
-              className={abaSelecionada === 'informacoes' ? 'aba-btn ativo' : 'aba-btn'}
-              onClick={() => setAbaSelecionada('informacoes')}
-            >
-              Informações
-            </button>
-            <button
-              className={abaSelecionada === 'partidas' ? 'aba-btn ativo' : 'aba-btn'}
-              onClick={() => setAbaSelecionada('partidas')}
-            >
-              Partidas
-            </button>
-          </div>
+          {/* ── Tabs ── */}
+          <nav className="main-tabs">
+            {['informacoes', 'partidas'].map(aba => (
+              <button
+                key={aba}
+                className={`main-tab ${abaSelecionada === aba ? 'active' : ''}`}
+                onClick={() => setAbaSelecionada(aba)}
+              >
+                {aba === 'informacoes' ? '📋 Informações' : '⚽ Partidas'}
+              </button>
+            ))}
+          </nav>
 
-          {/* INFORMAÇÕES */}
+          {/* ── Informações ── */}
           {abaSelecionada === 'informacoes' && (
-            <>
-              <div className="header-box">
-                <div className="logo-box">
-                  <img src={formatarImagem(campeonato.imagemCampeonato)} alt={campeonato.nome} />
+            <div className="info-content">
+              {/* Hero Card */}
+              <div className="hero-card">
+                <div className="hero-image-wrap">
+                  <img src={formatarImagem(campeonato.imagemCampeonato)} alt={campeonato.nome} className="hero-image" />
+                  <div className="hero-image-overlay" />
                 </div>
-                <div className="info-box">
-                  <h1>{campeonato.nome}</h1>
-                  <div className="tags-box">
-                    <span className={`tag-tipo ${campeonato.tipo.toLowerCase()}`}>
-                      {campeonato.tipo === 'GRATUITO' ? 'Gratuito' : 'Pago'}
+                <div className="hero-body">
+                  <div className="hero-badges">
+                    <span className="badge" style={{ background: campeonato.tipo === 'GRATUITO' ? '#10b98120' : '#ef444420', color: campeonato.tipo === 'GRATUITO' ? '#10b981' : '#ef4444', borderColor: campeonato.tipo === 'GRATUITO' ? '#10b98140' : '#ef444440' }}>
+                      {campeonato.tipo === 'GRATUITO' ? '🆓 Gratuito' : '💳 Pago'}
                     </span>
-                    <span className={`tag-status ${campeonato.status.toLowerCase()}`}>
+                    <span className="badge" style={{ background: `${statusColors[campeonato.status] || '#6b7280'}20`, color: statusColors[campeonato.status] || '#6b7280', borderColor: `${statusColors[campeonato.status] || '#6b7280'}40` }}>
                       {formatarStatus(campeonato.status)}
                     </span>
                   </div>
-                  <div className="info-dados">
-                    <div className="info-item"><strong>Data de Início📅:</strong> {campeonato.dataInicio}</div>
-                    <div className="info-item"><strong>Data de Fim📅:</strong> {campeonato.dataFim || 'A ser definido'}</div>
-                    <div className="info-item"><strong>Prêmio💵:</strong> {campeonato.premio !== null ? `R$ ${Number(campeonato.valor || 0).toFixed(2)}` : '-'}</div>
-                    <div className="info-item"><strong>Entrada🎟️:</strong> {campeonato.tipo === 'GRATUITO' ? 'Gratuito' : `R$ ${Number(campeonato.valorPorEquipe || 0).toFixed(2)}`}</div>
-                    <div className="info-item"><strong>Numero de equipes👥:</strong> {campeonato.maxEquipes}</div>
+                  <h1 className="hero-title">{campeonato.nome}</h1>
+                  <div className="hero-stats">
+                    <div className="stat-item">
+                      <span className="stat-icon">📅</span>
+                      <div>
+                        <div className="stat-label">Início</div>
+                        <div className="stat-value">{campeonato.dataInicio}</div>
+                      </div>
+                    </div>
+                    <div className="stat-divider" />
+                    <div className="stat-item">
+                      <span className="stat-icon">🏁</span>
+                      <div>
+                        <div className="stat-label">Término</div>
+                        <div className="stat-value">{campeonato.dataFim || 'A definir'}</div>
+                      </div>
+                    </div>
+                    <div className="stat-divider" />
+                    <div className="stat-item">
+                      <span className="stat-icon">💵</span>
+                      <div>
+                        <div className="stat-label">Prêmio</div>
+                        <div className="stat-value">{campeonato.premio !== null ? `R$ ${Number(campeonato.valor || 0).toFixed(2)}` : '—'}</div>
+                      </div>
+                    </div>
+                    <div className="stat-divider" />
+                    <div className="stat-item">
+                      <span className="stat-icon">🎟️</span>
+                      <div>
+                        <div className="stat-label">Entrada</div>
+                        <div className="stat-value">{campeonato.tipo === 'GRATUITO' ? 'Gratuito' : `R$ ${Number(campeonato.valorPorEquipe || 0).toFixed(2)}`}</div>
+                      </div>
+                    </div>
+                    <div className="stat-divider" />
+                    <div className="stat-item">
+                      <span className="stat-icon">👥</span>
+                      <div>
+                        <div className="stat-label">Equipes</div>
+                        <div className="stat-value">{campeonato.maxEquipes}</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="botoes-box">
-                  {user?.id === campeonato.idCriador && (
-                    <button className="btn-editar" onClick={abrirModal}>Editar</button>
-                  )}
-                  <button className="btn-voltar2" onClick={handleVoltar}>Voltar</button>
+                <div className="hero-actions">
+                  {isAdmin && <button className="btn-primary" onClick={abrirModal}>✏️ Editar</button>}
+                  <button className="btn-ghost" onClick={() => navigate('/campeonatos')}>← Voltar</button>
                 </div>
               </div>
 
-              <div className="card-desc">
-                <h2>DESCRIÇÃO</h2>
-                <p>{campeonato.descricao || '-'}</p>
+              {/* Descrição */}
+              <div className="section-card">
+                <div className="section-header">
+                  <span className="section-icon">📝</span>
+                  <h2 className="section-title">Descrição</h2>
+                </div>
+                <p className="desc-text">{campeonato.descricao || 'Nenhuma descrição disponível.'}</p>
               </div>
 
+              {/* Chaveamento / Tabela */}
               {campeonato.formatoCampeonato === 'TABELA_ELIMINATORIAS' ? (
                 <TabelaEliminatorias times={Object.values(timesInscritos).flat()} maxEquipes={campeonato.maxEquipes} />
               ) : (
                 <Chaveamento grupos={timesInscritos} maxEquipes={campeonato.maxEquipes} />
               )}
-            </>
+            </div>
           )}
 
-          {/* PARTIDAS */}
+          {/* ── Partidas ── */}
           {abaSelecionada === 'partidas' && (
-            <>
-              {campeonato.formatoCampeonato === 'FASE_DE_GRUPOS_E_ELIMINATORIAS' ? (
-                <PartidasGrupos
-                  idCampeonato={id}
-                  onAgendarPartida={abrirModalAgendarPartida}
-                  isAdmin={isAdmin}
-                  onEditarPlacar={abrirModalPlacar}
-                />
-              ) : (
-                <PartidasSimples
-                  times={Object.values(timesInscritos).flat()}
-                  maxEquipes={campeonato.maxEquipes}
-                  onAgendarPartida={abrirModalAgendarPartida}
-                  isAdmin={isAdmin}
-                  onEditarPlacar={abrirModalPlacar}
-                />
+            <div className="partidas-content">
+              {isFaseGrupos && (
+                <div className="sub-tabs">
+                  <button className={`sub-tab ${subAbaPartidas === 'grupos' ? 'active' : ''}`} onClick={() => setSubAbaPartidas('grupos')}>
+                    🏟️ Fase de Grupos
+                  </button>
+                  <button className={`sub-tab ${subAbaPartidas === 'playoffs' ? 'active' : ''}`} onClick={() => setSubAbaPartidas('playoffs')}>
+                    🏆 Playoffs
+                  </button>
+                </div>
               )}
-            </>
+
+              {isFaseGrupos ? (
+                subAbaPartidas === 'grupos' ? (
+                  <PartidasGrupos idCampeonato={id} onAgendarPartida={abrirModalAgendarPartida} isAdmin={isAdmin} onEditarPlacar={abrirModalPlacar} />
+                ) : (
+                  <PlayoffsBracket idCampeonato={id} isAdmin={isAdmin} onEditarPlacar={abrirModalPlacar} onAgendarPartida={abrirModalAgendarPartida} />
+                )
+              ) : (
+                <PartidasSimples times={Object.values(timesInscritos).flat()} maxEquipes={campeonato.maxEquipes} onAgendarPartida={abrirModalAgendarPartida} isAdmin={isAdmin} onEditarPlacar={abrirModalPlacar} />
+              )}
+            </div>
           )}
+
         </div>
       </div>
 
-      {/* MODAL EDITAR CAMPEONATO */}
+      {/* ── Modal Editar Campeonato ── */}
       {modalOpen && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h2 className="modal-title">Editar Campeonato</h2>
+        <div className="modal-overlay" onClick={() => setModalOpen(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <h2 className="modal-title">✏️ Editar Campeonato</h2>
             <div className="modal-field">
-              <label>Nome do Campeonato:</label>
-              <input type="text" value={editNome} onChange={(e) => setEditNome(e.target.value)} />
+              <label>Nome do Campeonato</label>
+              <input type="text" value={editNome} onChange={e => setEditNome(e.target.value)} />
             </div>
             <div className="modal-field">
-              <label>Descrição:</label>
-              <textarea value={campeonato.descricao} onChange={(e) => setCampeonato({ ...campeonato, descricao: e.target.value })} />
+              <label>Descrição</label>
+              <textarea value={campeonato.descricao} onChange={e => setCampeonato({ ...campeonato, descricao: e.target.value })} rows={3} />
             </div>
             <div className="modal-field">
-              <label>Status:</label>
-              <select value={editStatus} onChange={(e) => setEditStatus(e.target.value)}>
+              <label>Status</label>
+              <select value={editStatus} onChange={e => setEditStatus(e.target.value)}>
                 {(() => {
-                  const statusAtual = campeonato.status;
-                  if (statusAtual === 'ABERTO')      return (<><option value="EM_ANDAMENTO">Em Andamento</option><option value="FECHADO">Fechado</option></>);
-                  if (statusAtual === 'EM_ANDAMENTO') return <option value="FINALIZADO">Finalizado</option>;
-                  if (statusAtual === 'FECHADO')      return <option value="EM_ANDAMENTO">Reabrir (Em Andamento)</option>;
+                  const s = campeonato.status;
+                  if (s === 'ABERTO')       return (<><option value="EM_ANDAMENTO">Em Andamento</option><option value="FECHADO">Fechado</option></>);
+                  if (s === 'EM_ANDAMENTO') return <option value="FINALIZADO">Finalizado</option>;
+                  if (s === 'FECHADO')      return <option value="EM_ANDAMENTO">Reabrir</option>;
                   return <option value="FINALIZADO">Finalizado</option>;
                 })()}
               </select>
             </div>
             <div className="modal-field">
-              <label>Imagem:</label>
+              <label>Imagem</label>
               <input type="file" accept="image/*" onChange={handleImagemChange} />
               {previewImagem && <img src={previewImagem} alt="Preview" className="preview-img" />}
             </div>
             <div className="modal-buttons">
-              <button className="btn-salvar" disabled={saving} onClick={handleSalvarEdicao}>
-                {saving ? 'Salvando...' : 'Salvar'}
-              </button>
+              <button className="btn-salvar" disabled={saving} onClick={handleSalvarEdicao}>{saving ? 'Salvando…' : 'Salvar'}</button>
               <button className="btn-cancelar" onClick={() => setModalOpen(false)}>Cancelar</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* MODAL EDITAR PLACAR */}
+      {/* ── Modal Editar Placar ── */}
       {modalPlacarOpen && partidaEditando && (
-        <div className="modal-overlay">
-          <div className="modal-content modal-placar">
+        <div className="modal-overlay" onClick={() => setModalPlacarOpen(false)}>
+          <div className="modal-content modal-placar" onClick={e => e.stopPropagation()}>
             <h2 className="modal-title">✏️ Editar Placar</h2>
-
             <div className="placar-edit-row">
               <div className="placar-edit-time">
                 <img src={partidaEditando.time1.imagem} alt={partidaEditando.time1.nome} />
                 <span>{partidaEditando.time1.nome}</span>
-                <input
-                  type="number"
-                  min="0"
-                  max="8"
-                  value={editScore1}
-                  onChange={(e) => setEditScore1(Number(e.target.value))}
-                />
+                <input type="number" min="0" max="99" value={editScore1} onChange={e => setEditScore1(Number(e.target.value))} />
               </div>
-
               <span className="placar-edit-x">×</span>
-
               <div className="placar-edit-time">
                 <img src={partidaEditando.time2.imagem} alt={partidaEditando.time2.nome} />
                 <span>{partidaEditando.time2.nome}</span>
-                <input
-                  type="number"
-                  min="0"
-                  max="8"
-                  value={editScore2}
-                  onChange={(e) => setEditScore2(Number(e.target.value))}
-                />
+                <input type="number" min="0" max="99" value={editScore2} onChange={e => setEditScore2(Number(e.target.value))} />
               </div>
             </div>
-
-            <p className="placar-edit-info">
-              Vitória normal: 7 a 0–5 &nbsp;|&nbsp; Overtime: 6×6 → 8 a 6 ou 8 a 7
-            </p>
-
+            <p className="placar-hint">Vitória normal: 7 a 0–5 &nbsp;|&nbsp; Overtime: 8 a 6 ou 8 a 7</p>
             <div className="modal-buttons">
-              <button className="btn-salvar" disabled={salvandoPlacar} onClick={handleSalvarPlacar}>
-                {salvandoPlacar ? 'Salvando...' : 'Salvar'}
-              </button>
-              <button className="btn-cancelar" onClick={() => setModalPlacarOpen(false)} disabled={salvandoPlacar}>
-                Cancelar
-              </button>
+              <button className="btn-salvar" disabled={salvandoPlacar} onClick={handleSalvarPlacar}>{salvandoPlacar ? 'Salvando…' : 'Salvar'}</button>
+              <button className="btn-cancelar" disabled={salvandoPlacar} onClick={() => setModalPlacarOpen(false)}>Cancelar</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* MODAL AGENDAR PARTIDA */}
+      {/* ── Modal Agendar Partida ── */}
       {modalAgendarOpen && (
-        <div className="modal-overlay">
-          <div className="modal-content modal-agendar">
+        <div className="modal-overlay" onClick={() => setModalAgendarOpen(false)}>
+          <div className="modal-content modal-agendar" onClick={e => e.stopPropagation()}>
             <h2 className="modal-title">⚔️ Agendar Partida</h2>
             <div className="agendar-grid">
               <div className="modal-field">
-                <label>Grupo</label>
-                <select value={partidaGrupo} onChange={(e) => { setPartidaGrupo(e.target.value); setPartidaTime1(''); setPartidaTime2(''); }}>
+                <label>Grupo / Fase</label>
+                <select value={partidaGrupo} onChange={e => { setPartidaGrupo(e.target.value); setPartidaTime1(''); setPartidaTime2(''); }}>
                   <option value="A">Grupo A</option>
                   <option value="B">Grupo B</option>
                   <option value="C">Grupo C</option>
                   <option value="D">Grupo D</option>
+                  <option value="PLAYOFF">Playoffs</option>
                 </select>
               </div>
               <div className="modal-field">
-                <label>Semana</label>
-                <select value={partidaSemana} onChange={(e) => setPartidaSemana(e.target.value)}>
-                  <option value="SEMANA1">Semana 1</option>
-                  <option value="SEMANA2">Semana 2</option>
-                  <option value="SEMANA3">Semana 3</option>
-                </select>
+                <label>Semana / Fase</label>
+                {isPlayoffAgendar ? (
+                  <select value={partidaSemana} onChange={e => setPartidaSemana(e.target.value)}>
+                    <option value="QUARTAS">Quartas de Final</option>
+                    <option value="SEMIFINAL">Semifinal</option>
+                    <option value="FINAL">Final</option>
+                    <option value="TERCEIRO_LUGAR">3º Lugar</option>
+                  </select>
+                ) : (
+                  <select value={partidaSemana} onChange={e => setPartidaSemana(e.target.value)}>
+                    <option value="SEMANA1">Semana 1</option>
+                    <option value="SEMANA2">Semana 2</option>
+                    <option value="SEMANA3">Semana 3</option>
+                  </select>
+                )}
               </div>
               <div className="modal-field">
                 <label>Time 1</label>
-                <select value={partidaTime1} onChange={(e) => setPartidaTime1(e.target.value)}>
+                <select value={partidaTime1} onChange={e => setPartidaTime1(e.target.value)}>
                   <option value="">Selecione</option>
-                  {timesDoGrupo.map((time) => (
-                    <option key={time.id} value={time.id}>{time.nome}</option>
-                  ))}
+                  {timesDisponiveisAgendar.map(t => <option key={t.id} value={t.id}>{t.nome}</option>)}
                 </select>
               </div>
               <div className="modal-field">
                 <label>Time 2</label>
-                <select value={partidaTime2} onChange={(e) => setPartidaTime2(e.target.value)}>
+                <select value={partidaTime2} onChange={e => setPartidaTime2(e.target.value)}>
                   <option value="">Selecione</option>
-                  {timesDoGrupo.filter(t => t.id !== Number(partidaTime1)).map((time) => (
-                    <option key={time.id} value={time.id}>{time.nome}</option>
-                  ))}
+                  {timesDisponiveisAgendar.filter(t => t.id !== Number(partidaTime1)).map(t => <option key={t.id} value={t.id}>{t.nome}</option>)}
                 </select>
               </div>
               <div className="modal-field">
                 <label>Data</label>
-                <input type="date" value={partidaData} onChange={(e) => setPartidaData(e.target.value)} min={new Date().toISOString().split('T')[0]} />
+                <input type="date" value={partidaData} onChange={e => setPartidaData(e.target.value)} min={new Date().toISOString().split('T')[0]} />
               </div>
               <div className="modal-field">
                 <label>Hora</label>
-                <input type="time" value={partidaHora} onChange={(e) => setPartidaHora(e.target.value)} />
+                <input type="time" value={partidaHora} onChange={e => setPartidaHora(e.target.value)} />
               </div>
             </div>
             <div className="info-warning">⚠️ Data e horário são obrigatórios</div>
             <div className="modal-buttons">
-              <button className="btn-salvar" disabled={agendando || !partidaData || !partidaHora} onClick={handleAgendarPartida}>
-                {agendando ? 'Agendando...' : 'Agendar'}
-              </button>
-              <button className="btn-cancelar" onClick={() => setModalAgendarOpen(false)} disabled={agendando}>
-                Cancelar
-              </button>
+              <button className="btn-salvar" disabled={agendando || !partidaData || !partidaHora} onClick={handleAgendarPartida}>{agendando ? 'Agendando…' : 'Agendar'}</button>
+              <button className="btn-cancelar" disabled={agendando} onClick={() => setModalAgendarOpen(false)}>Cancelar</button>
             </div>
           </div>
         </div>

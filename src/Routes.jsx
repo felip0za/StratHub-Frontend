@@ -4,16 +4,13 @@ import PrivateRoute from './Components/PrivateRoute/PrivateRoute';
 import Login from './Pages/Login/Login';
 import Cadastro from './Pages/Cadastro/Cadastro';
 import Chatbox from './Pages/Chatbox/Chatbox';
-import Home from './Pages/Home/Home';
 import User from './Pages/Usuario/User/User';
 import Times from './Pages/Time/Times/Times';
 import CreateTime from './Pages/Time/CreateTime/CreateTime';
 import Invites from './Pages/Invites/Invites';
 import Partidas from './Pages/Partidas/Partidas';
-import FPL from './Pages/Lobbys/FPL/FPL';
 import EliteCup from './Pages/EliteCup/EliteCup';
 import Campeonatos from './Pages/Campeonatos/Campeonatos';
-import EditTime from './Pages/Time/EditTime/EditTime';
 import Landpage from './Pages/Landpage/Landpage';
 import CriarCampeonatos from './Pages/Campeonatos/CriarCampeonatos/CriarCampeonatos';
 import ListarCampeonatos from './Pages/Campeonatos/ListarCampeonatos/ListarCampeonatos';
@@ -29,7 +26,6 @@ function MainRoutes() {
       <Route path='/' element={<Landpage />} />
       <Route path='/login' element={<Login />} />
       <Route path='/cadastro' element={<Cadastro />} />
-      <Route path='/home' element={<Home />} />
       <Route path='/chatbox' element={
         <PrivateRoute>
           <Chatbox />
@@ -93,12 +89,6 @@ function MainRoutes() {
           <CampeonatoDetalhes />
         </PrivateRoute>
       } />
-      
-      <Route path='/editar-time/:id' element={
-        <PrivateRoute>
-          <EditTime />
-        </PrivateRoute>
-      } />
       <Route path='/criartime' element={
         <PrivateRoute>
           <CreateTime />
@@ -112,11 +102,6 @@ function MainRoutes() {
       <Route path='/partida/:id' element={
         <PrivateRoute>
           <Partidas />
-        </PrivateRoute>
-      } />
-      <Route path='/fpl' element={
-        <PrivateRoute>
-          <FPL />
         </PrivateRoute>
       } />
       <Route path='/campeonatos' element={

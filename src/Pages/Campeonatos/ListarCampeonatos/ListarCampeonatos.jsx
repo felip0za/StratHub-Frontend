@@ -11,86 +11,64 @@ const ListarCampeonatos = () => {
   const [filtro, setFiltro] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [equipesPorCampeonato, setEquipesPorCampeonato] = useState({}); // ✅ estado por campeonato
+  const [equipesPorCampeonato, setEquipesPorCampeonato] = useState({});
 
   const navigate = useNavigate();
   const api = useApi();
   const { user } = useAuth();
   const userId = user?.id;
 
-  const handleCriarCampeonato = () => navigate('/criar-campeonatos');
-  const handleVoltar = () => navigate('/campeonatos');
-
   useEffect(() => {
     if (!userId) return;
-
     const fetchCampeonatos = async () => {
       try {
         setLoading(true);
         const response = await api.get(`/campeonatos/criador/${userId}`);
         setCampeonatos(response.data);
-
-        // ✅ buscar número de equipes inscritas para cada campeonato
         const inscritosObj = {};
         await Promise.all(
           response.data.map(async (c) => {
             try {
               const countResp = await api.get(`/inscricoes/campeonato/${c.id}/count`);
               inscritosObj[c.id] = countResp.data;
-            } catch (err) {
-              console.error(`Erro ao contar equipes do campeonato ${c.id}:`, err);
+            } catch {
               inscritosObj[c.id] = 0;
             }
           })
         );
         setEquipesPorCampeonato(inscritosObj);
       } catch (err) {
-        console.error('Erro ao buscar campeonatos do usuário:', err);
+        console.error('Erro ao buscar campeonatos:', err);
         setError('❌ Erro ao carregar campeonatos. Tente novamente.');
       } finally {
         setLoading(false);
       }
     };
-
     fetchCampeonatos();
   }, [api, userId]);
 
-  const filtrarCampeonatos = (lista) => {
-    const termo = filtro.toLowerCase();
-    return lista.filter((c) => c.nome.toLowerCase().includes(termo));
-  };
+  const campeonatosFiltrados = campeonatos.filter((c) =>
+    c.nome.toLowerCase().includes(filtro.toLowerCase())
+  );
 
-  const campeonatosFiltrados = filtrarCampeonatos(campeonatos);
-
-  // Formata status
   const formatarStatus = (status) => {
     switch (status) {
       case 'ABERTO':
-      case 'ATIVO':
-        return { texto: 'Aberto', classe: 'status-ativo' };
-      case 'EM_ANDAMENTO':
-        return { texto: 'Em andamento', classe: 'status-em-andamento' };
-      case 'FECHADO':
-        return { texto: 'Fechado', classe: 'status-finalizado' };
-      default:
-        return { texto: '-', classe: '' };
+      case 'ATIVO':        return { texto: 'Aberto',       classe: 'aberto' };
+      case 'EM_ANDAMENTO': return { texto: 'Em Andamento', classe: 'em_andamento' };
+      case 'FECHADO':      return { texto: 'Fechado',      classe: 'fechado' };
+      default:             return { texto: '—',            classe: '' };
     }
   };
 
-  // Formata datas para DD/MM/YYYY
-  const formatarData = (data) => {
-    return data ? new Date(data).toLocaleDateString('pt-BR') : '-';
-  };
+  const formatarData = (data) =>
+    data ? new Date(data).toLocaleDateString('pt-BR') : '—';
 
-  // Formata o formato do campeonato
   const formatarFormato = (formato) => {
     switch (formato) {
-      case 'FASE_DE_GRUPOS_E_ELIMINATORIAS':
-        return 'Fase de Grupos + Eliminatórias';
-      case 'TABELA_ELIMINATORIAS':
-        return 'Tabela + Eliminatórias';
-      default:
-        return '-';
+      case 'FASE_DE_GRUPOS_E_ELIMINATORIAS': return 'Grupos + Eliminatórias';
+      case 'TABELA_ELIMINATORIAS':           return 'Tabela + Eliminatórias';
+      default:                               return '—';
     }
   };
 
@@ -99,90 +77,125 @@ const ListarCampeonatos = () => {
   return (
     <>
       <Navbar />
-      <div className="campeonatos-page">
-        <div className="campeonatos-header">
-          <h1>🏆 Meus Campeonatos</h1>
-          <div className="header-buttons">
-            <button className="btn-criar" onClick={handleCriarCampeonato}>
-              + Criar Campeonato
-            </button>
-            <button className="btn-voltar" onClick={handleVoltar}>
-              Voltar
-            </button>
+      <div className="listar-page">
+
+        {/* ── Header ── */}
+        <div className="listar-page-header">
+          <div className="listar-page-header-inner">
+            <div>
+              <h1 className="listar-page-title">🏆 Meus Campeonatos</h1>
+              <p className="listar-page-subtitle">Gerencie seus torneios</p>
+            </div>
+            <div className="listar-page-actions">
+              <button className="btn-primary" onClick={() => navigate('/criar-campeonatos')}>
+                + Criar Campeonato
+              </button>
+              <button className="btn-ghost" onClick={() => navigate('/campeonatos')}>
+                ← Voltar
+              </button>
+            </div>
           </div>
         </div>
 
-        <div className="campeonatos-container">
-          <input
-            type="text"
-            className="campo-pesquisa"
-            placeholder="🔎 Buscar por nome do campeonato..."
-            value={filtro}
-            onChange={(e) => setFiltro(e.target.value)}
-          />
+        {/* ── Body ── */}
+        <div className="listar-body">
+          {error && <div className="listar-error">{error}</div>}
 
-          {error && <p className="erro">{error}</p>}
+          <div className="listar-search-wrap">
+            <span className="listar-search-icon">🔎</span>
+            <input
+              type="text"
+              className="listar-search"
+              placeholder="Buscar por nome do campeonato..."
+              value={filtro}
+              onChange={(e) => setFiltro(e.target.value)}
+            />
+          </div>
 
-          <div className="tabela-container">
-            <table className="tabela-campeonatos">
-              <thead>
-                <tr>
-                  <th>Foto</th>
-                  <th>Nome</th>
-                  <th>Descrição</th>
-                  <th>Formato</th>
-                  <th>Máx. Equipes</th>
-                  <th>Equipes Inscritas</th>
-                  <th>Tipo</th>
-                  <th>Valor por Equipe</th>
-                  <th>Prêmio</th>
-                  <th>Data Início</th>
-                  <th>Data Fim</th>
-                  <th>Status</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {campeonatosFiltrados.length > 0 ? (
-                  campeonatosFiltrados.map((c) => {
+          {campeonatosFiltrados.length === 0 && !error ? (
+            <div className="listar-empty">
+              <span className="listar-empty-icon">🏟️</span>
+              <p>Você ainda não criou nenhum campeonato.</p>
+              <button className="btn-primary" onClick={() => navigate('/criar-campeonatos')}>
+                + Criar primeiro campeonato
+              </button>
+            </div>
+          ) : (
+            <div className="listar-table-wrap">
+              <table className="listar-table">
+                <thead>
+                  <tr>
+                    <th>Campeonato</th>
+                    <th>Formato</th>
+                    <th>Equipes</th>
+                    <th>Tipo</th>
+                    <th>Prêmio</th>
+                    <th>Início</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {campeonatosFiltrados.map((c) => {
                     const imagemCampeonato =
                       c.imagemCampeonato && c.imagemCampeonato.length > 100
                         ? `data:image/png;base64,${c.imagemCampeonato}`
-                        : "https://via.placeholder.com/50?text=Sem+Imagem";
-
+                        : null;
                     const status = formatarStatus(c.status);
+                    const inscritosCount = equipesPorCampeonato[c.id] ?? 0;
 
                     return (
                       <tr key={c.id}>
                         <td>
-                          <img
-                            src={imagemCampeonato}
-                            alt={c.nome}
-                            className="campeonato-img"
-                          />
-                        </td>
-                        <td>{c.nome}</td>
-                        <td>{c.descricao || '-'}</td>
-                        <td>{formatarFormato(c.formatoCampeonato)}</td>
-                        <td>{c.maxEquipes}</td>
-                        <td>{equipesPorCampeonato[c.id] ?? 0}</td> {/* ✅ aqui */}
-                        <td>{c.tipo === 'GRATUITO' ? 'Gratuito' : 'Pago'}</td>
-                        <td>
-                          {c.tipo === 'GRATUITO'
-                            ? 'Gratuito'
-                            : c.valorPorEquipe
-                            ? `R$:${Number(c.valorPorEquipe).toFixed(2)}`
-                            : 'R$:0,00'}
+                          <div className="listar-camp-cell">
+                            <div className="listar-camp-img">
+                              {imagemCampeonato
+                                ? <img src={imagemCampeonato} alt={c.nome} />
+                                : <span>🏆</span>
+                              }
+                            </div>
+                            <div className="listar-camp-info">
+                              <span className="listar-camp-nome">{c.nome}</span>
+                              {c.descricao && (
+                                <span className="listar-camp-desc">{c.descricao.slice(0, 50)}{c.descricao.length > 50 ? '…' : ''}</span>
+                              )}
+                            </div>
+                          </div>
                         </td>
                         <td>
-                          {c.valor !== null ? `R$:${Number(c.valor).toFixed(2)}` : '-'}
+                          <span className="listar-format-badge">{formatarFormato(c.formatoCampeonato)}</span>
                         </td>
-                        <td>{formatarData(c.dataInicio)}</td>
-                        <td>{c.dataFim ? formatarData(c.dataFim) : 'A definir'}</td>
-                        <td className={status.classe}>{status.texto}</td>
+                        <td>
+                          <div className="listar-equipes-cell">
+                            <span className="listar-equipes-num">{inscritosCount}</span>
+                            <span className="listar-equipes-max">/ {c.maxEquipes}</span>
+                            <div className="listar-equipes-bar">
+                              <div
+                                className="listar-equipes-fill"
+                                style={{ width: `${Math.min((inscritosCount / c.maxEquipes) * 100, 100)}%` }}
+                              />
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <span className={`listar-tipo-badge ${c.tipo === 'GRATUITO' ? 'free' : 'paid'}`}>
+                            {c.tipo === 'GRATUITO' ? 'Gratuito' : 'Pago'}
+                          </span>
+                        </td>
+                        <td>
+                          <span className="listar-valor">
+                            {c.valor !== null ? `R$ ${Number(c.valor).toFixed(2)}` : '—'}
+                          </span>
+                        </td>
+                        <td>
+                          <span className="listar-data">{formatarData(c.dataInicio)}</span>
+                        </td>
+                        <td>
+                          <span className={`listar-status-badge ${status.classe}`}>{status.texto}</span>
+                        </td>
                         <td>
                           <button
-                            className="btn-info"
+                            className="listar-btn-editar"
                             onClick={() => navigate(`/info-campeonato/${c.id}`)}
                           >
                             Editar
@@ -190,17 +203,11 @@ const ListarCampeonatos = () => {
                         </td>
                       </tr>
                     );
-                  })
-                ) : (
-                  <tr>
-                    <td colSpan="13" className="nenhum">
-                      Nenhum campeonato encontrado.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     </>

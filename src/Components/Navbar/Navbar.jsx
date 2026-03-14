@@ -18,18 +18,13 @@ function Navbar() {
   const [loading, setLoading] = useState(true);
   const [timeInfo, setTimeInfo] = useState(null);
   const [showTooltip, setShowTooltip] = useState(false);
-
-  // WALLET
   const [showWalletBox, setShowWalletBox] = useState(false);
-  const [stratCoins, setStratCoins] = useState(320); // depois vem da API
+  const [stratCoins, setStratCoins] = useState(320);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (!e.target.closest(".wallet-container")) {
-        setShowWalletBox(false);
-      }
+      if (!e.target.closest(".wallet-container")) setShowWalletBox(false);
     };
-
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
@@ -41,7 +36,6 @@ function Navbar() {
         setLoading(false);
         return;
       }
-
       try {
         const { data } = await api.get(`/usuario/${userId}`);
         setUsuario(data);
@@ -66,39 +60,27 @@ function Navbar() {
     carregarUsuario();
   }, [userId, api, location.pathname, navigate]);
 
+  /* ── Loading ── */
   if (loading) {
     return (
       <header>
         <nav className="nav">
-          <img
-            src={StratHub}
-            alt="Logo"
-            className="nav-logo"
-            onClick={() => navigate("/")}
-          />
-          <span>Carregando...</span>
+          <img src={StratHub} alt="Logo" className="nav-logo" onClick={() => navigate("/")} />
+          <span className="nav-loading">Carregando...</span>
         </nav>
       </header>
     );
   }
 
+  /* ── Não autenticado ── */
   if (!usuario) {
     return (
       <header>
         <nav className="nav">
-          <img
-            src={StratHub}
-            alt="Logo"
-            className="nav-logo"
-            onClick={() => navigate("/")}
-          />
+          <img src={StratHub} alt="Logo" className="nav-logo" onClick={() => navigate("/")} />
           <div className="nav-center">
-            <span className="nav-link" onClick={() => navigate("/login")}>
-              Entrar
-            </span>
-            <span className="nav-link" onClick={() => navigate("/cadastro")}>
-              Cadastrar
-            </span>
+            <span className="nav-link" onClick={() => navigate("/login")}>Entrar</span>
+            <span className="nav-link" onClick={() => navigate("/cadastro")}>Cadastrar</span>
           </div>
         </nav>
       </header>
@@ -106,8 +88,8 @@ function Navbar() {
   }
 
   const imagemPerfil = usuario.imagemUsuario || avatardefault;
-  const nomeUsuario = usuario.nome || "Usuário";
-  const idTime = usuario.idTime || usuario.id_time;
+  const nomeUsuario  = usuario.nome || "Usuário";
+  const idTime       = usuario.idTime || usuario.id_time;
 
   return (
     <header>
@@ -115,12 +97,7 @@ function Navbar() {
 
         {/* LEFT */}
         <div className="nav-left">
-          <img
-            src={StratHub}
-            alt="Logo"
-            className="nav-logo"
-            onClick={() => navigate("/")}
-          />
+          <img src={StratHub} alt="Logo" className="nav-logo" onClick={() => navigate("/")} />
         </div>
 
         {/* CENTER */}
@@ -129,14 +106,9 @@ function Navbar() {
             Campeonatos
           </span>
           <span className="nav-link" onClick={() => navigate("/eliteCup")}>
-            ELITE CUP
+            Elite Cup
           </span>
-          <span
-            className="nav-link"
-            onClick={() =>
-              navigate(idTime ? `/times/${idTime}` : "/criartime")
-            }
-          >
+          <span className="nav-link" onClick={() => navigate(idTime ? `/times/${idTime}` : "/criartime")}>
             Time
           </span>
         </div>
@@ -144,29 +116,19 @@ function Navbar() {
         {/* RIGHT */}
         <div className="nav-right">
 
-          {/* WALLET */}
+          {/* Wallet */}
           <div className="wallet-container">
-            <div
-              className="wallet"
-              onClick={() => setShowWalletBox(!showWalletBox)}
-            >
+            <div className="wallet" onClick={() => setShowWalletBox(!showWalletBox)}>
               👝 <span className="wallet-value">{stratCoins}</span>
             </div>
 
             {showWalletBox && (
               <div className="wallet-box">
-                <h4>Carteira </h4>
-
+                <h4>Carteira</h4>
                 <p><strong>Saldo:</strong> {stratCoins} StratCoins</p>
-                <p>
-                  <strong>Em reais:</strong> R$ {(stratCoins / 8).toFixed(2)}
-                </p>
-
+                <p><strong>Em reais:</strong> R$ {(stratCoins / 8).toFixed(2)}</p>
                 <div className="wallet-actions">
-                  <button onClick={() => navigate("/wallet/comprar")}>
-                    Comprar
-                  </button>
-
+                  <button onClick={() => navigate("/wallet/comprar")}>Comprar</button>
                   <button
                     disabled={(stratCoins / 8) < 40}
                     onClick={() => navigate("/wallet/resgatar")}
@@ -174,23 +136,21 @@ function Navbar() {
                     Resgatar
                   </button>
                 </div>
-
                 {(stratCoins / 8) < 40 && (
                   <small className="wallet-warning">
-                    Saldo mínimo para resgate: R$40 (320 StratCoins)
+                    Mínimo para resgate: R$ 40 (320 StratCoins)
                   </small>
                 )}
               </div>
             )}
           </div>
 
-          <span
-            className="nav-link-friends"
-            onClick={() => navigate("/amigos")}
-          >
+          {/* Friends */}
+          <span className="nav-link-friends" onClick={() => navigate("/amigos")}>
             <FontAwesomeIcon icon={faUserGroup} />
           </span>
 
+          {/* User */}
           <div
             className="user-info"
             onMouseEnter={() => setShowTooltip(true)}
@@ -200,14 +160,12 @@ function Navbar() {
               className="profile-icon-img"
               src={imagemPerfil}
               alt={`Foto de ${nomeUsuario}`}
-              onClick={() =>
-                navigate(`/usuario/${usuario.id || userId}`)
-              }
+              onClick={() => navigate(`/usuario/${usuario.id || userId}`)}
             />
 
             {showTooltip && (
               <div className="user-tooltip">
-                <p>Time:</p>
+                <p>Time</p>
                 {timeInfo ? (
                   <div className="tooltip-header">
                     <img
@@ -218,9 +176,7 @@ function Navbar() {
                     <p className="tooltip-name">{timeInfo.nome}</p>
                   </div>
                 ) : (
-                  <p className="tooltip-name nao-possui">
-                    Não possui
-                  </p>
+                  <p className="tooltip-name nao-possui">Sem time</p>
                 )}
               </div>
             )}

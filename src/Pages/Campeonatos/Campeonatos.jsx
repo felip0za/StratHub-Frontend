@@ -15,11 +15,6 @@ const Campeonatos = () => {
   const navigate = useNavigate();
   const api = useApi();
 
-  const handleCriarCampeonato = () => navigate("/criar-campeonatos");
-  const handleMeusCampeonatos = () => navigate("/meus-campeonatos");
-  const handleMeusCampeonatosInscritos = () =>
-    navigate("/campeonatos-inscritos");
-
   const fetchCampeonatos = async () => {
     try {
       const response = await api.get("/campeonatos");
@@ -33,18 +28,11 @@ const Campeonatos = () => {
     }
   };
 
-  // 🔥 verifica se o usuário tem time
   const fetchTimeUsuario = async () => {
     try {
       const response = await api.get("/times/usuario");
-
-      if (response.data) {
-        setTemTime(true);
-      } else {
-        setTemTime(false);
-      }
-    } catch (err) {
-      console.error("Erro ao buscar time do usuário:", err);
+      setTemTime(!!response.data);
+    } catch {
       setTemTime(false);
     }
   };
@@ -52,12 +40,10 @@ const Campeonatos = () => {
   useEffect(() => {
     fetchCampeonatos();
     fetchTimeUsuario();
-
     const interval = setInterval(() => {
       fetchCampeonatos();
       fetchTimeUsuario();
     }, 1000);
-
     return () => clearInterval(interval);
   }, [api]);
 
@@ -69,118 +55,114 @@ const Campeonatos = () => {
 
   const formatarStatus = (status) => {
     switch (status) {
-      case "ABERTO":
-        return { texto: "Aberto", classe: "aberto" };
-      case "EM_ANDAMENTO":
-        return { texto: "Em andamento", classe: "em_andamento" };
-      case "FECHADO":
-        return { texto: "Fechado", classe: "fechado" };
-      default:
-        return { texto: "-", classe: "" };
+      case "ABERTO":       return { texto: "Aberto",       classe: "aberto" };
+      case "EM_ANDAMENTO": return { texto: "Em Andamento", classe: "em_andamento" };
+      case "FECHADO":      return { texto: "Fechado",      classe: "fechado" };
+      default:             return { texto: "-",            classe: "" };
     }
   };
 
-  const getImagemCampeonato = (imagemBase64) =>
-    imagemBase64
-      ? `data:image/png;base64,${imagemBase64}`
-      : "https://via.placeholder.com/400x200?text=Sem+Imagem";
+  const getImagemCampeonato = (img) =>
+    img ? `data:image/png;base64,${img}` : null;
 
   if (loading) return <LoadingScreen />;
 
   return (
     <>
       <Navbar />
+      <div className="camp-page">
 
-      <div className="campeonatos-page">
-        <div className="campeonatos-header">
-          <h1 className="campeonatos-title">🏆 Campeonatos</h1>
-
-          <div className="header-buttons">
-            {/* ❌ só aparece se NÃO tiver time */}
-            {!temTime && (
-              <>
-                <button className="btn-criar" onClick={handleCriarCampeonato}>
-                  + Criar Campeonato
-                </button>
-
-                <button className="btn-meus" onClick={handleMeusCampeonatos}>
-                  Meus Campeonatos
-                </button>
-              </>
-            )}
-
-            {/* ✅ sempre aparece */}
-            <button
-              className="btn-inscritos"
-              onClick={handleMeusCampeonatosInscritos}
-            >
-              Campeonatos Inscritos
-            </button>
+        {/* ── Page Header ── */}
+        <div className="camp-page-header">
+          <div className="camp-page-header-inner">
+            <div>
+              <h1 className="camp-page-title">🏆 Campeonatos</h1>
+              <p className="camp-page-subtitle">Encontre e participe de torneios</p>
+            </div>
+            <div className="camp-page-actions">
+              {!temTime && (
+                <>
+                  <button className="btn-primary" onClick={() => navigate("/criar-campeonatos")}>
+                    + Criar Campeonato
+                  </button>
+                  <button className="btn-ghost" onClick={() => navigate("/meus-campeonatos")}>
+                    Meus Campeonatos
+                  </button>
+                </>
+              )}
+              <button className="btn-ghost" onClick={() => navigate("/campeonatos-inscritos")}>
+                Inscritos
+              </button>
+            </div>
           </div>
         </div>
 
-        {error && <p className="campeonatos-error">{error}</p>}
+        {/* ── Body ── */}
+        <div className="camp-body">
+          {error && <div className="camp-error">{error}</div>}
 
-        <div className="campeonatos-container">
-          <input
-            type="text"
-            placeholder="🔎 Buscar campeonatos..."
-            value={filtro}
-            onChange={(e) => setFiltro(e.target.value)}
-            className="campo-pesquisa"
-          />
+          <div className="camp-search-wrap">
+            <span className="search-icon">🔎</span>
+            <input
+              type="text"
+              placeholder="Buscar campeonatos..."
+              value={filtro}
+              onChange={(e) => setFiltro(e.target.value)}
+              className="camp-search"
+            />
+          </div>
 
           {campeonatosFiltrados.length > 0 ? (
-            <div className="campeonatos-grid">
+            <div className="camp-grid">
               {campeonatosFiltrados.map((c) => {
                 const status = formatarStatus(c.status);
+                const imagem = getImagemCampeonato(c.imagemCampeonato);
 
                 return (
-                  <div key={c.id} className="card">
-                    <div className="card-img">
-                      <img
-                        src={getImagemCampeonato(c.imagemCampeonato)}
-                        alt={c.nome}
-                      />
-                      <span className={`status ${status.classe}`}>
+                  <div key={c.id} className="camp-card" onClick={() => handleClick(c.id)}>
+                    <div className="camp-card-img">
+                      {imagem ? (
+                        <img src={imagem} alt={c.nome} />
+                      ) : (
+                        <div className="camp-card-img-placeholder">🏆</div>
+                      )}
+                      <span className={`camp-status-badge ${status.classe}`}>
+                        {status.classe === "em_andamento" && <span className="live-dot" />}
                         {status.texto}
                       </span>
+                      <div className="camp-card-img-overlay" />
                     </div>
 
-                    <div className="card-body">
-                      <h2>{c.nome}</h2>
+                    <div className="camp-card-body">
+                      <h2 className="camp-card-title">{c.nome}</h2>
 
-                      <p className="detalhes">
-                        Tipo:{" "}
-                        {c.tipo === "GRATUITO" ? "Gratuito" : "Pago"} • Máx.{" "}
-                        {c.maxEquipes} equipes
+                      <div className="camp-card-meta">
+                        <span className={`meta-badge ${c.tipo === "GRATUITO" ? "free" : "paid"}`}>
+                          {c.tipo === "GRATUITO" ? "🆓 Gratuito" : "💳 Pago"}
+                        </span>
+                        <span className="meta-badge neutral">👥 {c.maxEquipes} equipes</span>
+                      </div>
+
+                      <p className="camp-card-org">
+                        por <strong>{c.criador?.nome || "Desconhecido"}</strong>
                       </p>
 
-                      <p className="organizador">
-                        Organizado por{" "}
-                        <strong>{c.criador?.nome || "Desconhecido"}</strong>
-                      </p>
-
-                      {c.status === "ABERTO" ? (
-                        <button
-                          className="btn-entrar"
-                          onClick={() => handleClick(c.id)}
-                        >
-                          Participar
-                        </button>
-                      ) : (
-                        <button className="btn-fechado" disabled>
-                          Fechado
-                        </button>
-                      )}
+                      <button
+                        className={c.status === "ABERTO" ? "btn-card-enter" : "btn-card-closed"}
+                        disabled={c.status !== "ABERTO"}
+                        onClick={(e) => { e.stopPropagation(); handleClick(c.id); }}
+                      >
+                        {c.status === "ABERTO" ? "Participar" : "Indisponível"}
+                      </button>
                     </div>
                   </div>
                 );
               })}
             </div>
           ) : (
-            <div className="nenhum-campeonato">
-              <p>⚠️Nenhum campeonato encontrado.</p>
+            <div className="camp-empty">
+              <span className="camp-empty-icon">🏟️</span>
+              <p>Nenhum campeonato encontrado.</p>
             </div>
           )}
         </div>

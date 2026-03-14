@@ -9,14 +9,13 @@ const CriarCampeonatos = () => {
   const [nome, setNome] = useState('');
   const [descricao, setDescricao] = useState('');
   const [tipo, setTipo] = useState('GRATUITO');
-  const [status, setStatus] = useState('ABERTO');
   const [valorPremiacao, setValorPremiacao] = useState('0');
   const [maxEquipes, setMaxEquipes] = useState(4);
   const [formatoCampeonato, setFormatoCampeonato] = useState('FASE_DE_GRUPOS_E_ELIMINATORIAS');
   const [imagemBase64, setImagemBase64] = useState('');
   const [previewImagem, setPreviewImagem] = useState('');
   const [plataforma, setPlataforma] = useState('PC');
-  const [consoleTipo, setConsoleTipo] = useState('AMBOS'); // Valor padrão
+  const [consoleTipo, setConsoleTipo] = useState('AMBOS');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -25,17 +24,17 @@ const CriarCampeonatos = () => {
   const { user, token } = useAuth();
   const userId = user?.id;
 
+  useEffect(() => {
+    if (formatoCampeonato === 'TABELA_ELIMINATORIAS') setMaxEquipes(10);
+  }, [formatoCampeonato]);
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    if (!file.type.startsWith('image/')) {
-      setError('❌ Selecione um arquivo de imagem válido.');
-      return;
-    }
+    if (!file.type.startsWith('image/')) { setError('❌ Selecione um arquivo de imagem válido.'); return; }
     const reader = new FileReader();
     reader.onloadend = () => {
-      const base64 = reader.result.split(',')[1];
-      setImagemBase64(base64);
+      setImagemBase64(reader.result.split(',')[1]);
       setPreviewImagem(reader.result);
       setError('');
     };
@@ -52,21 +51,15 @@ const CriarCampeonatos = () => {
       setLoading(false);
       return;
     }
-
-    if (!userId) {
-      setError('❌ Usuário não autenticado.');
-      setLoading(false);
-      return;
-    }
-
-    // Validação para console
-    if (plataforma === 'CONSOLE' && !consoleTipo) {
-      setError('❌ Selecione o tipo de console.');
-      setLoading(false);
-      return;
-    }
+    if (!userId) { setError('❌ Usuário não autenticado.'); setLoading(false); return; }
+    if (plataforma === 'CONSOLE' && !consoleTipo) { setError('❌ Selecione o tipo de console.'); setLoading(false); return; }
 
     const totalPremiacao = Number(valorPremiacao) || 0;
+    if (tipo === 'PAGO' && totalPremiacao <= 0) {
+      setError('❌ Informe o valor da premiação para campeonatos pagos.');
+      setLoading(false);
+      return;
+    }
 
     const novoCampeonato = {
       nome,
@@ -81,208 +74,180 @@ const CriarCampeonatos = () => {
       dataFim: null,
       idCriador: userId,
       plataforma,
-      console: plataforma === 'CONSOLE' ? consoleTipo : null // null quando PC
+      console: plataforma === 'CONSOLE' ? consoleTipo : null,
+      ...(tipo === 'PAGO' && { valorPorEquipe: totalPremiacao / maxEquipes }),
     };
-
-    if (tipo === 'PAGO') {
-      if (totalPremiacao <= 0) {
-        setError('❌ Informe o valor da premiação (obrigatório) para campeonatos pagos.');
-        setLoading(false);
-        return;
-      }
-      novoCampeonato.valorPorEquipe = totalPremiacao / maxEquipes;
-    }
 
     try {
       await api.post('/campeonatos', novoCampeonato, {
         headers: { Authorization: `Bearer ${token}` }
       });
-
       alert('✅ Campeonato criado com sucesso!');
       navigate('/campeonatos');
     } catch (err) {
       console.error('Erro ao criar campeonato:', err);
-      setError(
-        err.response?.data?.message || '❌ Erro ao criar campeonato. Tente novamente.'
-      );
+      setError(err.response?.data?.message || '❌ Erro ao criar campeonato. Tente novamente.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleVoltar = () => navigate(-1);
-
-  useEffect(() => {
-    if (formatoCampeonato === 'TABELA_ELIMINATORIAS') {
-      setMaxEquipes(10);
-    }
-  }, [formatoCampeonato]);
-
   return (
     <>
       <Navbar />
+      <div className="criar-page">
+        <div className="criar-container">
 
-      <div>
-        <button className="btn-voltar" onClick={handleVoltar}>
-          ← Voltar
-        </button>
-      </div>
-
-      <div className="campeonatos-create-container">
-        <h1 className="campeonatos-create-title">Criar Novo Campeonato</h1>
-
-        {error && <div className="campeonatos-create-error">{error}</div>}
-
-        <form onSubmit={handleSubmit} className="campeonatos-create-form">
-          {/* Nome */}
-          <div className="campeonatos-create-field">
-            <label className="campeonatos-create-label">Nome do Campeonato:</label>
-            <input
-              type="text"
-              value={nome}
-              onChange={(e) => setNome(e.target.value)}
-              className="campeonatos-create-input"
-              required
-            />
-          </div>
-
-          {/* Descrição */}
-          <div className="campeonatos-create-field">
-            <label className="campeonatos-create-label">Descrição:</label>
-            <textarea
-              value={descricao}
-              onChange={(e) => setDescricao(e.target.value)}
-              rows="4"
-              className="campeonatos-create-input"
-              required
-            />
-          </div>
-
-          {/* Imagem */}
-          <div className="campeonatos-create-field">
-            <label className="campeonatos-create-label">Imagem:</label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="campeonatos-create-input"
-              required
-            />
-            {previewImagem && (
-              <img
-                src={previewImagem}
-                alt="Pré-visualização"
-                className="campeonatos-create-preview"
-              />
-            )}
-          </div>
-
-          {/* Tipo de Campeonato */}
-          <div className="campeonatos-create-field">
-            <label className="campeonatos-create-label">Tipo de Campeonato:</label>
-            <select
-              value={tipo}
-              onChange={(e) => setTipo(e.target.value)}
-              className="campeonatos-create-select"
-            >
-              <option value="GRATUITO">Gratuito</option>
-              <option value="PAGO">Pago</option>
-            </select>
-          </div>
-
-          {/* Formato de Campeonato */}
-          <div className="campeonatos-create-field">
-            <label className="campeonatos-create-label">Formato de Campeonato:</label>
-            <select
-              value={formatoCampeonato}
-              onChange={(e) => setFormatoCampeonato(e.target.value)}
-              className="campeonatos-create-select"
-            >
-              <option value="FASE_DE_GRUPOS_E_ELIMINATORIAS">Fase de Grupos e Eliminatórias</option>
-              <option value="TABELA_ELIMINATORIAS">Tabela e Eliminatórias</option>
-            </select>
-          </div>
-
-          {/* Valor da premiação */}
-          <div className="campeonatos-create-field">
-            <label className="campeonatos-create-label">Valor da Premiação (R$):</label>
-            <input
-              type="number"
-              min="0"
-              step="0.01"
-              value={valorPremiacao}
-              onChange={(e) => setValorPremiacao(e.target.value)}
-              className="campeonatos-create-input"
-            />
-            <small className="campeonatos-create-hint">
-              {tipo === 'PAGO'
-                ? `Cada equipe pagará R$ ${(Number(valorPremiacao) / maxEquipes).toFixed(2)}.`
-                : `Este campeonato é gratuito; a premiação será de R$ ${Number(valorPremiacao).toFixed(2)}.`}
-            </small>
-          </div>
-
-          {/* Máximo de equipes */}
-          <div className="campeonatos-create-field">
-            <label className="campeonatos-create-label">Máximo de Equipes:</label>
-            {formatoCampeonato === 'TABELA_ELIMINATORIAS' ? (
-              <input
-                type="number"
-                value={10}
-                disabled
-                className="campeonatos-create-input"
-              />
-            ) : (
-              <select
-                value={maxEquipes}
-                onChange={(e) => setMaxEquipes(Number(e.target.value))}
-                className="campeonatos-create-select"
-              >
-                {[4, 8, 12, 16].map((qtd) => (
-                  <option key={qtd} value={qtd}>
-                    {qtd} equipes
-                  </option>
-                ))}
-              </select>
-            )}
-          </div>
-
-          {/* Plataforma */}
-          <div className="campeonatos-create-field">
-            <label className="campeonatos-create-label">Plataforma:</label>
-            <select
-              value={plataforma}
-              onChange={(e) => setPlataforma(e.target.value)}
-              className="campeonatos-create-select"
-            >
-              <option value="PC">PC</option>
-              <option value="CONSOLE">Console</option>
-            </select>
-          </div>
-
-          {/* Console */}
-          {plataforma === 'CONSOLE' && (
-            <div className="campeonatos-create-field">
-              <label className="campeonatos-create-label">Console:</label>
-              <select
-                value={consoleTipo}
-                onChange={(e) => setConsoleTipo(e.target.value)}
-                className="campeonatos-create-select"
-              >
-                <option value="AMBOS">Ambos</option>
-                <option value="XBOX">Xbox</option>
-                <option value="PS">PlayStation</option>
-              </select>
+          <div className="criar-header">
+            <button className="btn-back" onClick={() => navigate(-1)}>← Voltar</button>
+            <div>
+              <h1 className="criar-title">Criar Campeonato</h1>
+              <p className="criar-subtitle">Configure seu torneio</p>
             </div>
-          )}
+          </div>
 
-          <button
-            type="submit"
-            className="campeonatos-create-button"
-            disabled={loading}
-          >
-            {loading ? 'Salvando...' : 'Criar Campeonato'}
-          </button>
-        </form>
+          {error && <div className="criar-error">{error}</div>}
+
+          <form onSubmit={handleSubmit} className="criar-form">
+
+            {/* Nome */}
+            <div className="form-field">
+              <label className="form-label">Nome do Campeonato <span className="required">*</span></label>
+              <input
+                type="text"
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+                className="form-input"
+                placeholder="Ex: Copa de Inverno 2025"
+                required
+              />
+            </div>
+
+            {/* Descrição */}
+            <div className="form-field">
+              <label className="form-label">Descrição <span className="required">*</span></label>
+              <textarea
+                value={descricao}
+                onChange={(e) => setDescricao(e.target.value)}
+                rows="4"
+                className="form-input"
+                placeholder="Descreva as regras e informações do campeonato..."
+                required
+              />
+            </div>
+
+            {/* Imagem */}
+            <div className="form-field">
+              <label className="form-label">Imagem de Capa <span className="required">*</span></label>
+              <label className="form-file-label">
+                <span className="form-file-icon">📸</span>
+                <span>{previewImagem ? 'Trocar imagem' : 'Selecionar imagem'}</span>
+                <input type="file" accept="image/*" onChange={handleImageChange} className="form-file-input" required={!imagemBase64} />
+              </label>
+              {previewImagem && (
+                <div className="form-preview-wrap">
+                  <img src={previewImagem} alt="Preview" className="form-preview" />
+                </div>
+              )}
+            </div>
+
+            {/* Row: Tipo + Formato */}
+            <div className="form-row">
+              <div className="form-field">
+                <label className="form-label">Tipo</label>
+                <div className="form-toggle">
+                  <button type="button" className={`toggle-opt ${tipo === 'GRATUITO' ? 'active' : ''}`} onClick={() => setTipo('GRATUITO')}>
+                    🆓 Gratuito
+                  </button>
+                  <button type="button" className={`toggle-opt ${tipo === 'PAGO' ? 'active' : ''}`} onClick={() => setTipo('PAGO')}>
+                    💳 Pago
+                  </button>
+                </div>
+              </div>
+
+              <div className="form-field">
+                <label className="form-label">Formato</label>
+                <select
+                  value={formatoCampeonato}
+                  onChange={(e) => setFormatoCampeonato(e.target.value)}
+                  className="form-select"
+                >
+                  <option value="FASE_DE_GRUPOS_E_ELIMINATORIAS">Grupos + Eliminatórias</option>
+                  <option value="TABELA_ELIMINATORIAS">Tabela + Eliminatórias</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Row: Premiação + Equipes */}
+            <div className="form-row">
+              <div className="form-field">
+                <label className="form-label">Premiação (R$)</label>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={valorPremiacao}
+                  onChange={(e) => setValorPremiacao(e.target.value)}
+                  className="form-input"
+                />
+                <span className="form-hint">
+                  {tipo === 'PAGO'
+                    ? `Entrada: R$ ${(Number(valorPremiacao) / maxEquipes).toFixed(2)} por equipe`
+                    : `Premiação gratuita: R$ ${Number(valorPremiacao).toFixed(2)}`}
+                </span>
+              </div>
+
+              <div className="form-field">
+                <label className="form-label">Máx. Equipes</label>
+                {formatoCampeonato === 'TABELA_ELIMINATORIAS' ? (
+                  <input type="number" value={10} disabled className="form-input" />
+                ) : (
+                  <select
+                    value={maxEquipes}
+                    onChange={(e) => setMaxEquipes(Number(e.target.value))}
+                    className="form-select"
+                  >
+                    {[4, 8, 12, 16].map((q) => <option key={q} value={q}>{q} equipes</option>)}
+                  </select>
+                )}
+              </div>
+            </div>
+
+            {/* Row: Plataforma + Console */}
+            <div className="form-row">
+              <div className="form-field">
+                <label className="form-label">Plataforma</label>
+                <div className="form-toggle">
+                  <button type="button" className={`toggle-opt ${plataforma === 'PC' ? 'active' : ''}`} onClick={() => setPlataforma('PC')}>
+                    🖥️ PC
+                  </button>
+                  <button type="button" className={`toggle-opt ${plataforma === 'CONSOLE' ? 'active' : ''}`} onClick={() => setPlataforma('CONSOLE')}>
+                    🎮 Console
+                  </button>
+                </div>
+              </div>
+
+              {plataforma === 'CONSOLE' && (
+                <div className="form-field">
+                  <label className="form-label">Console</label>
+                  <select
+                    value={consoleTipo}
+                    onChange={(e) => setConsoleTipo(e.target.value)}
+                    className="form-select"
+                  >
+                    <option value="AMBOS">Ambos</option>
+                    <option value="XBOX">Xbox</option>
+                    <option value="PS">PlayStation</option>
+                  </select>
+                </div>
+              )}
+            </div>
+
+            <button type="submit" className="btn-submit" disabled={loading}>
+              {loading ? 'Criando…' : '🏆 Criar Campeonato'}
+            </button>
+          </form>
+        </div>
       </div>
     </>
   );

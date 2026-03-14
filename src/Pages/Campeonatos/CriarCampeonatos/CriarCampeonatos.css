@@ -1,161 +1,200 @@
-/* ===== Container principal ===== */
-.campeonatos-create-container {
-  max-width: 600px;
-  margin: 40px auto;
-  padding: 25px;
-  background: #161616;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(255, 1, 1, 0.25); /* vermelho ajustado */
-  color: #fff;
-  font-family: 'Poppins', sans-serif;
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
+
+.criar-page {
+  background: #080b10;
+  min-height: 100vh;
+  color: #e6edf3;
+  font-family: 'DM Sans', sans-serif;
+  padding: 32px 16px 64px;
 }
 
-/* ===== Título ===== */
-.campeonatos-create-title {
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 28px;
-  font-weight: bold;
-  color: #ff0101;
-  letter-spacing: 0.5px;
+.criar-container {
+  max-width: 660px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
-/* ===== Botão Voltar ===== */
-.btn-voltar {
-  top: 80px;       /* distância do topo */
-  left: 50px;      /* um pouco mais à direita */
-  padding: 10px 16px;
-  background: #ff0101; /* usando o vermelho correto */
-  color: #fff;
-  border: 2px solid transparent;
-  border-radius: 8px;
-  font-weight: 600;
+/* ── Header ── */
+.criar-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.btn-back {
+  background: transparent;
+  border: 1px solid #30363d;
+  color: #8b949e;
+  padding: 8px 16px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: background 0.3s, border-color 0.3s, transform 0.2s;
-  z-index: 1000; /* garante que fique acima de outros elementos */
-}
-
-.btn-voltar:hover {
-  background: #c10001;
-  border-color: #ff0101;
-  transform: scale(1.03);
-}
-
-/* ===== Formulário ===== */
-.campeonatos-create-form {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-/* ===== Campos ===== */
-.campeonatos-create-field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.campeonatos-create-label {
+  font-family: 'DM Sans', sans-serif;
   font-weight: 600;
-  font-size: 14px;
-  color: #ddd;
+  font-size: 0.85rem;
+  transition: 0.18s ease;
+  white-space: nowrap;
+}
+.btn-back:hover { background: #1c2332; color: #e6edf3; }
+
+.criar-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin: 0;
+}
+.criar-subtitle { font-size: 0.8rem; color: #484f58; margin-top: 2px; }
+
+/* ── Error ── */
+.criar-error {
+  background: rgba(230,0,35,0.08);
+  border: 1px solid rgba(230,0,35,0.3);
+  border-left: 3px solid #e60023;
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: #ff6b6b;
+  font-size: 0.875rem;
 }
 
-/* ===== Inputs e Select ===== */
-.campeonatos-create-input,
-.campeonatos-create-select {
-  padding: 10px 14px;
-  border-radius: 8px;
-  border: none;
-  background: #222;
-  color: #fff;
-  font-size: 15px;
+/* ── Form ── */
+.criar-form {
+  background: #0d1117;
+  border: 1px solid #21262d;
+  border-radius: 16px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* ── Field ── */
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.form-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #8b949e;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+}
+
+.required { color: #e60023; }
+
+.form-input,
+.form-select {
+  background: #161b22;
+  border: 1px solid #21262d;
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: #e6edf3;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem;
   outline: none;
-  transition: border 0.2s ease, background 0.2s ease;
+  transition: 0.18s ease;
+  width: 100%;
 }
+.form-input:focus,
+.form-select:focus { border-color: #e60023; box-shadow: 0 0 0 3px #e6002220; }
+.form-input::placeholder { color: #484f58; }
+.form-input:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.campeonatos-create-input:focus,
-.campeonatos-create-select:focus {
-  border: 1px solid #ff0101;
-  background: #1a1a1a;
-}
+textarea.form-input { resize: vertical; min-height: 100px; }
 
-/* ===== Botões de seleção (pago/grátis ou qtd equipes) ===== */
-.campeonatos-create-toggle {
+/* ── File input ── */
+.form-file-label {
   display: flex;
-  justify-content: center;
-  gap: 12px;
-}
-
-.campeonatos-create-option {
-  flex: 1;
-  padding: 12px;
-  text-align: center;
-  border-radius: 8px;
-  background: #222;
-  font-weight: 600;
-  color: #fff;
-  border: 2px solid transparent;
+  align-items: center;
+  gap: 10px;
+  background: #161b22;
+  border: 1px dashed #30363d;
+  border-radius: 10px;
+  padding: 12px 16px;
   cursor: pointer;
-  transition: background 0.3s, border 0.3s, transform 0.2s;
+  transition: 0.18s ease;
+  color: #8b949e;
+  font-size: 0.875rem;
 }
+.form-file-label:hover { border-color: #e60023; color: #e6edf3; background: #1c2332; }
+.form-file-icon { font-size: 1.1rem; }
+.form-file-input { display: none; }
 
-.campeonatos-create-option:hover {
-  background: #2a2a2a;
-  transform: scale(1.03);
-}
-
-.campeonatos-create-option.active {
-  background: #ff0101;
-  border-color: #ff0101;
-}
-
-/* ===== Prévia da Imagem ===== */
-.campeonatos-create-preview {
+.form-preview-wrap { margin-top: 4px; }
+.form-preview {
   width: 100%;
   max-height: 180px;
   object-fit: cover;
-  margin-top: 10px;
-  border-radius: 8px;
-  border: 2px solid #444;
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  border-radius: 10px;
+  border: 1px solid #21262d;
 }
 
-.campeonatos-create-preview:hover {
-  transform: scale(1.02);
-  border-color: #ff0101;
+/* ── Toggle ── */
+.form-toggle {
+  display: flex;
+  gap: 0;
+  background: #161b22;
+  border: 1px solid #21262d;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
-/* ===== Botão Principal ===== */
-.campeonatos-create-button {
-  width: 100%;
-  padding: 12px;
-  background: #ff0101;
+.toggle-opt {
+  flex: 1;
+  background: transparent;
   border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  color: #fff;
+  color: #8b949e;
+  padding: 10px 8px;
   cursor: pointer;
-  transition: background 0.3s, transform 0.2s;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  transition: 0.18s ease;
+  border-right: 1px solid #21262d;
+}
+.toggle-opt:last-child { border-right: none; }
+.toggle-opt:hover { color: #e6edf3; background: #1c2332; }
+.toggle-opt.active { background: #e60023; color: #fff; border-color: transparent; }
+
+/* ── Hint ── */
+.form-hint {
+  font-size: 0.72rem;
+  color: #484f58;
+  margin-top: 2px;
 }
 
-.campeonatos-create-button:hover {
-  background: #c10001;
-  transform: scale(1.02);
+/* ── Submit ── */
+.btn-submit {
+  width: 100%;
+  padding: 13px;
+  background: #e60023;
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: 0.18s ease;
+  margin-top: 4px;
 }
+.btn-submit:hover:not(:disabled) { background: #c1001d; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(230,0,35,0.4); }
+.btn-submit:disabled { background: #1c2332; color: #484f58; cursor: not-allowed; }
 
-.campeonatos-create-button:disabled {
-  background: #555;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* ===== Mensagem de erro ===== */
-.campeonatos-create-error {
-  color: #ff0101;
-  text-align: center;
-  margin-top: -5px;
-  font-size: 14px;
-  font-weight: 500;
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .form-row { grid-template-columns: 1fr; }
+  .criar-header { flex-direction: column; align-items: flex-start; }
+  .criar-form { padding: 20px; }
 }

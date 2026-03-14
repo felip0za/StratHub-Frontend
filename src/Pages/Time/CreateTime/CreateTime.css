@@ -1,177 +1,195 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
 
+/* ── Page ── */
 .create-time-page {
+  background: #080b10;
   min-height: 100vh;
-  background: radial-gradient(circle at top, #101010 0%, #050505 100%);
-  color: #f5f5f5;
-  font-family: 'Poppins', sans-serif;
+  color: #e6edf3;
+  font-family: 'DM Sans', sans-serif;
+  padding: 32px 16px 64px;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 60px 20px;
 }
 
-/* === CARD PRINCIPAL === */
+/* ── Card ── */
 .create-card {
-  background: rgba(20, 20, 20, 0.9);
-  border: 1px solid rgba(255, 0, 0, 0.15);
-  backdrop-filter: blur(10px);
-  padding: 40px 35px;
+  background: #0d1117;
+  border: 1px solid #21262d;
   border-radius: 20px;
+  padding: 32px 28px;
   width: 100%;
   max-width: 520px;
-  box-shadow: 0 0 30px rgba(255, 0, 0, 0.1);
-  animation: fadeIn 0.4s ease;
-  transition: all 0.3s ease-in-out;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  position: relative;
+  animation: ctFadeIn 0.25s ease;
 }
 
-.create-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 35px rgba(255, 0, 0, 0.25);
+.create-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: 20px 20px 0 0;
+  background: linear-gradient(90deg, #e60023, #ff6b35, #e60023);
 }
 
-/* === TÍTULO === */
+@keyframes ctFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Título ── */
 .form-title {
-  text-align: center;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.6rem;
   font-weight: 700;
-  color: #fff;
-  font-size: 28px;
-  margin-bottom: 25px;
   letter-spacing: 1px;
-  text-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
-}
-
-/* === ERRO === */
-.error-box {
-  background: rgba(255, 30, 30, 0.12);
-  color: #ff9c9c;
-  border-left: 4px solid crimson;
-  padding: 12px;
-  border-radius: 10px;
-  margin-bottom: 18px;
   text-align: center;
-  font-weight: 500;
-  box-shadow: 0 0 8px rgba(255, 0, 0, 0.1);
+  color: #e6edf3;
+  margin: 0 0 24px;
 }
 
-/* === FORMULÁRIO === */
+/* ── Erro ── */
+.error-box {
+  background: rgba(230,0,35,0.08);
+  border: 1px solid rgba(230,0,35,0.3);
+  border-left: 3px solid #e60023;
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: #ff6b6b;
+  font-size: 0.875rem;
+  margin-bottom: 20px;
+}
+
+/* ── Form ── */
 .team-form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .form-group label {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 5px;
-  color: #ddd;
-  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  color: #8b949e;
 }
 
-/* === CAMPOS === */
+/* ── Inputs ── */
 .team-form input,
 .team-form textarea {
-  background: #1c1c1f;
-  border: 1px solid #333;
+  background: #161b22;
+  border: 1px solid #21262d;
   border-radius: 10px;
-  padding: 12px 14px;
-  color: #fff;
-  font-size: 14px;
-  transition: all 0.3s;
+  padding: 10px 12px;
+  color: #e6edf3;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem;
+  outline: none;
+  transition: 0.18s ease;
   width: 100%;
 }
 
 .team-form input:focus,
 .team-form textarea:focus {
-  border-color: crimson;
-  background: #262628;
-  box-shadow: 0 0 8px rgba(255, 0, 0, 0.3);
-  outline: none;
+  border-color: #e60023;
+  box-shadow: 0 0 0 3px rgba(230,0,35,0.12);
 }
 
-.team-form textarea {
-  resize: none;
-  min-height: 80px;
-}
+.team-form input::placeholder,
+.team-form textarea::placeholder { color: #484f58; }
+
+.team-form textarea { resize: none; }
 
 .tag-hint {
-  font-size: 12px;
-  color: #aaa;
-  margin-top: -5px;
+  font-size: 0.68rem;
+  color: #484f58;
+  margin-top: -2px;
 }
 
-/* === PREVIEW DE IMAGEM === */
+/* ── File input ── */
+.team-form input[type="file"] {
+  padding: 8px 12px;
+  background: #161b22;
+  border: 1px dashed #30363d;
+  color: #8b949e;
+  cursor: pointer;
+}
+
+.team-form input[type="file"]:hover {
+  border-color: #e60023;
+  color: #e6edf3;
+}
+
+/* ── Preview ── */
 .preview-box {
-  margin-top: 15px;
-  text-align: center;
+  margin-top: 8px;
 }
 
 .team-preview {
   width: 100%;
-  max-height: 220px;
+  max-height: 200px;
   object-fit: contain;
-  border-radius: 12px;
-  border: 2px solid crimson;
-  box-shadow: 0 0 20px rgba(255, 0, 0, 0.25);
-  transition: transform 0.3s;
+  border-radius: 10px;
+  border: 1px solid #21262d;
 }
 
-.team-preview:hover {
-  transform: scale(1.02);
-}
-
-/* === REDES SOCIAIS === */
+/* ── Redes Sociais ── */
 .social-group {
-  margin-top: 25px;
+  border-top: 1px solid #21262d;
+  padding-top: 16px;
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .social-group h3 {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 12px;
-  border-left: 3px solid crimson;
-  padding-left: 10px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #8b949e;
+  margin: 0 0 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-/* === BOTÃO CRIAR === */
+/* ── Botão criar ── */
 .btn-create {
-  background: linear-gradient(90deg, #ff1e1e, #a00000);
+  width: 100%;
+  background: #e60023;
   border: none;
-  padding: 14px;
+  padding: 13px;
   color: #fff;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 16px;
+  border-radius: 10px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 1px;
   cursor: pointer;
-  transition: all 0.25s ease;
-  margin-top: 15px;
-  letter-spacing: 0.5px;
+  transition: 0.18s ease;
+  margin-top: 6px;
 }
 
 .btn-create:hover {
-  transform: scale(1.04);
-  box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+  background: #c1001d;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(230,0,35,0.4);
 }
 
-/* === ANIMAÇÃO === */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* === RESPONSIVO === */
+/* ── Responsive ── */
 @media (max-width: 600px) {
-  .create-card {
-    padding: 28px 20px;
-    border-radius: 16px;
-  }
-
-  .form-title {
-    font-size: 22px;
-  }
-
-  .team-preview {
-    max-height: 160px;
-  }
+  .create-card { padding: 24px 18px; }
+  .form-title  { font-size: 1.3rem; }
 }

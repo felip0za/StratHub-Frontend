@@ -1,180 +1,279 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
 
-.campeonatos-page {
-  background-color: #0e0e0e;
-  color: #fff;
+.listar-page {
+  background: #080b10;
   min-height: 100vh;
-  font-family: 'Poppins', sans-serif;
+  color: #e6edf3;
+  font-family: 'DM Sans', sans-serif;
 }
 
-.campeonatos-header {
+/* ── Header ── */
+.listar-page-header {
+  background: #0d1117;
+  border-bottom: 1px solid #21262d;
+  padding: 0 5%;
+  position: relative;
+}
+.listar-page-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #e60023, transparent 60%);
+}
+.listar-page-header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 0;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 20px 10%;
-  background: linear-gradient(to right, #1b1b1b, #111);
-  box-shadow: 0 3px 8px rgba(255, 1, 1, 0.25); /* vermelho atualizado */
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
 }
-
-.campeonatos-header h1 {
-  font-size: 2rem;
-  font-weight: 600;
+.listar-page-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.9rem;
+  font-weight: 700;
+  letter-spacing: 1px;
   margin: 0;
 }
+.listar-page-subtitle { font-size: 0.82rem; color: #484f58; margin-top: 3px; }
 
-.header-buttons button {
-  margin-left: 15px;
-  padding: 10px 18px;
+.listar-page-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.btn-primary {
+  background: #e60023;
   border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: 'Poppins', sans-serif;
-}
-
-.btn-criar {
-  background-color: #ff0101; /* vermelho principal */
-  color: white;
-}
-
-.btn-criar:hover {
-  background-color: #c10001; /* hover mais escuro */
-}
-
-.btn-meus {
-  background-color: #292929;
   color: #fff;
-}
-
-.btn-meus:hover {
-  background-color: #3a3a3a;
-}
-
-.campeonatos-container {
-  max-width: 1600px;
-  margin: 40px auto;
-  padding: 0 20px;
-}
-
-.campo-pesquisa {
-  width: 100%;
-  padding: 12px 16px;
+  padding: 9px 18px;
   border-radius: 10px;
-  border: none;
-  background-color: #1a1a1a;
-  color: #fff;
-  font-size: 16px;
-  outline: none;
-  margin-bottom: 25px;
-  box-shadow: 0 0 0 2px transparent;
-  transition: box-shadow 0.3s ease;
-}
-
-.campo-pesquisa:focus {
-  box-shadow: 0 0 0 2px #ff0101;
-}
-
-/* === Tabela === */
-.tabela-container {
-  overflow-x: auto;
-  border-radius: 12px;
-  background-color: #111;
-  box-shadow: 0 0 12px rgba(255, 1, 1, 0.15);
-}
-
-.tabela-campeonatos {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 15px;
-}
-
-.tabela-campeonatos th,
-.tabela-campeonatos td {
-  text-align: left;
-  padding: 8px 12px;
-  font-size: 14px;
-}
-
-.campeonato-img {
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
-  border-radius: 6px;
-}
-
-.tabela-campeonatos thead {
-  background-color: #1a1a1a;
-  text-transform: uppercase;
-  font-size: 0.9rem;
-  letter-spacing: 1px;
-}
-
-.tabela-campeonatos tbody tr {
-  background-color: #181818;
-  border-bottom: 1px solid #2a2a2a;
-  transition: background 0.3s ease;
-}
-
-.tabela-campeonatos tbody tr:nth-child(even) {
-  background-color: #202020;
-}
-
-.tabela-campeonatos tbody tr:hover {
-  background-color: #2b2b2b;
-}
-
-.status-ativo {
-  color: #31d158;
-  font-weight: 600;
-}
-
-.status-em-andamento {
-  color: #f5a623;
-  font-weight: 600;
-}
-
-.status-finalizado {
-  color: #ff0101;
-  font-weight: 600;
-}
-
-.btn-info {
-  background-color: #ff0101;
-  color: #fff;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 6px;
   cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
   font-weight: 600;
-  transition: background 0.3s ease;
+  font-size: 0.85rem;
+  transition: 0.18s ease;
+}
+.btn-primary:hover { background: #c1001d; transform: translateY(-1px); }
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid #30363d;
+  color: #8b949e;
+  padding: 9px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: 0.18s ease;
+}
+.btn-ghost:hover { background: #1c2332; color: #e6edf3; }
+
+/* ── Body ── */
+.listar-body {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 28px 20px 64px;
 }
 
-.btn-info:hover {
-  background-color: #c10001;
-}
-
-.nenhum {
-  text-align: center;
-  color: #aaa;
-  padding: 20px;
-}
-
-.erro {
-  color: #ff0101;
-  text-align: center;
+.listar-error {
+  background: rgba(230,0,35,0.08);
+  border: 1px solid rgba(230,0,35,0.3);
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: #ff6b6b;
+  font-size: 0.875rem;
   margin-bottom: 20px;
 }
 
-@media (max-width: 768px) {
-  .campeonatos-header {
-    flex-direction: column;
-    gap: 15px;
-  }
+/* ── Search ── */
+.listar-search-wrap { position: relative; margin-bottom: 24px; }
+.listar-search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.9rem;
+  pointer-events: none;
+}
+.listar-search {
+  width: 100%;
+  padding: 12px 14px 12px 40px;
+  background: #0d1117;
+  border: 1px solid #21262d;
+  border-radius: 10px;
+  color: #e6edf3;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  transition: 0.18s ease;
+}
+.listar-search:focus { border-color: #e60023; box-shadow: 0 0 0 3px #e6002220; }
+.listar-search::placeholder { color: #484f58; }
 
-  .tabela-campeonatos th,
-  .tabela-campeonatos td {
-    padding: 10px;
-    font-size: 14px;
-  }
+/* ── Empty ── */
+.listar-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 80px 20px;
+  color: #484f58;
+  text-align: center;
+}
+.listar-empty-icon { font-size: 3.5rem; opacity: 0.3; }
+.listar-empty p    { font-size: 1rem; }
+
+/* ── Table ── */
+.listar-table-wrap {
+  background: #0d1117;
+  border: 1px solid #21262d;
+  border-radius: 16px;
+  overflow: hidden;
+  overflow-x: auto;
+}
+
+.listar-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  min-width: 800px;
+}
+
+.listar-table thead tr {
+  background: #161b22;
+  border-bottom: 1px solid #21262d;
+}
+
+.listar-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #484f58;
+  white-space: nowrap;
+}
+
+.listar-table tbody tr {
+  border-bottom: 1px solid #21262d;
+  transition: 0.18s ease;
+}
+.listar-table tbody tr:last-child { border-bottom: none; }
+.listar-table tbody tr:hover { background: #1c2332; }
+
+.listar-table td {
+  padding: 12px 16px;
+  color: #8b949e;
+  vertical-align: middle;
+}
+
+/* ── Camp Cell ── */
+.listar-camp-cell { display: flex; align-items: center; gap: 12px; }
+
+.listar-camp-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #161b22;
+  border: 1px solid #21262d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.3rem;
+}
+.listar-camp-img img { width: 100%; height: 100%; object-fit: cover; }
+
+.listar-camp-info { display: flex; flex-direction: column; gap: 2px; }
+.listar-camp-nome { font-weight: 700; color: #e6edf3; font-size: 0.875rem; }
+.listar-camp-desc { font-size: 0.72rem; color: #484f58; }
+
+/* ── Format Badge ── */
+.listar-format-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: #161b22;
+  border: 1px solid #21262d;
+  color: #8b949e;
+  white-space: nowrap;
+}
+
+/* ── Equipes ── */
+.listar-equipes-cell { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.listar-equipes-num  { font-family: 'Rajdhani', sans-serif; font-weight: 700; color: #e6edf3; font-size: 0.95rem; }
+.listar-equipes-max  { font-size: 0.72rem; color: #484f58; }
+
+.listar-equipes-bar {
+  width: 40px;
+  height: 4px;
+  background: #161b22;
+  border-radius: 99px;
+  overflow: hidden;
+}
+.listar-equipes-fill {
+  height: 100%;
+  background: #e60023;
+  border-radius: 99px;
+}
+
+/* ── Tipo Badge ── */
+.listar-tipo-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border: 1px solid;
+  white-space: nowrap;
+}
+.listar-tipo-badge.free { color: #10b981; background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.3); }
+.listar-tipo-badge.paid { color: #f87171; background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3); }
+
+/* ── Valor / Data ── */
+.listar-valor { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.9rem; color: #e6edf3; }
+.listar-data  { font-size: 0.82rem; color: #8b949e; }
+
+/* ── Status Badge ── */
+.listar-status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+.listar-status-badge.aberto       { background: rgba(16,185,129,0.1); color: #10b981; }
+.listar-status-badge.em_andamento { background: rgba(245,158,11,0.1);  color: #f59e0b; }
+.listar-status-badge.fechado      { background: rgba(239,68,68,0.1);   color: #ef4444; }
+
+/* ── Editar Button ── */
+.listar-btn-editar {
+  background: transparent;
+  border: 1px solid #30363d;
+  color: #8b949e;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: 0.18s ease;
+}
+.listar-btn-editar:hover { background: #e60023; border-color: #e60023; color: #fff; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .listar-page-header-inner { flex-direction: column; align-items: flex-start; }
+  .listar-page-actions { width: 100%; }
 }

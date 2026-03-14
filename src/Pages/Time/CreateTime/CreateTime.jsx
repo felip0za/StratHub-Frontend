@@ -6,32 +6,25 @@ import { useApi } from '../../../Services/API';
 import { useAuth } from '../../../contexts/AuthContext';
 
 const CreateTime = () => {
-  const [apelidoTime, setApelidoTime] = useState('');
-  const [nmTime, setNmTime] = useState('');
-  const [teDescricao, setTeDescricao] = useState('');
+  const [apelidoTime, setApelidoTime]     = useState('');
+  const [nmTime, setNmTime]               = useState('');
+  const [teDescricao, setTeDescricao]     = useState('');
   const [teImagemBase64, setTeImagemBase64] = useState('');
-  const [instagram, setInstagram] = useState('');
-  const [discord, setDiscord] = useState('');
-  const [twitter, setTwitter] = useState('');
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
-  const api = useApi();
+  const [instagram, setInstagram]         = useState('');
+  const [discord, setDiscord]             = useState('');
+  const [twitter, setTwitter]             = useState('');
+  const [error, setError]                 = useState('');
+
+  const navigate  = useNavigate();
+  const api       = useApi();
   const { userId } = useAuth();
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-      setError('Selecione um arquivo de imagem válido.');
-      return;
-    }
-
+    if (!file.type.startsWith('image/')) { setError('Selecione um arquivo de imagem válido.'); return; }
     const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64String = reader.result.split(',')[1];
-      setTeImagemBase64(base64String);
-    };
+    reader.onloadend = () => setTeImagemBase64(reader.result.split(',')[1]);
     reader.readAsDataURL(file);
   };
 
@@ -43,26 +36,22 @@ const CreateTime = () => {
       setError('⚠️ Preencha todos os campos obrigatórios e envie uma imagem.');
       return;
     }
-
-    if (!userId) {
-      setError('Usuário não autenticado.');
-      return;
-    }
+    if (!userId) { setError('Usuário não autenticado.'); return; }
 
     try {
       const novoTime = {
-        nome: nmTime,
-        descricao: teDescricao,
+        nome:        nmTime,
+        descricao:   teDescricao,
         imagemBase64: teImagemBase64,
-        id_criador: parseInt(userId, 10),
-        apelido: apelidoTime,
-        instagram: instagram || null,
-        discord: discord || null,
-        twitter: twitter || null,
+        id_criador:  parseInt(userId, 10),
+        apelido:     apelidoTime,
+        instagram:   instagram || null,
+        discord:     discord   || null,
+        twitter:     twitter   || null,
       };
 
       const response = await api.post('/times', novoTime);
-      const timeId = response.data.id_time || response.data.id;
+      const timeId   = response.data.id_time || response.data.id;
 
       if (timeId) {
         alert('✅ Time criado com sucesso!');
@@ -82,37 +71,39 @@ const CreateTime = () => {
       <div className="create-time-page">
         <div className="create-card">
           <h1 className="form-title">🏆 Criar Novo Time</h1>
+
           {error && <div className="error-box">{error}</div>}
 
           <form onSubmit={handleSubmit} className="team-form">
+
             <div className="form-group">
-              <label>Nome do Time</label>
+              <label>Nome do Time *</label>
               <input
                 type="text"
                 value={nmTime}
-                onChange={(e) => setNmTime(e.target.value)}
+                onChange={e => setNmTime(e.target.value)}
                 required
                 placeholder="Ex: The Dragons Fury"
               />
             </div>
 
             <div className="form-group">
-              <label>Descrição</label>
+              <label>Descrição *</label>
               <textarea
                 value={teDescricao}
-                onChange={(e) => setTeDescricao(e.target.value)}
+                onChange={e => setTeDescricao(e.target.value)}
                 required
                 placeholder="Fale um pouco sobre o time..."
-                rows="4"
+                rows={4}
               />
             </div>
 
             <div className="form-group">
-              <label>Apelido / Tag</label>
+              <label>Apelido / Tag *</label>
               <input
                 type="text"
                 value={apelidoTime}
-                onChange={(e) => setApelidoTime(e.target.value.slice(0, 5).toUpperCase())}
+                onChange={e => setApelidoTime(e.target.value.slice(0, 5).toUpperCase())}
                 maxLength={5}
                 required
                 placeholder="Ex: TDF"
@@ -121,7 +112,7 @@ const CreateTime = () => {
             </div>
 
             <div className="form-group">
-              <label>Imagem do Time</label>
+              <label>Imagem do Time *</label>
               <input type="file" accept="image/*" onChange={handleImageChange} required />
               {teImagemBase64 && (
                 <div className="preview-box">
@@ -139,19 +130,19 @@ const CreateTime = () => {
               <input
                 type="url"
                 value={instagram}
-                onChange={(e) => setInstagram(e.target.value)}
+                onChange={e => setInstagram(e.target.value)}
                 placeholder="Instagram (https://instagram.com/seutime)"
               />
               <input
                 type="url"
                 value={discord}
-                onChange={(e) => setDiscord(e.target.value)}
+                onChange={e => setDiscord(e.target.value)}
                 placeholder="Discord (https://discord.gg/seutime)"
               />
               <input
                 type="url"
                 value={twitter}
-                onChange={(e) => setTwitter(e.target.value)}
+                onChange={e => setTwitter(e.target.value)}
                 placeholder="Twitter (https://twitter.com/seutime)"
               />
             </div>
