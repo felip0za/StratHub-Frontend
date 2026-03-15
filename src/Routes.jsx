@@ -3,7 +3,6 @@ import { Routes, Route } from 'react-router-dom';
 import PrivateRoute from './Components/PrivateRoute/PrivateRoute';
 import Login from './Pages/Login/Login';
 import Cadastro from './Pages/Cadastro/Cadastro';
-import Chatbox from './Pages/Chatbox/Chatbox';
 import User from './Pages/Usuario/User/User';
 import Times from './Pages/Time/Times/Times';
 import CreateTime from './Pages/Time/CreateTime/CreateTime';
@@ -26,11 +25,6 @@ function MainRoutes() {
       <Route path='/' element={<Landpage />} />
       <Route path='/login' element={<Login />} />
       <Route path='/cadastro' element={<Cadastro />} />
-      <Route path='/chatbox' element={
-        <PrivateRoute>
-          <Chatbox />
-        </PrivateRoute>
-      } />
       
       <Route path='/usuario/:id' element={
         <PrivateRoute>

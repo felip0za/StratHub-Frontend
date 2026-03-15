@@ -7,23 +7,22 @@ import StratHubLogo from "/src/assets/StratHub.png";
 import "./Login.css";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
-  const [error, setError] = useState("");
+  const [email, setEmail]       = useState("");
+  const [senha, setSenha]       = useState("");
+  const [error, setError]       = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
   const navigate = useNavigate();
-  const api = useApi();
+  const api      = useApi();
   const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
-
     try {
       const response = await api.post("/usuario/login", { email, senha });
       const dados = response.data;
-
       if (dados.token && dados.id) {
         login(dados);
         navigate("/usuario/" + dados.id);
@@ -41,7 +40,7 @@ const Login = () => {
 
   return (
     <div className="login-page">
-      <div className="background-overlay"></div>
+      <div className="background-overlay" />
 
       <div className="login-card">
         <img src={StratHubLogo} alt="StratHub" className="login-logo" />
@@ -57,7 +56,7 @@ const Login = () => {
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
               placeholder="seu@email.com"
               required
             />
@@ -68,15 +67,13 @@ const Login = () => {
             <input
               type="password"
               value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-              placeholder="********"
+              onChange={e => setSenha(e.target.value)}
+              placeholder="••••••••"
               required
             />
           </div>
 
-          <button type="submit" className="login-btn">
-            Entrar
-          </button>
+          <button type="submit" className="login-btn">Entrar</button>
         </form>
 
         <div className="divider">ou</div>

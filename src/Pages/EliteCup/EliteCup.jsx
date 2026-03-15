@@ -1,42 +1,35 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // ✅ import adicionado
+import { useNavigate } from 'react-router-dom';
 import { useApi } from '../../Services/API';
 import Navbar from '../../Components/Navbar/Navbar';
 import LoadingScreen from '../../Components/LoadingScreen/LoadingScreen';
 
-import ferro from '../../assets/ferro.png';
-import bronze from '../../assets/bronze.png';
-import prata from '../../assets/prata.png';
-import ouro from '../../assets/ouro.png';
-import platina from '../../assets/platina.png';
+import ferro      from '../../assets/ferro.png';
+import bronze     from '../../assets/bronze.png';
+import prata      from '../../assets/prata.png';
+import ouro       from '../../assets/ouro.png';
+import platina    from '../../assets/platina.png';
 import challenger from '../../assets/challenger.png';
-import master from '../../assets/master.png';
+import master     from '../../assets/master.png';
 
 import './EliteCup.css';
 
+const RANK_IMAGE = {
+  FERRO: ferro, BRONZE: bronze, PRATA: prata, OURO: ouro,
+  PLATINA: platina, CHALLENGER: challenger, MASTER: master,
+};
+
 function EliteCup() {
-  const [times, setTimes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [times, setTimes]                   = useState([]);
+  const [loading, setLoading]               = useState(true);
+  const [error, setError]                   = useState('');
   const [rankSelecionado, setRankSelecionado] = useState('');
-  const [meuTime, setMeuTime] = useState(null);
+  const [meuTime, setMeuTime]               = useState(null);
 
-  const api = useApi();
-  const navigate = useNavigate(); // ✅ hook adicionado
+  const api      = useApi();
+  const navigate = useNavigate();
 
-  const handleClickTeam = (timeId) => {
-    navigate(`/timesprofile/${timeId}`); // ✅ redireciona para o perfil do time
-  };
-  
-  const rankToImage = {
-    FERRO: ferro,
-    BRONZE: bronze,
-    PRATA: prata,
-    OURO: ouro,
-    PLATINA: platina,
-    CHALLENGER: challenger,
-    MASTER: master,
-  };
+  const handleClickTeam = (timeId) => navigate(`/times/${timeId}`);
 
   useEffect(() => {
     let intervalo;
@@ -44,13 +37,12 @@ function EliteCup() {
 
     const buscarDados = async (exibirLoading = false) => {
       if (!mounted) return;
-
       try {
         if (exibirLoading) setLoading(true);
         setError('');
 
         const resUsuario = await api.get('/times/usuario');
-        let usuarioTime = resUsuario.data;
+        let usuarioTime  = resUsuario.data;
 
         if (!usuarioTime) {
           setError('Você não possui um time.');
@@ -84,106 +76,80 @@ function EliteCup() {
         }
 
         const listaTimes = resTimes.data
-          .map((t) => ({ ...t, ehMeuTime: t.id === usuarioTime.id }))
+          .map(t => ({ ...t, ehMeuTime: t.id === usuarioTime.id }))
           .sort((a, b) => b.pontuacao - a.pontuacao);
 
         if (!mounted) return;
         setTimes(listaTimes);
       } catch (err) {
         if (!mounted) return;
-        const mensagem =
-          err.response?.data?.message ||
-          err.message ||
-          'Erro ao carregar o ranking.';
-        setError(mensagem);
+        setError(err.response?.data?.message || err.message || 'Erro ao carregar o ranking.');
       } finally {
         if (mounted && exibirLoading) setLoading(false);
       }
     };
 
     buscarDados(true);
-
-    intervalo = setInterval(() => {
-      buscarDados(false);
-    }, 10000);
-
-    return () => {
-      mounted = false;
-      clearInterval(intervalo);
-    };
+    intervalo = setInterval(() => { buscarDados(false); }, 10000);
+    return () => { mounted = false; clearInterval(intervalo); };
   }, [api]);
 
   useEffect(() => {
     if (meuTime) {
-      const meuTimeCard = document.querySelector('.meu-time');
-      if (meuTimeCard) {
-        meuTimeCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+      document.querySelector('.meu-time')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }, [meuTime, times]);
 
-  if (loading)
-    return (
-      <>
-        <Navbar />
-        <LoadingScreen />
-      </>
-    );
+  if (loading) return <><Navbar /><LoadingScreen /></>;
 
-  if (error)
-    return (
-      <>
-        <Navbar />
-        <div className="container">
-          <p className="error-message">{error}</p>
-        </div>
-      </>
-    );
+  if (error) return (
+    <>
+      <Navbar />
+      <div className="container">
+        <p className="error-message">{error}</p>
+      </div>
+    </>
+  );
 
-  const timePontuacao = meuTime?.pontuacao || 0;
-
-  const getRankInfo = (pontuacao) => {
-    if (pontuacao < 800) {
-      return { pontuacaoAtual: pontuacao, pontuacaoProximo: 800 };
-    }
-    return { pontuacaoAtual: pontuacao, pontuacaoProximo: null };
-  };
-
-  const rankInfo = getRankInfo(timePontuacao);
-  const progresso = rankInfo.pontuacaoProximo
-    ? Math.min(100, (rankInfo.pontuacaoAtual / rankInfo.pontuacaoProximo) * 100).toFixed(1)
+  const timePontuacao  = meuTime?.pontuacao || 0;
+  const pontuacaoProximo = timePontuacao < 800 ? 800 : null;
+  const progresso = pontuacaoProximo
+    ? Math.min(100, (timePontuacao / pontuacaoProximo) * 100).toFixed(1)
     : 100;
 
-  const rankImage = meuTime?.rank ? rankToImage[meuTime.rank.toUpperCase()] : null;
+  const rankImage = meuTime?.rank ? RANK_IMAGE[meuTime.rank.toUpperCase()] : null;
 
   return (
     <>
       <Navbar />
       <div className="ranking-wrapper">
+
+        {/* ── Tabela ── */}
         <div className="ranking-container">
-          <h1 className="ranking-title">ELITE CUP - {rankSelecionado}</h1>
+          <h1 className="ranking-title">Elite Cup — {rankSelecionado}</h1>
+
           <div className="ranking-header">
-            <span>Posição</span>
+            <span>Pos.</span>
             <span>Logo</span>
             <span>Time</span>
             <span>Pontos</span>
-            <span>Vitórias</span>
-            <span>Derrotas</span>
+            <span>V</span>
+            <span>D</span>
             <span>Status</span>
           </div>
+
           <div className="ranking-list">
             {times.map((time, index) => {
               const classificado = time.pontuacao >= 800;
-              const imagemTime = time.imagemBase64
+              const imagemTime   = time.imagemBase64
                 ? `data:image/*;base64,${time.imagemBase64}`
-                : "/default-team.png";
+                : '/default-team.png';
 
               return (
                 <div
                   key={time.id}
                   className={`ranking-card ${time.ehMeuTime ? 'meu-time' : ''}`}
-                  onClick={() => handleClickTeam(time.id)} // ✅ clique redireciona para perfil do time
-                  style={{ cursor: 'pointer' }} // ✅ visual de clique
+                  onClick={() => handleClickTeam(time.id)}
                 >
                   <span className="rank-position">#{index + 1}</span>
                   <span className="rank-logo">
@@ -202,6 +168,7 @@ function EliteCup() {
           </div>
         </div>
 
+        {/* ── Rank Sidebar ── */}
         {meuTime && (
           <div className="rank-box">
             {rankImage && <img src={rankImage} alt={`Rank ${meuTime.rank}`} className="rank-icon" />}
@@ -209,18 +176,17 @@ function EliteCup() {
 
             <div className="rank-progress-container">
               <div className="rank-progress-bar">
-                <div className="rank-progress-fill" style={{ width: `${progresso}%` }}></div>
+                <div className="rank-progress-fill" style={{ width: `${progresso}%` }} />
               </div>
-              {rankInfo.pontuacaoProximo ? (
-                <span className="progress-text">
-                  {rankInfo.pontuacaoAtual} / {rankInfo.pontuacaoProximo} PONTOS
-                </span>
+              {pontuacaoProximo ? (
+                <span className="progress-text">{timePontuacao} / {pontuacaoProximo} pts</span>
               ) : (
-                <span className="classified-text">Classificado</span>
+                <span className="classified-text">✓ Classificado</span>
               )}
             </div>
           </div>
         )}
+
       </div>
     </>
   );

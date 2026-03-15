@@ -1,163 +1,203 @@
-@import url('https://fonts.cdnfonts.com/css/akira-expanded');
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
 
-/* ===== CONTAINER PRINCIPAL ===== */
+/* ── Page ── */
 .login-page {
-  height: 100vh;
+  min-height: 100vh;
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
+  background: #080b10;
+  font-family: 'DM Sans', sans-serif;
   position: relative;
-  background: linear-gradient(120deg, #0a0a0a, #1a0000, #0a0a0a);
-  background-size: 300% 300%;
-  animation: moveBg 10s ease infinite;
+  overflow: hidden;
 }
 
-@keyframes moveBg {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+/* fundo decorativo */
+.login-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(230,0,35,0.12) 0%, transparent 65%);
+  pointer-events: none;
 }
 
 .background-overlay {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at center, rgba(255,0,0,0.15), transparent 70%);
-  animation: pulse 6s ease-in-out infinite alternate;
+  background: radial-gradient(circle at center, rgba(230,0,35,0.06), transparent 70%);
+  animation: loginPulse 6s ease-in-out infinite alternate;
+  pointer-events: none;
 }
 
-@keyframes pulse {
-  from { opacity: 0.3; }
-  to { opacity: 0.7; }
+@keyframes loginPulse {
+  from { opacity: 0.4; }
+  to   { opacity: 1; }
 }
 
-/* ===== CARD DE LOGIN ===== */
+/* ── Card ── */
 .login-card {
   position: relative;
   z-index: 2;
-  background: rgba(20, 20, 20, 0.85);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: #0d1117;
+  border: 1px solid #21262d;
   border-radius: 20px;
-  padding: 50px;
-  width: 380px;
+  padding: 44px 40px;
+  width: 100%;
+  max-width: 400px;
   text-align: center;
-  box-shadow: 0 0 30px rgba(255, 0, 0, 0.1);
-  transition: transform var(--transition);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+  animation: loginCardIn 0.3s ease;
 }
 
-.login-card:hover {
-  transform: translateY(-5px);
+.login-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: 20px 20px 0 0;
+  background: linear-gradient(90deg, #e60023, #ff6b35, #e60023);
 }
 
-/* ===== LOGO ===== */
+@keyframes loginCardIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Logo ── */
 .login-logo {
-  width: 120px;
+  width: 110px;
   margin-bottom: 20px;
 }
 
-/* ===== TEXTOS ===== */
-h2 {
-  color: white;
-  font-family: 'Akira Expanded', sans-serif;
+/* ── Textos ── */
+.login-card h2 {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 700;
   letter-spacing: 1px;
+  color: #e6edf3;
+  margin: 0 0 6px;
 }
 
-.subtitle {
-  color: var(--gray);
-  margin-bottom: 30px;
-  font-size: 0.95rem;
+.login-card .subtitle {
+  color: #484f58;
+  font-size: 0.83rem;
+  margin: 0 0 24px;
 }
 
-.error {
-  color: #ff4c4c;
-  background: rgba(255,0,0,0.1);
-  padding: 10px;
+/* ── Error ── */
+.login-card .error {
+  color: #ff6b6b;
+  background: rgba(230,0,35,0.08);
+  border: 1px solid rgba(230,0,35,0.25);
+  padding: 10px 14px;
   border-radius: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
+  font-size: 0.83rem;
+  font-weight: 600;
 }
 
-/* ===== FORM ===== */
+/* ── Input Group ── */
 .input-group {
   display: flex;
   flex-direction: column;
   text-align: left;
-  margin-bottom: 20px;
+  margin-bottom: 14px;
+  gap: 5px;
 }
 
 .input-group label {
-  color: var(--gray);
-  font-size: 0.9rem;
-  margin-bottom: 5px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  color: #8b949e;
 }
 
 .input-group input {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.2);
-  color: white;
-  padding: 12px 15px;
+  background: #161b22;
+  border: 1px solid #21262d;
+  color: #e6edf3;
+  padding: 11px 13px;
   border-radius: 10px;
-  transition: var(--transition);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem;
+  outline: none;
+  transition: 0.18s ease;
 }
+
+.input-group input::placeholder { color: #484f58; }
 
 .input-group input:focus {
-  border-color: var(--red);
-  box-shadow: 0 0 10px rgba(255,0,0,0.4);
-  outline: none;
+  border-color: #e60023;
+  box-shadow: 0 0 0 3px rgba(230,0,35,0.12);
 }
 
-/* ===== BOTÕES ===== */
-.login-btn, .signup-btn {
+/* ── Buttons ── */
+.login-btn {
   width: 100%;
   padding: 12px;
+  background: #e60023;
   border: none;
   border-radius: 10px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition);
+  color: #fff;
+  font-family: 'Rajdhani', sans-serif;
   font-size: 1rem;
-}
-
-.login-btn {
-  background: var(--red);
-  color: white;
-  margin-top: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: 0.18s ease;
+  margin-top: 6px;
 }
 
 .login-btn:hover {
-  background: #b80000;
+  background: #c1001d;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(230,0,35,0.4);
 }
 
 .signup-btn {
+  width: 100%;
+  padding: 12px;
   background: transparent;
-  border: 1px solid var(--red);
-  color: var(--red);
+  border: 1px solid #30363d;
+  border-radius: 10px;
+  color: #8b949e;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.18s ease;
 }
 
 .signup-btn:hover {
-  background: var(--red);
-  color: white;
+  background: #161b22;
+  border-color: #e60023;
+  color: #e6edf3;
 }
 
+/* ── Divider ── */
 .divider {
-  margin: 20px 0;
-  color: var(--gray);
-  font-size: 0.85rem;
+  margin: 16px 0;
+  color: #30363d;
+  font-size: 0.78rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-/* ===== RESPONSIVIDADE ===== */
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #21262d;
+}
+
+/* ── Responsive ── */
 @media (max-width: 480px) {
-  .login-card {
-    width: 90%;
-    padding: 35px;
-  }
-
-  .login-logo {
-    width: 100px;
-  }
-
-  h2 {
-    font-size: 1.4rem;
-  }
+  .login-card { padding: 32px 22px; max-width: 95%; }
+  .login-card h2 { font-size: 1.35rem; }
 }

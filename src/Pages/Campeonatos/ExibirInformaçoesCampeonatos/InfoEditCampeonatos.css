@@ -3,6 +3,7 @@
 /* ═══════════════════════════════════════════
    RESET & BASE
 ═══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 .page-wrapper {
   background: #080b10;
@@ -683,114 +684,6 @@
 .empty-bracket-icon { font-size: 3rem; opacity: 0.4; }
 .empty-bracket p { color: #484f58; font-size: 0.9rem; }
 
-.bracket-container {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.bracket-round {
-  background: #0d1117;
-  border: 1px solid #21262d;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.bracket-round-label {
-  padding: 10px 18px;
-  background: linear-gradient(135deg, rgba(230,0,35,0.08), transparent);
-  border-bottom: 1px solid #21262d;
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: #e60023;
-}
-
-.bracket-matches {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 12px;
-  padding: 14px;
-}
-
-.bracket-match {
-  background: #161b22;
-  border: 1px solid #21262d;
-  border-radius: 10px;
-  overflow: hidden;
-  transition: 0.18s ease;
-}
-
-.bracket-match:hover { border-color: #30363d; }
-
-.bracket-match.ao-vivo {
-  border-color: rgba(16,185,129,0.5);
-  box-shadow: 0 0 16px rgba(16,185,129,0.12);
-}
-
-.bracket-match.finalizada { opacity: 0.85; }
-
-.bracket-match-time { cursor: pointer; }
-
-.bm-team {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 11px 14px;
-  transition: 0.18s ease;
-}
-
-.bm-team.bm-winner { background: rgba(16,185,129,0.07); }
-.bm-team.bm-loser  { opacity: 0.5; }
-
-.bm-team img {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1.5px solid #21262d;
-}
-
-.bm-team span:nth-child(2) {
-  flex: 1;
-  font-size: 0.83rem;
-  font-weight: 600;
-  color: #e6edf3;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.bm-score {
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: #8b949e;
-  min-width: 24px;
-  text-align: center;
-}
-
-.score-win { color: #00ff88; }
-
-.bm-divider {
-  height: 1px;
-  background: #21262d;
-  margin: 0 14px;
-}
-
-.bracket-match-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 7px 12px;
-  border-top: 1px solid #21262d;
-  background: rgba(0,0,0,0.1);
-}
-
-.bm-date { font-size: 10.5px; color: #484f58; }
-
 /* ═══════════════════════════════════════════
    MODAL
 ═══════════════════════════════════════════ */
@@ -1057,7 +950,6 @@
   .hero-actions { flex-direction: row; padding: 16px; }
   .main-tabs { width: 100%; }
   .main-tab { flex: 1; padding: 10px; font-size: 0.85rem; }
-  .bracket-matches { grid-template-columns: 1fr; }
   .agendar-grid { grid-template-columns: 1fr; }
   .agendar-grid .modal-field { padding-left: 0 !important; padding-right: 0 !important; }
 }
@@ -1067,4 +959,376 @@
   .grupos-container { grid-template-columns: 1fr; }
   .hero-stats { gap: 0; }
   .stat-item { min-width: auto; }
+}
+
+/* ═══════════════════════════════════════════
+   TOPBAR / BOTÃO VOLTAR
+═══════════════════════════════════════════ */
+.page-topbar {
+  display: flex;
+  align-items: center;
+}
+
+.btn-voltar-topo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid #30363d;
+  color: #8b949e;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.83rem;
+  cursor: pointer;
+  transition: 0.18s ease;
+}
+
+.btn-voltar-topo:hover {
+  background: #1c2332;
+  color: #e6edf3;
+  border-color: #8b949e;
+  transform: translateX(-2px);
+}
+
+/* ── Playoffs agendar row ── */
+.playoffs-agendar-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 0 2px;
+}
+
+
+/* ═══════════════════════════════════════════
+   BRACKET HORIZONTAL — sistema CSS puro
+   Linhas desenhadas com ::before/::after.
+   Sem SVG.
+
+   Estrutura:
+   bp-scroll > bp-wrap > bp-round > bp-col >
+   bp-pair > bp-pair-slot > bp-card
+═══════════════════════════════════════════ */
+
+.bp-scroll {
+  --bp-conn: 40px;   /* ← comprimento dos pauzinhos */
+  overflow-x: auto;
+  padding-bottom: 16px;
+  scrollbar-width: thin;
+  scrollbar-color: #e60023 transparent;
+}
+.bp-scroll::-webkit-scrollbar       { height: 4px; }
+.bp-scroll::-webkit-scrollbar-thumb { background: #e60023; border-radius: 4px; }
+
+/* ── Linha principal ── */
+.bp-wrap {
+  display: flex;
+  align-items: stretch;
+  min-width: max-content;
+  padding: 4px 4px 8px;
+}
+
+/* ── Coluna de uma rodada ── */
+.bp-round {
+  display: flex;
+  flex-direction: column;
+  width: 220px;
+  flex-shrink: 0;
+}
+
+/* Espaço entre colunas (onde as linhas moram) */
+.bp-round + .bp-round { margin-left: calc(var(--bp-conn) * 2); }
+
+/* ── Label da rodada ── */
+.bp-round-label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: #e60023;
+  text-align: center;
+  margin-bottom: 12px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Coluna de pares ── */
+.bp-col {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: space-around; /* distribui pares igualmente no eixo vertical */
+}
+
+/* ── Par de cards ── */
+.bp-pair {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  position: relative;
+  gap: 8px;       /* espaço entre as duas boxes dentro do par */
+}
+.bp-pair + .bp-pair { margin-top: 32px; }
+
+/* ── Slot dentro do par ── */
+.bp-pair-slot {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+/* Linha horizontal saindo do card à direita (ambos os slots) */
+.bp-pair-double .bp-pair-slot::after {
+  content: '';
+  position: absolute;
+  right: calc(var(--bp-conn) * -1);
+  top: 50%;
+  width: var(--bp-conn);
+  height: 1.5px;
+  background: #30363d;
+}
+
+/* Linha vertical — conecta o centro do slot superior ao centro do slot inferior.
+   Usa gap de 8px (mesmo do .bp-pair { gap: 8px }).
+   A linha começa em top: 50% do primeiro slot e termina em 50% do segundo.
+   Com 2 slots de flex: 1 + gap de 8px, cada slot ocupa (100% - 8px) / 2.
+   Centro do slot 1: (100% - 8px) / 4  →  calc(25% - 2px)
+   Centro do slot 2: (100% - 8px) / 4 * 3 + 8px  →  calc(75% + 2px)
+   Portanto: top = calc(25% - 2px), height = calc(50% + 4px)              */
+.bp-pair-double::before {
+  content: '';
+  position: absolute;
+  right: calc(var(--bp-conn) * -1);
+  top: calc(25% - 2px);
+  height: calc(50% + 4px);
+  width: 1.5px;
+  background: #30363d;
+}
+
+/* Linha horizontal entrando no card da esquerda (Semis e Final) */
+.bp-pair-single .bp-pair-slot::before {
+  content: '';
+  position: absolute;
+  left: calc(var(--bp-conn) * -1);
+  top: 50%;
+  width: var(--bp-conn);
+  height: 1.5px;
+  background: #30363d;
+}
+
+/* bp-pair-single ocupa o mesmo espaço vertical que um bp-pair-double
+   para que a linha de entrada fique centrada */
+.bp-pair-single {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Primeira coluna (Quartas) não tem linha de entrada */
+.bp-round-first .bp-pair-slot::before { display: none; }
+
+/* ── Card de partida ── */
+.bp-card {
+  background: #0d1117;
+  border: 1px solid #21262d;
+  border-radius: 8px;
+  overflow: hidden;
+  width: 100%;
+  transition: border-color 0.18s ease;
+  cursor: pointer;
+}
+.bp-card:hover    { border-color: #30363d; }
+.bp-card.bp-vivo  { border-color: rgba(16,185,129,.5); box-shadow: 0 0 10px rgba(16,185,129,.08); }
+.bp-card.bp-enc   { opacity: 0.85; }
+.bp-card.bp-empty { opacity: 0.35; pointer-events: none; cursor: default; }
+
+/* ── Slot de cada time ── */
+.bp-slot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  transition: background 0.15s ease;
+  min-height: 32px;
+}
+.bp-slot.bp-win  { background: rgba(16,185,129,.07); }
+.bp-slot.bp-lose { opacity: 0.4; }
+
+/* ── Logo ── */
+.bp-logo {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid #21262d;
+}
+
+/* ── Nome ── */
+.bp-nome {
+  flex: 1;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #e6edf3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bp-nome-empty { color: #484f58; font-weight: 400; }
+
+/* ── Score ── */
+.bp-score {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #484f58;
+  min-width: 16px;
+  text-align: right;
+  flex-shrink: 0;
+}
+.bp-score-empty        { color: #30363d; }
+.bp-score.bp-score-win { color: #10b981; }
+
+/* ── Divisor ── */
+.bp-divider { height: 1px; background: #21262d; }
+
+/* ── Footer ── */
+.bp-footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px 5px;
+  border-top: 1px solid #21262d;
+  background: rgba(0,0,0,.12);
+}
+.bp-date { font-size: 0.62rem; color: #484f58; flex: 1; }
+
+.bp-badge {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: 20px;
+  border: 1px solid;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+}
+.bp-badge-vivo { color: #10b981; border-color: rgba(16,185,129,.35); }
+.bp-badge-enc  { color: #484f58; border-color: #21262d; }
+
+.bp-edit-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.65rem;
+  padding: 1px 3px;
+  opacity: 0.5;
+  transition: opacity 0.15s;
+  flex-shrink: 0;
+}
+.bp-edit-btn:hover { opacity: 1; }
+
+/* ── 3º Lugar ── */
+.bp-terceiro {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px dashed #21262d;
+  width: 220px;
+}
+
+/* ── Live dot ── */
+.bp-live-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #10b981;
+  display: inline-block;
+  animation: bpLivePulse 1.2s infinite;
+}
+@keyframes bpLivePulse {
+  0%,100% { opacity: 1; }
+  50%      { opacity: 0.2; }
+}
+
+/* ── Coluna do Campeão ── */
+.bp-round-campeon {
+  margin-left: calc(var(--bp-conn) * 2); /* mesmo gap das outras colunas */
+}
+
+.bp-campeon-box {
+  width: 180px;
+  background: #0d1117;
+  border: 1px solid #21262d;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 14px;
+  text-align: center;
+  transition: 0.18s ease;
+  min-height: 88px;
+}
+
+.bp-campeon-definido {
+  border-color: rgba(241,196,15,.45);
+  background: linear-gradient(160deg, #0d1117 60%, rgba(241,196,15,.05));
+  box-shadow: 0 0 20px rgba(241,196,15,.08);
+}
+
+.bp-campeon-trophy {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.bp-campeon-trophy-empty {
+  opacity: 0.2;
+  font-size: 1.2rem;
+}
+
+.bp-campeon-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(241,196,15,.4);
+}
+
+.bp-campeon-nome {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #f1c40f;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 150px;
+}
+
+.bp-campeon-vazio {
+  color: #30363d;
+  font-weight: 400;
+  font-size: 0.75rem;
+}
+
+/* linha de entrada da box do campeão */
+.bp-round-campeon .bp-pair-slot::before {
+  content: '';
+  position: absolute;
+  left: calc(var(--bp-conn) * -1);
+  top: 50%;
+  width: var(--bp-conn);
+  height: 1.5px;
+  background: #30363d;
 }

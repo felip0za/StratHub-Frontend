@@ -1,199 +1,287 @@
-@import url('https://fonts.cdnfonts.com/css/akira-expanded');
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
 
-:root {
-  --red: #ff0000;
-  --dark: #0a0a0a;
-  --gray: #c7c7c7;
-  --transition: 0.3s ease;
-}
-
-/* Reset e base */
-body, html {
-  margin: 0;
-  padding: 0;
-  background-color: var(--dark);
-  font-family: 'Inter', sans-serif;
-  overflow-x: hidden;
-}
-
-/* ===== CONTAINER PRINCIPAL ===== */
+/* ── Page ── */
 .landing {
   position: relative;
-  height: 100vh;
+  min-height: 100vh;
   width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  color: white;
-  background: linear-gradient(120deg, #080808, #1a0000, #141414);
-  background-size: 300% 300%;
-  animation: gradientMove 10s ease infinite;
+  background: #080b10;
+  font-family: 'DM Sans', sans-serif;
+  color: #e6edf3;
   overflow: hidden;
 }
 
-@keyframes gradientMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+/* glow decorativo no topo */
+.landing::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #e60023, #ff6b35, #e60023);
+  z-index: 3;
 }
 
-/* ===== EFEITO SUAVE DE LUZ ===== */
+/* radial glow de fundo */
 .landing-overlay {
   position: absolute;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle at center, rgba(255, 0, 0, 0.1), transparent 70%);
-  animation: pulse 6s ease-in-out infinite alternate;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% -10%, rgba(230,0,35,0.18) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+  animation: lpGlow 6s ease-in-out infinite alternate;
+}
+
+@keyframes lpGlow {
+  from { opacity: 0.5; }
+  to   { opacity: 1; }
+}
+
+/* grade sutil de fundo */
+.landing-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(230,0,35,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(230,0,35,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
   z-index: 0;
 }
 
-@keyframes pulse {
-  from { opacity: 0.3; }
-  to { opacity: 0.7; }
-}
-
-/* ===== NAVBAR ===== */
-.navbar {
+/* ── Navbar ── */
+.lp-navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 25px 60px;
+  padding: 20px 48px;
   position: relative;
   z-index: 2;
+  border-bottom: 1px solid #21262d;
+  background: rgba(8,11,16,0.7);
+  backdrop-filter: blur(10px);
 }
 
-.logo {
-  width: 120px;
+.lp-logo {
+  width: 110px;
   height: auto;
   object-fit: contain;
   cursor: pointer;
-  transition: transform var(--transition);
+  transition: 0.18s ease;
 }
 
-.logo:hover {
-  transform: scale(1.05);
-}
+.lp-logo:hover { opacity: 0.85; }
 
-.nav-btn {
+.lp-nav-actions { display: flex; align-items: center; gap: 10px; }
+
+.lp-btn-ghost {
   background: transparent;
-  border: 2px solid var(--red);
-  color: var(--red);
-  font-weight: bold;
-  padding: 10px 25px;
-  border-radius: 30px;
+  border: 1px solid #30363d;
+  color: #8b949e;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 9px 22px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: var(--transition);
+  transition: 0.18s ease;
 }
 
-.nav-btn:hover {
-  background: var(--red);
-  color: white;
-  box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+.lp-btn-ghost:hover {
+  background: #161b22;
+  border-color: #e60023;
+  color: #e6edf3;
 }
 
-/* ===== HERO SECTION ===== */
-.hero {
-  flex-grow: 1;
+/* ── Hero ── */
+.lp-hero {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Centraliza verticalmente */
+  justify-content: center;
   align-items: center;
   text-align: center;
-  z-index: 2;
-  padding: 0 20px;
-  margin-top: -60px; /* Corrige o espaçamento vertical */
-}
-
-.hero-title {
-  font-family: 'Akira Expanded', sans-serif;
-  font-size: 3.5rem;
-  color: white;
-  text-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
-  animation: fadeInDown 1s ease;
-}
-
-.hero-title span {
-  color: var(--red);
-}
-
-.hero-subtitle {
-  font-size: 1.2rem;
-  color: var(--gray);
-  margin-top: 15px;
-  animation: fadeInUp 1.3s ease;
-  max-width: 600px;
-}
-
-/* ===== BOTÃO PRINCIPAL ===== */
-.cta-btn {
-  margin-top: 40px;
-  padding: 15px 40px;
-  font-size: 18px;
-  border: none;
-  border-radius: 50px;
-  background: var(--red);
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all var(--transition);
-  box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
-  animation: fadeIn 1.6s ease;
-}
-
-.cta-btn:hover {
-  background: #b80000;
-  transform: translateY(-3px);
-  box-shadow: 0 0 30px rgba(255, 0, 0, 0.6);
-}
-
-/* ===== FOOTER ===== */
-.footer {
-  text-align: center;
-  padding: 20px;
-  font-size: 0.9rem;
-  color: #777;
-  background: rgba(0, 0, 0, 0.3);
+  padding: 80px 24px 60px;
   position: relative;
   z-index: 2;
 }
 
-/* ===== ANIMAÇÕES ===== */
-@keyframes fadeInDown {
-  from { opacity: 0; transform: translateY(-30px); }
-  to { opacity: 1; transform: translateY(0); }
+.lp-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(230,0,35,0.08);
+  border: 1px solid rgba(230,0,35,0.25);
+  color: #e60023;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 20px;
+  margin-bottom: 24px;
+  animation: lpFadeDown 0.6s ease both;
 }
 
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
+.lp-eyebrow-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #e60023;
+  animation: lpPulse 1.5s infinite;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+@keyframes lpPulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.4; transform: scale(0.7); }
 }
 
-/* ===== RESPONSIVIDADE ===== */
-@media (max-width: 768px) {
-  .navbar {
-    padding: 20px 30px;
-  }
+.lp-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 700;
+  letter-spacing: 4px;
+  line-height: 1.05;
+  margin: 0 0 8px;
+  color: #e6edf3;
+  animation: lpFadeDown 0.7s ease 0.1s both;
+}
 
-  .logo {
-    width: 100px;
-  }
+.lp-title-accent {
+  color: #e60023;
+  position: relative;
+}
 
-  .hero-title {
-    font-size: 2.5rem;
-  }
+.lp-subtitle {
+  font-size: clamp(0.95rem, 2vw, 1.15rem);
+  color: #8b949e;
+  max-width: 540px;
+  line-height: 1.7;
+  margin: 16px 0 0;
+  animation: lpFadeUp 0.8s ease 0.2s both;
+}
 
-  .hero-subtitle {
-    font-size: 1rem;
-  }
+.lp-subtitle b { color: #e6edf3; font-weight: 600; }
 
-  .cta-btn {
-    font-size: 16px;
-    padding: 12px 25px;
-  }
+.lp-cta-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 40px;
+  flex-wrap: wrap;
+  justify-content: center;
+  animation: lpFadeUp 0.9s ease 0.3s both;
+}
+
+.lp-btn-primary {
+  background: #e60023;
+  border: none;
+  color: #fff;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 14px 36px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.18s ease;
+  box-shadow: 0 4px 20px rgba(230,0,35,0.3);
+}
+
+.lp-btn-primary:hover {
+  background: #c1001d;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 28px rgba(230,0,35,0.45);
+}
+
+/* ── Stats strip ── */
+.lp-stats {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  margin-top: 64px;
+  border: 1px solid #21262d;
+  border-radius: 16px;
+  overflow: hidden;
+  max-width: 560px;
+  width: 100%;
+  animation: lpFadeUp 1s ease 0.4s both;
+}
+
+.lp-stat {
+  flex: 1;
+  padding: 18px 12px;
+  text-align: center;
+  border-right: 1px solid #21262d;
+  background: #0d1117;
+}
+
+.lp-stat:last-child { border-right: none; }
+
+.lp-stat-val {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #e6edf3;
+  display: block;
+}
+
+.lp-stat-label {
+  font-size: 0.72rem;
+  color: #484f58;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  display: block;
+  margin-top: 2px;
+}
+
+/* ── Footer ── */
+.lp-footer {
+  text-align: center;
+  padding: 16px 24px;
+  font-size: 0.78rem;
+  color: #30363d;
+  border-top: 1px solid #21262d;
+  position: relative;
+  z-index: 2;
+}
+
+/* ── Animations ── */
+@keyframes lpFadeDown {
+  from { opacity: 0; transform: translateY(-18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes lpFadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Skeleton loader ── */
+.lp-skeleton {
+  display: inline-block;
+  width: 48px;
+  height: 24px;
+  border-radius: 6px;
+  background: #21262d;
+  background-image: linear-gradient(90deg, #21262d 25%, #30363d 50%, #21262d 75%);
+  background-size: 200% 100%;
+  animation: lpShimmer 1.4s infinite;
+  vertical-align: middle;
+}
+
+@keyframes lpShimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .lp-navbar { padding: 16px 20px; }
+  .lp-logo   { width: 90px; }
+  .lp-hero   { padding: 60px 16px 40px; }
+  .lp-stats  { flex-direction: column; max-width: 260px; }
+  .lp-stat   { border-right: none; border-bottom: 1px solid #21262d; }
+  .lp-stat:last-child { border-bottom: none; }
 }

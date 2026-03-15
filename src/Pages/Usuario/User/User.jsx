@@ -240,7 +240,6 @@ function User() {
               <label>
                 Plataforma
                 <select name="plataforma" value={editData.plataforma} onChange={e => setEditData({ ...editData, [e.target.name]: e.target.value })}>
-                  <option value="">Selecione</option>
                   <option value="PC">PC</option>
                   <option value="XBOX">Xbox</option>
                   <option value="PLAYSTATION">PlayStation</option>

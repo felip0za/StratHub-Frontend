@@ -254,125 +254,395 @@ const PartidasGrupos = ({ idCampeonato, onAgendarPartida, isAdmin, onEditarPlaca
 /* ─────────────────────────────────────────────
    Playoffs – Single Elimination Bracket
 ───────────────────────────────────────────── */
-const PlayoffsBracket = ({ idCampeonato, isAdmin, onEditarPlacar, onAgendarPartida }) => {
-  const navigate = useNavigate();
-  const api = useApi();
-  const [partidas, setPartidas] = useState([]);
+/* ─────────────────────────────────────────────
+   Helpers de bracket
+───────────────────────────────────────────── */
 
-  useEffect(() => {
-    if (!idCampeonato) return;
-    const load = async () => {
-      try {
-        const res = await api.get(`/partidas/campeonato/${idCampeonato}`);
-        const playoffs = res.data.filter(p =>
-          p.fasePartida === 'PLAYOFFS' || p.grupos === 'PLAYOFF' || p.grupos === 'PLAYOFFS'
-        );
-        const comTimes = await Promise.all(
-          playoffs.map(async (p) => {
-            const [t1, t2] = await Promise.all([api.get(`/times/${p.idTime1}`), api.get(`/times/${p.idTime2}`)]);
-            return {
-              ...p,
-              time1: { nome: t1.data.nome, imagem: t1.data.imagemBase64 ? `data:image/*;base64,${t1.data.imagemBase64}` : timeDefault },
-              time2: { nome: t2.data.nome, imagem: t2.data.imagemBase64 ? `data:image/*;base64,${t2.data.imagemBase64}` : timeDefault },
-            };
-          })
-        );
-        setPartidas(comTimes);
-      } catch (err) {
-        console.error('Erro ao buscar playoffs:', err);
-      }
-    };
-    load();
-  }, [idCampeonato]);
+// Dado um conjunto de partidas finalizadas, retorna o id do vencedor
+const getVencedor = (p) => {
+  if (!p) return null;
+  const enc = p.statusPartida === 'FINALIZADO' || p.statusPartida === 'WO';
+  if (!enc) return null;
+  if (p.idTimeVencedor) return p.idTimeVencedor;
+  if (p.scoreTime1 > p.scoreTime2) return p.idTime1;
+  if (p.scoreTime2 > p.scoreTime1) return p.idTime2;
+  return null;
+};
 
-  // Organiza por fase: QF, SF, FINAL
-  const faseMap = {
-    QUARTAS:       { label: 'Quartas de Final', ordem: 1 },
-    SEMIFINAL:     { label: 'Semifinal',        ordem: 2 },
-    FINAL:         { label: 'Final',            ordem: 3 },
-    TERCEIRO_LUGAR:{ label: '3º Lugar',         ordem: 4 },
-  };
+const getPerdedor = (p) => {
+  if (!p) return null;
+  const enc = p.statusPartida === 'FINALIZADO' || p.statusPartida === 'WO';
+  if (!enc) return null;
+  const v = getVencedor(p);
+  if (!v) return null;
+  return v === p.idTime1 ? p.idTime2 : p.idTime1;
+};
 
-  const porFase = {};
-  partidas.forEach(p => {
-    const fase = p.semana || p.fasePlayoff || 'QUARTAS';
-    if (!porFase[fase]) porFase[fase] = [];
-    porFase[fase].push(p);
-  });
-
-  const fasesOrdenadas = Object.keys(porFase).sort((a, b) => {
-    const oa = faseMap[a]?.ordem ?? 99;
-    const ob = faseMap[b]?.ordem ?? 99;
-    return oa - ob;
-  });
-
-  return (
-    <div className="partidas-wrap">
-      <div className="partidas-toolbar">
-        <div className="toolbar-left">
-          <span className="toolbar-label">🏅 Fase Eliminatória</span>
+/* ─────────────────────────────────────────────
+   BracketMatch — card no estilo da imagem
+   Dois slots (time + score) sem cabeçalho
+───────────────────────────────────────────── */
+const BracketMatch = ({ p, navigate, isAdmin, onEditarPlacar }) => {
+  // slot vazio
+  if (!p) {
+    return (
+      <div className="bp-card bp-empty">
+        <div className="bp-slot">
+          <span className="bp-nome bp-nome-empty">A definir</span>
+          <span className="bp-score bp-score-empty">—</span>
         </div>
-        {isAdmin && (
-          <button className="btn-agendar" onClick={() => onAgendarPartida('PLAYOFF')}>
-            ➕ Agendar Playoffs
-          </button>
+        <div className="bp-divider" />
+        <div className="bp-slot">
+          <span className="bp-nome bp-nome-empty">A definir</span>
+          <span className="bp-score bp-score-empty">—</span>
+        </div>
+        {isAdmin && onEditarPlacar && (
+          <button className="bp-edit-btn" onClick={e => e.stopPropagation()}>✏️</button>
         )}
       </div>
+    );
+  }
 
-      {partidas.length === 0 ? (
-        <div className="empty-bracket">
-          <div className="empty-bracket-icon">🏆</div>
-          <p>Nenhuma partida de playoffs agendada ainda.</p>
-          {isAdmin && (
-            <button className="btn-agendar" onClick={() => onAgendarPartida('PLAYOFF')} style={{ marginTop: 16 }}>
-              ➕ Agendar primeira partida
-            </button>
-          )}
-        </div>
-      ) : (
-        <div className="bracket-container">
-          {fasesOrdenadas.map(fase => (
-            <div key={fase} className="bracket-round">
-              <div className="bracket-round-label">{faseMap[fase]?.label || fase}</div>
-              <div className="bracket-matches">
-                {porFase[fase].map(p => (
-                  <BracketMatch key={p.id} p={p} navigate={navigate} isAdmin={isAdmin} onEditarPlacar={onEditarPlacar} />
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+  const enc  = p.statusPartida === 'FINALIZADO' || p.statusPartida === 'WO';
+  const vivo = p.statusPartida === 'EM_ANDAMENTO';
+  const v1   = enc && p.scoreTime1 > p.scoreTime2;
+  const v2   = enc && p.scoreTime2 > p.scoreTime1;
+
+  return (
+    <div
+      className={`bp-card ${vivo ? 'bp-vivo' : ''} ${enc ? 'bp-enc' : ''}`}
+      onClick={() => navigate(`/partida/${p.id}`)}
+      style={{ cursor: 'pointer' }}
+    >
+      {/* Time 1 */}
+      <div className={`bp-slot ${v1 ? 'bp-win' : v2 ? 'bp-lose' : ''}`}>
+        <img src={p.time1.imagem} alt={p.time1.nome} className="bp-logo" />
+        <span className="bp-nome">{p.time1.nome}</span>
+        <span className={`bp-score ${v1 ? 'bp-score-win' : ''}`}>{p.scoreTime1 ?? 0}</span>
+      </div>
+      <div className="bp-divider" />
+      {/* Time 2 */}
+      <div className={`bp-slot ${v2 ? 'bp-win' : v1 ? 'bp-lose' : ''}`}>
+        <img src={p.time2.imagem} alt={p.time2.nome} className="bp-logo" />
+        <span className="bp-nome">{p.time2.nome}</span>
+        <span className={`bp-score ${v2 ? 'bp-score-win' : ''}`}>{p.scoreTime2 ?? 0}</span>
+      </div>
+
+      {/* badges e editar ficam fora do fluxo principal */}
+      <div className="bp-footer">
+        <span className="bp-date">{formatarHorario(p.dataHoraPartida)}</span>
+        {vivo && <span className="bp-badge bp-badge-vivo"><span className="bp-live-dot" />Ao Vivo</span>}
+        {enc  && <span className="bp-badge bp-badge-enc">Finalizado</span>}
+        {isAdmin && (
+          <button className="bp-edit-btn" onClick={e => { e.stopPropagation(); onEditarPlacar(p); }}>✏️</button>
+        )}
+      </div>
     </div>
   );
 };
 
-const BracketMatch = ({ p, navigate, isAdmin, onEditarPlacar }) => {
-  const isFinalizado = p.statusPartida === 'FINALIZADO' || p.statusPartida === 'WO';
-  const v1 = isFinalizado && p.scoreTime1 > p.scoreTime2;
-  const v2 = isFinalizado && p.scoreTime2 > p.scoreTime1;
+/* ─────────────────────────────────────────────
+   PlayoffsBracket — layout horizontal
+───────────────────────────────────────────── */
+const PlayoffsBracket = ({ idCampeonato, isAdmin, onEditarPlacar, timesInscritos, api: apiProp }) => {
+  const navigate  = useNavigate();
+  const apiHook   = useApi();
+  const api       = apiProp || apiHook;
+
+  const [partidas,  setPartidas]  = useState([]);
+  const [agendando, setAgendando] = useState(false);
+  const [modalData, setModalData] = useState('');
+  const [modalHora, setModalHora] = useState('');
+  const [modalFase, setModalFase] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const carregarPartidas = async () => {
+    if (!idCampeonato) return;
+    try {
+      const res = await api.get(`/partidas/campeonato/${idCampeonato}`);
+      const playoffs = res.data.filter(p => p.fasePartida === 'PLAYOFFS');
+      const comTimes = await Promise.all(
+        playoffs.map(async (p) => {
+          const [t1, t2] = await Promise.all([api.get(`/times/${p.idTime1}`), api.get(`/times/${p.idTime2}`)]);
+          return {
+            ...p,
+            time1: { id: t1.data.id, nome: t1.data.nome, imagem: t1.data.imagemBase64 ? `data:image/*;base64,${t1.data.imagemBase64}` : timeDefault },
+            time2: { id: t2.data.id, nome: t2.data.nome, imagem: t2.data.imagemBase64 ? `data:image/*;base64,${t2.data.imagemBase64}` : timeDefault },
+          };
+        })
+      );
+      setPartidas(comTimes);
+    } catch (err) { console.error('Erro ao buscar playoffs:', err); }
+  };
+
+  useEffect(() => { carregarPartidas(); }, [idCampeonato]);
+
+  // ── agrupamento e lógica de progressão ──
+  const porFase = {};
+  partidas.forEach(p => {
+    if (!porFase[p.semana]) porFase[p.semana] = [];
+    porFase[p.semana].push(p);
+  });
+
+  const quartas  = porFase['QUARTAS_DE_FINAL'] || [];
+  const semis    = porFase['SEMIFINAL']        || [];
+  const terceiro = porFase['TERCEIRO_LUGAR']   || [];
+  const final_   = porFase['FINAL']            || [];
+
+  const quartasCompletas = quartas.length === 4 && quartas.every(p => getVencedor(p));
+  const semisCompletas   = semis.length   === 2 && semis.every(p => getVencedor(p));
+
+  const classificadosPorGrupo = {};
+  ['A','B','C','D'].forEach(l => {
+    const g = (timesInscritos?.[l] || []).slice().sort((a,b) => (Number(b.pontuacao)||0)-(Number(a.pontuacao)||0));
+    classificadosPorGrupo[l] = { primeiro: g[0]||null, segundo: g[1]||null };
+  });
+
+  const confrontosQuartas = [
+    { time1: classificadosPorGrupo['A']?.primeiro, time2: classificadosPorGrupo['B']?.segundo },
+    { time1: classificadosPorGrupo['B']?.primeiro, time2: classificadosPorGrupo['A']?.segundo },
+    { time1: classificadosPorGrupo['C']?.primeiro, time2: classificadosPorGrupo['D']?.segundo },
+    { time1: classificadosPorGrupo['D']?.primeiro, time2: classificadosPorGrupo['C']?.segundo },
+  ];
+
+  const confrontosSemis    = quartasCompletas ? [
+    { time1Id: getVencedor(quartas[0]), time2Id: getVencedor(quartas[1]) },
+    { time1Id: getVencedor(quartas[2]), time2Id: getVencedor(quartas[3]) },
+  ] : [];
+  const confrontosTerceiro = semisCompletas ? [{ time1Id: getPerdedor(semis[0]), time2Id: getPerdedor(semis[1]) }] : [];
+  const confrontosFinal    = semisCompletas ? [{ time1Id: getVencedor(semis[0]), time2Id: getVencedor(semis[1]) }] : [];
+
+  const podeAgendarQuartas  = quartas.length === 0 && confrontosQuartas.every(c => c.time1 && c.time2);
+
+  const getNomeTime = (timeId) => {
+    if (!timeId) return '?';
+    for (const g of Object.values(timesInscritos || {})) { const t = g.find(t => t.id === timeId); if (t) return t.nome; }
+    for (const p of partidas) { if (p.idTime1 === timeId) return p.time1.nome; if (p.idTime2 === timeId) return p.time2.nome; }
+    return `Time #${timeId}`;
+  };
+
+  const abrirModal = (semana, confrontos, label) => {
+    setModalFase({ semana, confrontos, label });
+    setModalData(''); setModalHora('');
+    setModalOpen(true);
+  };
+
+  const handleAgendarFase = async () => {
+    if (!modalFase) return;
+    setAgendando(true);
+    try {
+      for (const c of modalFase.confrontos) {
+        await api.post('/partidas/agendar', null, {
+          params: { idCampeonato, idTime1: c.time1Id, idTime2: c.time2Id, fasePartida: 'PLAYOFFS', grupos: 'PLAYOFFS', semana: modalFase.semana, dataHora: `${modalData}T${modalHora}:00` }
+        });
+      }
+      alert('✅ Partidas agendadas!');
+      setModalOpen(false); setModalData(''); setModalHora('');
+      await carregarPartidas();
+    } catch (err) {
+      alert(`❌ ${err.response?.data?.mensagem || 'Erro ao agendar'}`);
+    } finally { setAgendando(false); }
+  };
+
+  // ── Rodadas ──
+  const roundsMain = [
+    { key: 'QUARTAS_DE_FINAL', label: 'Quartas de Final', partidas: quartas,  slots: 4 },
+    { key: 'SEMIFINAL',        label: 'Semifinal',        partidas: semis,    slots: 2 },
+    { key: 'FINAL',            label: 'Final',            partidas: final_,   slots: 1 },
+  ];
+
+  const slotsOf = (round) => {
+    const arr = [...round.partidas];
+    while (arr.length < round.slots) arr.push(null);
+    return arr;
+  };
+
+  // Agrupa slots em pares: [[slot0,slot1], [slot2,slot3], ...]
+  // Um par é "double" apenas se tiver DOIS items reais (não null)
+  const pairsOf = (slots) => {
+    const pairs = [];
+    for (let i = 0; i < slots.length; i += 2) {
+      const a = slots[i];
+      const b = slots[i + 1];          // undefined se não existe
+      // só agrupa se houver dois slots definidos (mesmo que null = vazio)
+      const isDouble = b !== undefined; // b pode ser null (slot vazio) mas existe
+      pairs.push({ items: isDouble ? [a, b] : [a], double: isDouble });
+    }
+    return pairs;
+  };
 
   return (
-    <div className={`bracket-match ${p.statusPartida === 'EM_ANDAMENTO' ? 'ao-vivo' : ''} ${isFinalizado ? 'finalizada' : ''}`}>
-      <div className="bracket-match-time" onClick={() => navigate(`/partida/${p.id}`)} style={{ cursor: 'pointer' }}>
-        <div className={`bm-team ${v1 ? 'bm-winner' : v2 ? 'bm-loser' : ''}`}>
-          <img src={p.time1.imagem} alt={p.time1.nome} />
-          <span>{p.time1.nome}</span>
-          <span className={`bm-score ${v1 ? 'score-win' : ''}`}>{p.scoreTime1 ?? 0}</span>
-        </div>
-        <div className="bm-divider" />
-        <div className={`bm-team ${v2 ? 'bm-winner' : v1 ? 'bm-loser' : ''}`}>
-          <img src={p.time2.imagem} alt={p.time2.nome} />
-          <span>{p.time2.nome}</span>
-          <span className={`bm-score ${v2 ? 'score-win' : ''}`}>{p.scoreTime2 ?? 0}</span>
-        </div>
+    <div className="partidas-wrap">
+
+      <div className="partidas-toolbar">
+        <div className="toolbar-left"><span className="toolbar-label">🏅 Fase Eliminatória</span></div>
       </div>
-      <div className="bracket-match-footer">
-        <span className="bm-date">🕐 {formatarHorario(p.dataHoraPartida)}</span>
-        {isAdmin && (
-          <button className="btn-action editar small" onClick={() => onEditarPlacar(p)}>✏️</button>
+
+      {/* ── Botões admin ── */}
+      {isAdmin && (
+        <div className="playoffs-agendar-row">
+          <button className="btn-agendar" onClick={() =>
+            abrirModal('QUARTAS_DE_FINAL', confrontosQuartas.filter(c => c.time1 && c.time2).map(c => ({ time1Id: c.time1.id, time2Id: c.time2.id })), 'Quartas de Final')
+          }>➕ Quartas de Final</button>
+          <button className="btn-agendar" onClick={() =>
+            abrirModal('SEMIFINAL', confrontosSemis.length ? confrontosSemis : [{ time1Id:'', time2Id:'' },{ time1Id:'', time2Id:'' }], 'Semifinal')
+          }>➕ Semifinal</button>
+          <button className="btn-agendar" onClick={() =>
+            abrirModal('TERCEIRO_LUGAR', confrontosTerceiro.length ? confrontosTerceiro : [{ time1Id:'', time2Id:'' }], '3º Lugar')
+          }>➕ 3º Lugar</button>
+          <button className="btn-agendar" onClick={() =>
+            abrirModal('FINAL', confrontosFinal.length ? confrontosFinal : [{ time1Id:'', time2Id:'' }], 'Final')
+          }>➕ Final</button>
+        </div>
+      )}
+
+      {/* ── Bracket horizontal ── */}
+      <div className="bp-scroll">
+        <div className="bp-wrap">
+
+          {roundsMain.map((round, ri) => {
+            const slots   = slotsOf(round);
+            const isFirst = ri === 0;
+            const pairs   = pairsOf(slots);
+
+            return (
+              <div key={round.key} className={`bp-round ${isFirst ? 'bp-round-first' : ''}`}>
+                <div className="bp-round-label">{round.label}</div>
+                <div className="bp-col">
+                  {pairs.map((pair, pi) => (
+                    <div
+                      key={pi}
+                      className={`bp-pair ${pair.double ? 'bp-pair-double' : 'bp-pair-single'}`}
+                    >
+                      {pair.items.map((p, si) => (
+                        <div key={si} className="bp-pair-slot">
+                          <BracketMatch
+                            p={p}
+                            navigate={navigate}
+                            isAdmin={isAdmin}
+                            onEditarPlacar={onEditarPlacar}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+
+          {/* ── Campeão (ao lado da Final) ── */}
+          {(() => {
+            const finalPartida = final_[0] ?? null;
+            const campeaoId    = finalPartida ? getVencedor(finalPartida) : null;
+            const campeaoNome  = campeaoId ? getNomeTime(campeaoId) : null;
+            const campeaoImg   = campeaoId
+              ? partidas.find(p => p.idTime1 === campeaoId)?.time1?.imagem
+                ?? partidas.find(p => p.idTime2 === campeaoId)?.time2?.imagem
+                ?? null
+              : null;
+
+            return (
+              <div className="bp-round bp-round-campeon">
+                <div className="bp-round-label">Campeão</div>
+                <div className="bp-col">
+                  <div className="bp-pair bp-pair-single">
+                    <div className="bp-pair-slot">
+                      <div className={`bp-campeon-box ${campeaoNome ? 'bp-campeon-definido' : ''}`}>
+                        {campeaoNome ? (
+                          <>
+                            <div className="bp-campeon-trophy">🏆</div>
+                            {campeaoImg && (
+                              <img src={campeaoImg} alt={campeaoNome} className="bp-campeon-logo" />
+                            )}
+                            <span className="bp-campeon-nome">{campeaoNome}</span>
+                          </>
+                        ) : (
+                          <>
+                            <div className="bp-campeon-trophy bp-campeon-trophy-empty">🏆</div>
+                            <span className="bp-campeon-nome bp-campeon-vazio">A definir</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
+        </div>
+
+        {/* ── 3º Lugar ── */}
+        {(terceiro.length > 0 || semisCompletas) && (
+          <div className="bp-terceiro">
+            <div className="bp-round-label" style={{ marginBottom: 10 }}>3º Lugar</div>
+            <div style={{ width: 220 }}>
+              {(terceiro.length > 0 ? terceiro : [null]).map((p, si) => (
+                <BracketMatch key={p?.id ?? `trc-${si}`} p={p} navigate={navigate} isAdmin={isAdmin} onEditarPlacar={onEditarPlacar} />
+              ))}
+            </div>
+          </div>
         )}
       </div>
+
+      {/* ── Vazio ── */}
+      {partidas.length === 0 && (
+        <div className="empty-bracket">
+          <div className="empty-bracket-icon">🏆</div>
+          <p>{podeAgendarQuartas ? 'Tudo pronto! Clique em "Quartas de Final" para iniciar os playoffs.' : 'Os grupos precisam ter pelo menos 2 times classificados para iniciar os playoffs.'}</p>
+        </div>
+      )}
+
+      {/* ── Modal agendar fase ── */}
+      {modalOpen && modalFase && (
+        <div className="modal-overlay" onClick={() => setModalOpen(false)}>
+          <div className="modal-content modal-agendar" onClick={e => e.stopPropagation()} style={{ maxWidth: 480 }}>
+            <h2 className="modal-title">⚔️ Agendar {modalFase.label}</h2>
+            <div style={{ padding: '0 24px', marginBottom: 8 }}>
+              <p style={{ fontSize: '0.78rem', color: '#8b949e', marginBottom: 10 }}>Confrontos:</p>
+              {modalFase.confrontos.map((c, i) => {
+                const todos = Object.values(timesInscritos || {}).flat();
+                const tem = c.time1Id && c.time2Id;
+                return (
+                  <div key={i} style={{ marginBottom: 12, padding: '10px 0', borderBottom: '1px solid #21262d' }}>
+                    {tem ? (
+                      <span style={{ fontSize: '0.83rem', color: '#e6edf3' }}>
+                        {getNomeTime(c.time1Id)} <span style={{ color:'#484f58' }}>vs</span> {getNomeTime(c.time2Id)}
+                      </span>
+                    ) : (
+                      <div style={{ display:'flex', gap:8, alignItems:'center' }}>
+                        <select style={{ flex:1, background:'#161b22', border:'1px solid #21262d', color:'#e6edf3', padding:'8px 10px', borderRadius:8, fontSize:'0.83rem', outline:'none' }}
+                          value={c.time1Id||''} onChange={e => { const u=[...modalFase.confrontos]; u[i]={...u[i],time1Id:Number(e.target.value)}; setModalFase({...modalFase,confrontos:u}); }}>
+                          <option value="">Time 1</option>
+                          {todos.map(t => <option key={t.id} value={t.id}>{t.nome}</option>)}
+                        </select>
+                        <span style={{ color:'#484f58', fontWeight:700 }}>vs</span>
+                        <select style={{ flex:1, background:'#161b22', border:'1px solid #21262d', color:'#e6edf3', padding:'8px 10px', borderRadius:8, fontSize:'0.83rem', outline:'none' }}
+                          value={c.time2Id||''} onChange={e => { const u=[...modalFase.confrontos]; u[i]={...u[i],time2Id:Number(e.target.value)}; setModalFase({...modalFase,confrontos:u}); }}>
+                          <option value="">Time 2</option>
+                          {todos.filter(t => t.id !== c.time1Id).map(t => <option key={t.id} value={t.id}>{t.nome}</option>)}
+                        </select>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            <div className="agendar-grid" style={{ padding:'4px 24px 0' }}>
+              <div className="modal-field"><label>Data</label><input type="date" value={modalData} onChange={e => setModalData(e.target.value)} min={new Date().toISOString().split('T')[0]} /></div>
+              <div className="modal-field"><label>Hora</label><input type="time" value={modalHora} onChange={e => setModalHora(e.target.value)} /></div>
+            </div>
+            <div className="info-warning" style={{ margin:'8px 24px 0' }}>⚠️ Todos os jogos desta fase terão o mesmo horário</div>
+            <div className="modal-buttons">
+              <button className="btn-salvar" disabled={agendando||!modalData||!modalHora||modalFase.confrontos.some(c=>!c.time1Id||!c.time2Id)} onClick={handleAgendarFase}>
+                {agendando ? 'Agendando…' : 'Agendar'}
+              </button>
+              <button className="btn-cancelar" disabled={agendando} onClick={() => setModalOpen(false)}>Cancelar</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -651,6 +921,13 @@ const InfoEditCampeonatos = () => {
       <div className="page-wrapper">
         <div className="page-container">
 
+          {/* ── Topo: botão voltar ── */}
+          <div className="page-topbar">
+            <button className="btn-voltar-topo" onClick={() => navigate('/campeonatos')}>
+              ← Voltar
+            </button>
+          </div>
+
           {/* ── Tabs ── */}
           <nav className="main-tabs">
             {['informacoes', 'partidas'].map(aba => (
@@ -767,7 +1044,7 @@ const InfoEditCampeonatos = () => {
                 subAbaPartidas === 'grupos' ? (
                   <PartidasGrupos idCampeonato={id} onAgendarPartida={abrirModalAgendarPartida} isAdmin={isAdmin} onEditarPlacar={abrirModalPlacar} />
                 ) : (
-                  <PlayoffsBracket idCampeonato={id} isAdmin={isAdmin} onEditarPlacar={abrirModalPlacar} onAgendarPartida={abrirModalAgendarPartida} />
+                  <PlayoffsBracket idCampeonato={id} isAdmin={isAdmin} onEditarPlacar={abrirModalPlacar} timesInscritos={timesInscritos} />
                 )
               ) : (
                 <PartidasSimples times={Object.values(timesInscritos).flat()} maxEquipes={campeonato.maxEquipes} onAgendarPartida={abrirModalAgendarPartida} isAdmin={isAdmin} onEditarPlacar={abrirModalPlacar} />
